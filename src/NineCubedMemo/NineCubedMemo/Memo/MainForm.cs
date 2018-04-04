@@ -30,7 +30,7 @@ namespace NineCubed.Memo
         private void MainForm_Load(object sender, EventArgs e)
         {
             //テキストボックスを初期化します
-            initTextBox(txtMain, 12);
+            initTextBox(txtMain);
 
             //隙間がなくなるようにテキストボックスを配置します
             txtMain.Dock = DockStyle.Fill;
@@ -40,7 +40,7 @@ namespace NineCubed.Memo
         /// テキストボックスを初期化します
         /// </summary>
         /// <param name="textBox">初期化するテキストボックス</param>
-        private void initTextBox(RichTextBox textBox, float fontSize)
+        private void initTextBox(RichTextBox textBox, string fontName = "ＭＳ ゴシック", float fontSize = 12, int tabSize = 4)
         {
             //折り返さないようにします
             textBox.WordWrap = false;
@@ -49,7 +49,7 @@ namespace NineCubed.Memo
             textBox.AcceptsTab = true;
 
             //文字の幅が同じするため、等幅フォントの「ＭＳ ゴシック」にします
-            textBox.Font = new Font("ＭＳ ゴシック", fontSize);
+            textBox.Font = new Font(fontName, fontSize);
 
             //デフォルトでは、半角英数字は英語フォント、それ以外は日本語フォントを使う DualFont になっているため、AutoFont だけを再設定します
             //この設定をしないと、半角の「i」の幅がものすごく狭くなってしまう
@@ -62,7 +62,7 @@ namespace NineCubed.Memo
             textBox.DetectUrls = false; //true にすると、LinkClickedイベントでクリックされたURL(e.LinkText)が取得できる
 
             //タブの位置を設定します
-            setSelectionTabs(textBox, 4);
+            setSelectionTabs(textBox, tabSize);
         }
 
         /// <summary>
