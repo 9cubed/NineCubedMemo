@@ -45,19 +45,21 @@
             this.menuEdit_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEdit_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEdit_Delete = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHelp_version = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolFile_New = new System.Windows.Forms.ToolStripButton();
             this.toolFile_Open = new System.Windows.Forms.ToolStripButton();
             this.toolFile_Save = new System.Windows.Forms.ToolStripButton();
-            this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuHelp_version = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.menuBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtMain
             // 
-            this.txtMain.Location = new System.Drawing.Point(22, 78);
+            this.txtMain.Location = new System.Drawing.Point(172, 96);
             this.txtMain.Name = "txtMain";
             this.txtMain.Size = new System.Drawing.Size(297, 152);
             this.txtMain.TabIndex = 0;
@@ -91,26 +93,30 @@
             // menuFile_New
             // 
             this.menuFile_New.Name = "menuFile_New";
-            this.menuFile_New.Size = new System.Drawing.Size(161, 22);
+            this.menuFile_New.Size = new System.Drawing.Size(180, 22);
             this.menuFile_New.Text = "新規作成";
+            this.menuFile_New.Click += new System.EventHandler(this.menuFile_New_Click);
             // 
             // menuFile_Open
             // 
             this.menuFile_Open.Name = "menuFile_Open";
-            this.menuFile_Open.Size = new System.Drawing.Size(161, 22);
+            this.menuFile_Open.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Open.Text = "開く";
+            this.menuFile_Open.Click += new System.EventHandler(this.menuFile_Open_Click);
             // 
             // menuFile_Save
             // 
             this.menuFile_Save.Name = "menuFile_Save";
-            this.menuFile_Save.Size = new System.Drawing.Size(161, 22);
+            this.menuFile_Save.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Save.Text = "上書き保存";
+            this.menuFile_Save.Click += new System.EventHandler(this.menuFile_Save_Click);
             // 
             // menuFile_SaveAs
             // 
             this.menuFile_SaveAs.Name = "menuFile_SaveAs";
-            this.menuFile_SaveAs.Size = new System.Drawing.Size(161, 22);
+            this.menuFile_SaveAs.Size = new System.Drawing.Size(180, 22);
             this.menuFile_SaveAs.Text = "名前を付けて保存";
+            this.menuFile_SaveAs.Click += new System.EventHandler(this.menuFile_SaveAs_Click);
             // 
             // menuFile_Close
             // 
@@ -173,6 +179,21 @@
             this.menuEdit_Delete.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Delete.Text = "削除";
             // 
+            // menuHelp
+            // 
+            this.menuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuHelp_version});
+            this.menuHelp.Name = "menuHelp";
+            this.menuHelp.Size = new System.Drawing.Size(48, 20);
+            this.menuHelp.Text = "ヘルプ";
+            // 
+            // menuHelp_version
+            // 
+            this.menuHelp_version.Name = "menuHelp_version";
+            this.menuHelp_version.Size = new System.Drawing.Size(142, 22);
+            this.menuHelp_version.Text = "バージョン情報";
+            this.menuHelp_version.Click += new System.EventHandler(this.menuHelp_version_Click);
+            // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -212,20 +233,9 @@
             this.toolFile_Save.Size = new System.Drawing.Size(23, 22);
             this.toolFile_Save.Text = "toolStripButton1";
             // 
-            // menuHelp
+            // openFileDialog
             // 
-            this.menuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuHelp_version});
-            this.menuHelp.Name = "menuHelp";
-            this.menuHelp.Size = new System.Drawing.Size(48, 20);
-            this.menuHelp.Text = "ヘルプ";
-            // 
-            // menuHelp_version
-            // 
-            this.menuHelp_version.Name = "menuHelp_version";
-            this.menuHelp_version.Size = new System.Drawing.Size(180, 22);
-            this.menuHelp_version.Text = "バージョン情報";
-            this.menuHelp_version.Click += new System.EventHandler(this.menuHelp_version_Click);
+            this.openFileDialog.FileName = "openFileDialog1";
             // 
             // MainForm
             // 
@@ -272,5 +282,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuEdit_Delete;
         private System.Windows.Forms.ToolStripMenuItem menuHelp;
         private System.Windows.Forms.ToolStripMenuItem menuHelp_version;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
     }
 }
