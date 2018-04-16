@@ -93,28 +93,28 @@
             // menuFile_New
             // 
             this.menuFile_New.Name = "menuFile_New";
-            this.menuFile_New.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_New.Size = new System.Drawing.Size(161, 22);
             this.menuFile_New.Text = "新規作成";
             this.menuFile_New.Click += new System.EventHandler(this.menuFile_New_Click);
             // 
             // menuFile_Open
             // 
             this.menuFile_Open.Name = "menuFile_Open";
-            this.menuFile_Open.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open.Size = new System.Drawing.Size(161, 22);
             this.menuFile_Open.Text = "開く";
             this.menuFile_Open.Click += new System.EventHandler(this.menuFile_Open_Click);
             // 
             // menuFile_Save
             // 
             this.menuFile_Save.Name = "menuFile_Save";
-            this.menuFile_Save.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Save.Size = new System.Drawing.Size(161, 22);
             this.menuFile_Save.Text = "上書き保存";
             this.menuFile_Save.Click += new System.EventHandler(this.menuFile_Save_Click);
             // 
             // menuFile_SaveAs
             // 
             this.menuFile_SaveAs.Name = "menuFile_SaveAs";
-            this.menuFile_SaveAs.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_SaveAs.Size = new System.Drawing.Size(161, 22);
             this.menuFile_SaveAs.Text = "名前を付けて保存";
             this.menuFile_SaveAs.Click += new System.EventHandler(this.menuFile_SaveAs_Click);
             // 

@@ -37,7 +37,7 @@ namespace NineCubed.Memo
         private void MainForm_Load(object sender, EventArgs e)
         {
             //テキストボックスを初期化します
-            initTextBox(txtMain);
+            InitTextBox(txtMain);
 
             //隙間がなくなるようにテキストボックスを配置します
             txtMain.Dock = DockStyle.Fill;
@@ -53,7 +53,7 @@ namespace NineCubed.Memo
         /// テキストボックスを初期化します
         /// </summary>
         /// <param name="textBox">初期化するテキストボックス</param>
-        private void initTextBox(RichTextBox textBox, string fontName = "ＭＳ ゴシック", float fontSize = 12, int tabSize = 4)
+        private void InitTextBox(RichTextBox textBox, string fontName = "ＭＳ ゴシック", float fontSize = 12, int tabSize = 4)
         {
             //折り返さないようにします
             textBox.WordWrap = false;
@@ -75,7 +75,7 @@ namespace NineCubed.Memo
             textBox.DetectUrls = false; //true にすると、LinkClickedイベントでクリックされたURL(e.LinkText)が取得できる
 
             //タブの位置を設定します
-            setSelectionTabs(textBox, tabSize);
+            SetSelectionTabs(textBox, tabSize);
 
             //変更なしにします ver1.0.1
             textBox.Modified = false;
@@ -89,7 +89,7 @@ namespace NineCubed.Memo
         /// </summary>
         /// <param name="textBox">テキストボックス</param>
         /// <param name="tabSize">1タブあたりの文字数</param>
-        private void setSelectionTabs(RichTextBox textBox, int tabSize)
+        private void SetSelectionTabs(RichTextBox textBox, int tabSize)
         {
             //1文字の幅のサイズを取得します
             int charWidth = 0;
