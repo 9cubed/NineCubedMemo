@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NineCubed.Memo.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,7 +18,6 @@ namespace NineCubed.Memo
     {
         /// <summary>
         /// テキストファイルのパス
-        /// ver1.0.1
         /// </summary>
         public string Path { get; set; }
 
@@ -47,6 +47,25 @@ namespace NineCubed.Memo
                 "テキストファイル(*.txt)|*.txt" + "|" + 
                 "すべてのファイル(*.*)|*.*";
             saveFileDialog.Filter = openFileDialog.Filter;
+        }
+
+        /// <summary>
+        /// ver1.0.2
+        /// MainForm の FormClosing イベント
+        /// フォームが閉じられる直前に呼ばれます。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                //テキストファイルを閉じます
+                CloseFile();
+            } catch (CancelException) {
+                //キャンセルされた場合、フォームが閉じるのを中止します
+                e.Cancel = true;
+            }
         }
 
         /// <summary>
@@ -112,7 +131,6 @@ namespace NineCubed.Memo
 
         /// <summary>
         /// メニュー・ヘルプ・バージョン情報 の Clickイベント
-        /// ver1.0.1
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -131,66 +149,111 @@ namespace NineCubed.Memo
 
         /// <summary>
         /// メニュー・ファイル・新規作成 の Clickイベント
-        /// ver1.0.1
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void menuFile_New_Click(object sender, EventArgs e)
         {
-            if (txtMain.Modified) {
-                //テキストに変更がある場合
-                var result = MessageBox.Show("変更されています。保存しますか？", "確認", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                if (result == DialogResult.Cancel) {
-                    //「キャンセル」の場合、処理を抜けます
-                    return;
-                }
-
-                if (result == DialogResult.Yes) {
-                    //「はい」の場合
-
-                    //保存をします
-                    menuFile_Save_Click(sender, e);
-                }
+            //ver1.0.2
+            try {
+                //テキストファイルを新規作成します
+                CreateNewFile();
+            } catch (CancelException) {
+                //キャンセル時
+            } catch (Exception ex) {
+                ShowErrorMsgBox(ex);
             }
-
-            //テキストボックスのテキストを初期化します
-            txtMain.Clear(); //Modified は false になる
-
-            //変更なしにします
-            txtMain.Modified = false;
-
-            //パスを未設定にします
-            this.Path = null;
         }
 
         /// <summary>
         /// メニュー・ファイル・開く の Clickイベント
-        /// ver1.0.1
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void menuFile_Open_Click(object sender, EventArgs e)
         {
-            if (txtMain.Modified) {
-                //テキストに変更がある場合
-                var result = MessageBox.Show("変更されています。保存しますか？", "確認", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                if (result == DialogResult.Cancel) {
-                    //「キャンセル」の場合、処理を抜けます
-                    return;
-                }
-                if (result == DialogResult.Yes) {
-                    //「はい」の場合
-
-                    //保存します
-                    menuFile_Save_Click(sender, e);
-                }
+            //ver1.0.2
+            try {
+                //テキストファイルを開きます
+                OpenFile();
+            } catch (CancelException) {
+                //キャンセル時
+            } catch (Exception ex) {
+                ShowErrorMsgBox(ex);
             }
+        }
+
+        /// <summary>
+        /// メニュー・ファイル・上書き保存 の Clickイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuFile_Save_Click(object sender, EventArgs e)
+        {
+            //ver1.0.2
+            try {
+                //テキストファイルに保存します
+                SaveFile();
+            } catch (CancelException) {
+                //キャンセル時
+            } catch (Exception ex) {
+                ShowErrorMsgBox(ex);
+            }
+        }
+
+        /// <summary>
+        /// メニュー・ファイル・名前を付けて保存 の Clickイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuFile_SaveAs_Click(object sender, EventArgs e)
+        {
+            //ver1.0.2
+            try {
+                //テキストファイルに保存します
+                SaveFile(true);
+            } catch (CancelException) {
+                //キャンセル時
+            } catch (Exception ex) {
+                ShowErrorMsgBox(ex);
+            }
+        }
+
+        /// <summary>
+        /// ver1.0.2
+        /// テキストファイルを新規作成します
+        /// </summary>
+        private void CreateNewFile()
+        {
+            //テキストに変更がある場合は、ファイルの保存確認をして、ファイルを保存します
+            ConfirmAndSave();
 
             {
+                //テキストボックスのテキストを初期化します
+                txtMain.Clear(); //Modified は false になる
+
+                //変更なしにします
+                txtMain.Modified = false;
+
+                //パスを未設定にします
+                this.Path = null;
+            }
+        }
+
+        /// <summary>
+        /// ver1.0.2
+        /// テキストファイルを開きます
+        /// </summary>
+        private void OpenFile()
+        {
+            //テキストに変更がある場合は、ファイルの保存確認をして、ファイルを保存します
+            ConfirmAndSave();
+
+            { 
                 //開くダイアログを表示します
                 openFileDialog.FileName = "";
-                var result = openFileDialog.ShowDialog();
-                if (result == DialogResult.OK) {
+                var dialogResult = openFileDialog.ShowDialog();
+                if (dialogResult == DialogResult.OK) {
                     //「OK」の場合
 
                     //ファイルの読み込み
@@ -207,20 +270,57 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// メニュー・ファイル・上書き保存 の Clickイベント
-        /// ver1.0.1
+        /// ver1.0.2
+        /// テキストファイルを閉じます
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void menuFile_Save_Click(object sender, EventArgs e)
+        private void CloseFile()
         {
-            //パスが設定されていない場合は、名前を付けて保存処理に移行します
-            if (this.Path == null) {
-                menuFile_SaveAs_Click(sender, e);
-                return;
+            //テキストに変更がある場合は、ファイルの保存確認をして、ファイルを保存します
+            ConfirmAndSave();
+        }
+
+        /// <summary>
+        /// ファイルを必要に応じて保存します
+        /// テキストに変更がある場合は、ファイルの保存確認をして、「はい」の場合にはファイルを保存します
+        /// ver1.0.2
+        /// </summary>
+        /// <returns></returns>
+        private bool ConfirmAndSave()
+        {
+            if (txtMain.Modified)
+            {
+                //ファイルの保存確認をします
+                var dialogResult = ShowConfirmSavingMsgBox();
+                if (dialogResult == DialogResult.Cancel) throw new CancelException();
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //「はい」の場合、ファイルを保存します
+                    SaveFile();
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// ver1.0.2
+        /// テキストファイルに保存します
+        /// </summary>
+        /// <param name="showDialog">true:ファイル選択ダイアログを表示します</param>
+        private void SaveFile(bool showDialog = false)
+        {
+            if (this.Path == null || showDialog == true)
+            {
+                //パスが未設定の場合
+                //保存ダイアログを表示します
+                var result = saveFileDialog.ShowDialog();
+                if (result == DialogResult.Cancel) throw new CancelException();
+                if (result == DialogResult.No) return;
+
+                //選択されたファイルのパスを保持します
+                this.Path = saveFileDialog.FileName;
             }
 
-            //ファイルの保存
+            //ファイルを保存します
             txtMain.SaveFile(this.Path, RichTextBoxStreamType.PlainText);
 
             //変更なしにします
@@ -228,28 +328,23 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// メニュー・ファイル・名前を付けて保存 の Clickイベント
-        /// ver1.0.1
+        /// ver1.0.2
+        /// エラーメッセージを表示します
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void menuFile_SaveAs_Click(object sender, EventArgs e)
+        /// <param name="e">発生した例外</param>
+        private void ShowErrorMsgBox(Exception e)
         {
-            //保存ダイアログを表示します
-            var result = saveFileDialog.ShowDialog();
-            if (result == DialogResult.OK) {
-                //「OK」の場合、選択されたファイルに保存します
+            MessageBox.Show("エラーが発生しました。\n" + e.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
-                //ファイルの保存
-                string path = saveFileDialog.FileName;
-                txtMain.SaveFile(path, RichTextBoxStreamType.PlainText);
-
-                //パスを保持します
-                this.Path = path;
-
-                //変更なしにします
-                txtMain.Modified = false;
-            }
+        /// <summary>
+        /// ver1.0.2
+        /// 保存確認メッセージを表示します
+        /// </summary>
+        /// <returns>押されたボタン</returns>
+        private DialogResult ShowConfirmSavingMsgBox() {
+            var dialogResult = MessageBox.Show("変更されています。保存しますか？", "確認", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            return dialogResult;
         }
 
     } //class

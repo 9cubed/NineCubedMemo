@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Memo\Exceptions\CancelException.cs" />
     <Compile Include="Memo\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
