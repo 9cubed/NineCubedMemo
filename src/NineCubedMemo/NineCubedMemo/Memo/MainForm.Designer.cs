@@ -64,6 +64,8 @@
             this.txtMain.Size = new System.Drawing.Size(297, 152);
             this.txtMain.TabIndex = 0;
             this.txtMain.Text = "";
+            this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
+            this.txtMain.TextChanged += new System.EventHandler(this.txtMain_TextChanged);
             // 
             // menuBar
             // 
@@ -146,37 +148,37 @@
             // menuEdit_Undo
             // 
             this.menuEdit_Undo.Name = "menuEdit_Undo";
-            this.menuEdit_Undo.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Undo.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Undo.Text = "元に戻す";
             // 
             // menuEdit_Redo
             // 
             this.menuEdit_Redo.Name = "menuEdit_Redo";
-            this.menuEdit_Redo.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Redo.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Redo.Text = "やり直す";
             // 
             // menuEdit_Cut
             // 
             this.menuEdit_Cut.Name = "menuEdit_Cut";
-            this.menuEdit_Cut.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Cut.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Cut.Text = "切り取り";
             // 
             // menuEdit_Copy
             // 
             this.menuEdit_Copy.Name = "menuEdit_Copy";
-            this.menuEdit_Copy.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Copy.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Copy.Text = "コピー";
             // 
             // menuEdit_Paste
             // 
             this.menuEdit_Paste.Name = "menuEdit_Paste";
-            this.menuEdit_Paste.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Paste.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Paste.Text = "貼り付け";
             // 
             // menuEdit_Delete
             // 
             this.menuEdit_Delete.Name = "menuEdit_Delete";
-            this.menuEdit_Delete.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Delete.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Delete.Text = "削除";
             // 
             // menuHelp
@@ -190,19 +192,20 @@
             // menuHelp_version
             // 
             this.menuHelp_version.Name = "menuHelp_version";
-            this.menuHelp_version.Size = new System.Drawing.Size(142, 22);
+            this.menuHelp_version.Size = new System.Drawing.Size(180, 22);
             this.menuHelp_version.Text = "バージョン情報";
             this.menuHelp_version.Click += new System.EventHandler(this.menuHelp_version_Click);
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolFile_New,
             this.toolFile_Open,
             this.toolFile_Save});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(579, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(579, 27);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -212,8 +215,10 @@
             this.toolFile_New.Image = ((System.Drawing.Image)(resources.GetObject("toolFile_New.Image")));
             this.toolFile_New.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolFile_New.Name = "toolFile_New";
-            this.toolFile_New.Size = new System.Drawing.Size(23, 22);
-            this.toolFile_New.Text = "toolStripButton1";
+            this.toolFile_New.Size = new System.Drawing.Size(24, 24);
+            this.toolFile_New.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            this.toolFile_New.ToolTipText = "新規作成";
+            this.toolFile_New.Click += new System.EventHandler(this.toolFile_New_Click);
             // 
             // toolFile_Open
             // 
@@ -221,8 +226,9 @@
             this.toolFile_Open.Image = ((System.Drawing.Image)(resources.GetObject("toolFile_Open.Image")));
             this.toolFile_Open.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolFile_Open.Name = "toolFile_Open";
-            this.toolFile_Open.Size = new System.Drawing.Size(23, 22);
-            this.toolFile_Open.Text = "toolStripButton1";
+            this.toolFile_Open.Size = new System.Drawing.Size(24, 24);
+            this.toolFile_Open.ToolTipText = "開く";
+            this.toolFile_Open.Click += new System.EventHandler(this.toolFile_Open_Click);
             // 
             // toolFile_Save
             // 
@@ -230,8 +236,10 @@
             this.toolFile_Save.Image = ((System.Drawing.Image)(resources.GetObject("toolFile_Save.Image")));
             this.toolFile_Save.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolFile_Save.Name = "toolFile_Save";
-            this.toolFile_Save.Size = new System.Drawing.Size(23, 22);
+            this.toolFile_Save.Size = new System.Drawing.Size(24, 24);
             this.toolFile_Save.Text = "toolStripButton1";
+            this.toolFile_Save.ToolTipText = "上書き保存";
+            this.toolFile_Save.Click += new System.EventHandler(this.toolFile_Save_Click);
             // 
             // openFileDialog
             // 
