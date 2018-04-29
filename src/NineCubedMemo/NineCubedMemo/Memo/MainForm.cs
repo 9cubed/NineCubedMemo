@@ -1,4 +1,5 @@
-﻿using NineCubed.Memo.Exceptions;
+﻿using NineCubed.Common.Files;
+using NineCubed.Memo.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,16 +18,10 @@ namespace NineCubed.Memo
     public partial class MainForm : Form
     {
         /// <summary>
-        /// テキストファイルのパス
+        /// ver1.0.4
+        /// テキストファイルデータ
         /// </summary>
-        public string Path { get; set; }
-
-        /// <summary>
-        /// ver1.0.3
-        /// ファイルが読み取り専用かどうか
-        /// true:読み取り専用
-        /// </summary>
-        private bool IsReadOnly { get; set; }
+        private TextFile _textFile { get; set; }
 
         /// <summary>
         /// テキストボックスの左側の余白のサイズ
@@ -48,6 +43,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //新規作成時の状態にします
+            CreateNewFile();
+
             //テキストボックスを初期化します
             InitTextBox(txtMain);
 
@@ -62,7 +60,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.2
         /// MainForm の FormClosing イベント
         /// フォームが閉じられる直前に呼ばれます。
         /// </summary>
@@ -70,15 +67,13 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
-            {
+            try {
                 //テキストファイルを閉じます
                 CloseFile();
             } catch (CancelException) {
                 //キャンセルされた場合、フォームが閉じるのを中止します
                 e.Cancel = true;
             } catch (Exception ex) {
-                //ver1.0.3
                 e.Cancel = true;
                 ShowErrorMsgBox(ex);
             }
@@ -106,8 +101,9 @@ namespace NineCubed.Memo
             //テキストボックスの左の内側に余白を設定します
             textBox.SelectionIndent = TextBoxMarginLeft;
 
+            //左の余白がリセットされる不具合があるため、コメントアウトしました
             //URLが入力された時に書式が変わらないようにする
-            textBox.DetectUrls = false; //true にすると、LinkClickedイベントでクリックされたURL(e.LinkText)が取得できる
+            //textBox.DetectUrls = false; //true にすると、LinkClickedイベントでクリックされたURL(e.LinkText)が取得できる
 
             //タブの位置を設定します
             SetSelectionTabs(textBox, tabSize);
@@ -143,7 +139,6 @@ namespace NineCubed.Memo
             //タブで止まる位置を設定します
             textBox.SelectionTabs = tabArray;
         }
-
 
         /// <summary>
         /// メニュー・ヘルプ・バージョン情報 の Clickイベント
@@ -232,7 +227,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.3
         /// ツールバー・ファイル・新規作成 の Clickイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -243,7 +237,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.3
         /// ツールバー・ファイル・開く の Clickイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -254,7 +247,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.3
         /// ツールバー・ファイル・保存 の Clickイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -265,7 +257,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.3
         /// テキストボックスの Modified の Changedイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -274,21 +265,6 @@ namespace NineCubed.Memo
         {
             //フォームのタイトルを設定します
             SetFormTitle();
-        }
-
-        /// <summary>
-        /// ver1.0.3
-        /// テキストボックスの TextChangedイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txtMain_TextChanged(object sender, EventArgs e)
-        {
-            //テキストボックスの左の内側に余白のサイズが初期化された場合は、再設定します
-            //(テキストボックスの DetectUrls を false にしてテキストを全て削除すると、SelectionIndent が初期化されるため)
-            if (txtMain.SelectionIndent != TextBoxMarginLeft) {
-                txtMain.SelectionIndent = TextBoxMarginLeft;
-            }
         }
 
         /// <summary>
@@ -306,11 +282,8 @@ namespace NineCubed.Memo
                 //変更なしにします
                 txtMain.Modified = false;
 
-                //パスを未設定にします
-                this.Path = null;
-
-                //読み取り専用を解除します
-                this.IsReadOnly = false;
+                //テキストファイルを生成して設定します
+                _textFile = new TextFile();
 
                 //フォームのタイトルを設定します
                 SetFormTitle();
@@ -334,16 +307,11 @@ namespace NineCubed.Memo
 
                     //ファイルの読み込み
                     string path = openFileDialog.FileName;
-                    txtMain.LoadFile(path, RichTextBoxStreamType.PlainText);
+                    _textFile.Load(path);
+                    txtMain.Text = _textFile.Text;
 
                     //変更なしにします
                     txtMain.Modified = false;
-
-                    //パスを保持します
-                    this.Path = path;
-
-                    //読み取り専用かどうかを保持します
-                    this.IsReadOnly = isReadOnly(this.Path);
 
                     //フォームのタイトルを設定します
                     SetFormTitle();
@@ -387,8 +355,10 @@ namespace NineCubed.Memo
         /// <param name="showDialog">true:ファイル選択ダイアログを表示します</param>
         private void SaveFile(bool showDialog = false)
         {
+            string path = _textFile.Path;
+
             //パスが未設定、ダイアログを表示、読み取り専用、の場合は、保存ダイアログを表示します
-            if (this.Path == null || showDialog == true || this.IsReadOnly)
+            if (path == null || showDialog == true || _textFile.IsReadOnly)
             {
                 //パスが未設定の場合
                 //保存ダイアログを表示します
@@ -397,17 +367,18 @@ namespace NineCubed.Memo
                 if (result == DialogResult.No) return;
 
                 //選択されたファイルのパスを保持します
-                this.Path = saveFileDialog.FileName;
+                path = saveFileDialog.FileName;
             }
 
             //ファイルを保存します
-            txtMain.SaveFile(this.Path, RichTextBoxStreamType.PlainText);
+            _textFile.Text = txtMain.Text;
+            _textFile.Save(path);
+
+            //読み込み専用を解除します
+            _textFile.IsReadOnly = false;
 
             //変更なしにします
             txtMain.Modified = false;
-
-            //読み取り専用を解除します
-            this.IsReadOnly = false;
 
             //フォームのタイトルを設定します
             SetFormTitle();
@@ -432,7 +403,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.3
         /// フォームのタイトルを設定します
         /// </summary>
         private void SetFormTitle() {
@@ -440,12 +410,18 @@ namespace NineCubed.Memo
             string title = "";
 
             //読み取り専用の場合は、(読み取り専用) をつける
-            if (this.Path != null) {
-                title += (isReadOnly(this.Path) ? "(読み取り専用)" : "");
+            if (_textFile.Path != null) {
+                title += (_textFile.IsReadOnly ? "(読み取り専用)" : "");
             }
 
             //パスが未設定の場合は「無題」にする
-            title += this.Path ?? "無題";
+            title += _textFile.Path ?? "無題";
+
+            //文字コードを追加します
+            title += " [" + _textFile.TextEncoding.EncodingName;
+
+            //BOMの有無を追加します
+            title += ((_textFile.TextEncoding.GetPreamble().Length > 0) ? ":BOMあり" : "") + "]";
 
             //テキストが変更されている場合は、(*) をつける
             title += (txtMain.Modified ? "(*)" : "");
@@ -453,18 +429,6 @@ namespace NineCubed.Memo
             //フォームのタイトルを設定します
             this.Text = title;
         }
-
-        /// <summary>
-        /// ver1.0.3
-        /// ファイルが読み取り専用かどうかを返します
-        /// </summary>
-        /// <param name="path">パス</param>
-        /// <returns>true:読み取り専用</returns>
-        private bool isReadOnly(string path) {
-            return ((File.GetAttributes(path) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly);
-        }
-
-
 
     } //class
 }
