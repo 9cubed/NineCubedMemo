@@ -1,5 +1,5 @@
 ﻿using NineCubed.Memo;
-using NineCubed.Utils;
+using NineCubed.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
