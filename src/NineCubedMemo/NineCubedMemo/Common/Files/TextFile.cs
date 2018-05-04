@@ -56,7 +56,7 @@ namespace NineCubed.Common.Files
         /// 
         /// 注意：Textプロパティの改行コードは \n で統一する
         /// </summary>
-        public string NewLineCode { get; set; } = "\r\n";
+        public string NewLineCode { get; set; }
 
         /// <summary>
         /// ファイルのパス
@@ -81,8 +81,6 @@ namespace NineCubed.Common.Files
         /// コンストラクタ
         /// </summary>
         public TextFile() {
-            //文字コードの設定
-            SetEncodingShiftJIS();
         }
 
         /// <summary>
@@ -97,14 +95,17 @@ namespace NineCubed.Common.Files
 
                 {
                     //BOMがある場合は、BOMコードを書き込みます
-                    byte[] byteArray = this.TextEncoding.GetPreamble();
-                    if (byteArray.Length > 0) {
-                        writer.Write(byteArray, 0, byteArray.Length);
+                    if (this.TextEncoding != null) {
+                        byte[] byteArray = this.TextEncoding.GetPreamble();
+                        if (byteArray.Length > 0) {
+                            writer.Write(byteArray, 0, byteArray.Length);
+                        }
                     }
                 }
 
                 {
                     //エンコードします
+                    if (this.TextEncoding == null) SetEncodingShiftJIS(); //文字コードが指定されていない場合は、シフトJISで設定します
                     byte[] byteArray = this.TextEncoding.GetBytes(text);
 
                     //ファイルに書き込みます
@@ -118,47 +119,47 @@ namespace NineCubed.Common.Files
 
         /// <summary>
         /// テキストファイルを読み込みます
+        /// TextEncodingプロパティが null の場合は、文字コードの判別を行います
+        /// NewLineCode プロパティが null の場合は、改行コードの判別を行います
+        /// 引数で自動判別のフラグを持たさせたいが、I/F合わなくなるため、追加していません。要検討。
         /// </summary>
         /// <param name="path">パス</param>
         public void Load(string path)
         {
-            //----------------------------------------
-            //  ファイル読み込み
-            //----------------------------------------
-            //ファイル読み込み -> バイト配列
-            byte[] allTextByteArray = FileUtils.LoadFileToByteArray(path);
+            //文字コードと改行コードの判別のため、
+            //先頭の8KBだけ読み込んでバイト配列にいれます。8KBに根拠なし。なんとなく。
+            byte[] textByteArray = null;
+            if (this.TextEncoding == null || this.NewLineCode == null) {
+                textByteArray = FileUtils.LoadFileToByteArray(path, 1024 * 8);
+            }
 
             //----------------------------------------
-            //  文字コード判定
+            //  文字コード判別
             //----------------------------------------
-            this.TextEncoding = DetectEncoding(allTextByteArray);
+            //文字コードが指定されていない場合は、文字コードの判別を行います
+            if (this.TextEncoding == null) {
+                this.TextEncoding = DetectEncoding(textByteArray);
+            }
             
             //----------------------------------------
             //  バイト配列 -> 文字列リスト
             //----------------------------------------
             //バイト配列から1行単位で読み込み、リストに追加します
             var list = new List<string>();
-            using(var stream = new MemoryStream(allTextByteArray))
-            using(var reader = new StreamReader(stream, this.TextEncoding)) {
-                while(!reader.EndOfStream) {
-                    list.Add(reader.ReadLine());
-                }
+            using(var reader = new StreamReader(path, this.TextEncoding)) {
+                this.Text = reader.ReadToEnd();
             }
 
-            //リスト -> テキスト
-            this.Text = String.Join("\n", list);
+            //Textで保持する改行コードを \n で統一します
+            this.Text = this.Text.Replace("\r\n", "\n");
+            this.Text = this.Text.Replace('\r'  , '\n');
 
             //----------------------------------------
-            //  改行コード判定
+            //  改行コード判別
             //----------------------------------------
-            this.NewLineCode = DetectNewLineCode(allTextByteArray);
-
-            //----------------------------------------
-            //  最後の行の改行コードの有無の確認
-            //----------------------------------------
-            if (IsNewLineCodeAtTail(allTextByteArray, this.NewLineCode)) {
-                //最後の行に改行コードがある場合、改行コードを追加します
-                this.Text = this.Text + "\n";
+            //改行コードが指定されていない場合は、改行コードの判別を行います
+            if (this.NewLineCode == null) {
+                this.NewLineCode = DetectNewLineCode(textByteArray);
             }
 
             //----------------------------------------
@@ -231,6 +232,8 @@ namespace NineCubed.Common.Files
                 //シフトJIS や EUC-JP から UTF-8 に変換した時によく出る文字化けの文字が出ない
 
                 if (StringUtils.CountChar(strShiftJis, '縺') + 
+                    StringUtils.CountChar(strShiftJis, '繧') + 
+                    StringUtils.CountChar(strShiftJis, '繝') + 
                     StringUtils.CountChar(strShiftJis, '｡')> 0) {
                     //UTF-8 から ShiftJIS に変換した時によく出る文字化けの文字が出る
                     return new UTF8Encoding(false); //BOMなし
@@ -259,6 +262,7 @@ namespace NineCubed.Common.Files
         /// <summary>
         /// (簡易版)改行コードを判別して返します
         /// CRとLFが混在する場合は正常に判別できません。CRLF扱いにします。
+        /// \r と \n が 1バイトで表せない UTF-16 などは、正常に判別できません。
         /// </summary>
         /// <param name="byteData"></param>
         /// <returns></returns>
@@ -273,7 +277,7 @@ namespace NineCubed.Common.Files
             //改行コードがなかった場合、デフォルトの改行コードを返します
             return Environment.NewLine;
         }
-
+        
         /// <summary>
         /// テキストファイルの最後が改行かどうかを返します
         /// 

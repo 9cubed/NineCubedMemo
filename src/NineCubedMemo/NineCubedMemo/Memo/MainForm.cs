@@ -18,7 +18,6 @@ namespace NineCubed.Memo
     public partial class MainForm : Form
     {
         /// <summary>
-        /// ver1.0.4
         /// テキストファイルデータ
         /// </summary>
         private TextFile _textFile { get; set; }
@@ -407,27 +406,36 @@ namespace NineCubed.Memo
         /// </summary>
         private void SetFormTitle() {
             
-            string title = "";
+            var title = new StringBuilder();
 
             //読み取り専用の場合は、(読み取り専用) をつける
             if (_textFile.Path != null) {
-                title += (_textFile.IsReadOnly ? "(読み取り専用)" : "");
+                title.Append(_textFile.IsReadOnly ? "(読み取り専用)" : "");
             }
 
             //パスが未設定の場合は「無題」にする
-            title += _textFile.Path ?? "無題";
+            title.Append(_textFile.Path ?? "無題");
 
             //文字コードを追加します
-            title += " [" + _textFile.TextEncoding.EncodingName;
+            title.Append(" [" + _textFile.TextEncoding.EncodingName);
 
             //BOMの有無を追加します
-            title += ((_textFile.TextEncoding.GetPreamble().Length > 0) ? ":BOMあり" : "") + "]";
+            title.Append( ((_textFile.TextEncoding.GetPreamble().Length > 0) ? ":BOMあり" : ""));
 
+            //ver1.0.4
+            //改行コードを追加します
+            if (_textFile.NewLineCode.Length == 2) {
+                title.Append(":CRLF");
+            } else {
+                title.Append(_textFile.NewLineCode.Equals("\r") ? ":CR" : ":LF");
+            }
+            title.Append("]");
+            
             //テキストが変更されている場合は、(*) をつける
-            title += (txtMain.Modified ? "(*)" : "");
+            title.Append(txtMain.Modified ? "(*)" : "");
 
             //フォームのタイトルを設定します
-            this.Text = title;
+            this.Text = title.ToString();
         }
 
     } //class
