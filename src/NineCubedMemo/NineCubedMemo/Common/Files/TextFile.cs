@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 namespace NineCubed.Common.Files
 {
     /// <summary>
-    /// ver1.0.4
     /// テキストファイルクラス
     /// </summary>
     public class TextFile : IFile
@@ -148,6 +147,9 @@ namespace NineCubed.Common.Files
             var list = new List<string>();
             using(var reader = new StreamReader(path, this.TextEncoding)) {
                 this.Text = reader.ReadToEnd();
+
+                //StreamReaderの自動判別により文字コードが変わる場合があるため、それを保持します
+                this.TextEncoding = reader.CurrentEncoding;
             }
 
             //Textで保持する改行コードを \n で統一します
@@ -195,7 +197,7 @@ namespace NineCubed.Common.Files
             
             //UTF-16
             if (byteArray.Length >= 2) {
-                if (byteArray[0] == 0xFF && byteArray[1] == 0xFE) return Encoding.GetEncoding(1200); //UTF-16 
+                if (byteArray[0] == 0xFF && byteArray[1] == 0xFE) return Encoding.GetEncoding(1200); //UTF-16
                 if (byteArray[0] == 0xFE && byteArray[1] == 0xFF) return Encoding.GetEncoding(1201); //UTF-16BE
             }
             

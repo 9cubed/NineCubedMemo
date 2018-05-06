@@ -13,15 +13,9 @@ namespace NineCubed.Common.Files.Tests
     public class TextFileTests
     {
         [TestMethod()]
-        //[DeploymentItem(@"TestData/Common/Files/TextFile/文字コード判別/euc_jp_全角カナ.txt", "TestData/Common/Files/TextFile/文字コード判別")]
-        //[DeploymentItem(@"TestData/Common/Files/TextFile/文字コード判別/euc_jp_全角かな.txt", "TestData/Common/Files/TextFile/文字コード判別")]
-        //[DeploymentItem(@"TestData/Common/Files/TextFile/文字コード判別/euc_jp_全角英字.txt", "TestData/Common/Files/TextFile/文字コード判別")]
-        //[DeploymentItem(@"TestData/Common/Files/TextFile/文字コード判別/euc_jp_全角漢字.txt", "TestData/Common/Files/TextFile/文字コード判別")]
-        //[DeploymentItem(@"TestData/Common/Files/TextFile/文字コード判別/euc_jp_全角数字.txt", "TestData/Common/Files/TextFile/文字コード判別")]
         [DeploymentItem(@"TestData", "TestData")]
         public void LoadTest()
         {
-
             //文字コード判別テスト
             {
                 var textFile = new TextFile();
@@ -160,7 +154,6 @@ namespace NineCubed.Common.Files.Tests
                     Assert.AreEqual(textFile2.TextEncoding.GetPreamble().Length, 0); //BOMなし
                     Assert.AreEqual(textFile2.TextEncoding.CodePage, 65001);
                 }
-
             }
             
         } //SaveTest()

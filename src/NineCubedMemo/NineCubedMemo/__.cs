@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace NineCubed
 {
     /// <summary>
-    /// ver1.0.4
     /// ユーティリティークラス
     /// </summary>
     public class __
