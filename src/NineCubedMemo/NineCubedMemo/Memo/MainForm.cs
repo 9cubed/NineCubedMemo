@@ -1,4 +1,5 @@
 ﻿using NineCubed.Common.Files;
+using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -28,11 +29,19 @@ namespace NineCubed.Memo
         private const int TextBoxMarginLeft = 6;
 
         /// <summary>
+        /// Config
+        /// </summary>
+        private AppConfig _config;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public MainForm()
         {
             InitializeComponent();
+
+            //Configを読み込みます
+            LoadConfig();
         }
 
         /// <summary>
@@ -42,8 +51,28 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //新規作成時の状態にします
-            CreateNewFile();
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 1) {
+                //コマンドライン引数がある場合
+                //(EXEにファイルをD&D、送るメニューでファイル指定、ショートカットで引数指定による起動)
+
+                //ファイルを開きます
+                _textFile = new TextFile();
+                try {
+                    OpenFileSub(args[1], null);
+                } catch (Exception ex) {
+                    //例外が発生した場合は、アプリを終了させます
+                    ShowErrorMsgBox(ex);
+                    this.Dispose();
+                    return;
+                }
+
+            } else {
+                //コマンドライン引数がない場合(通常起動)
+          
+                //新規作成時の状態にします
+                CreateNewFile();
+            }
 
             //テキストボックスを初期化します
             InitTextBox(txtMain);
@@ -51,7 +80,7 @@ namespace NineCubed.Memo
             //隙間がなくなるようにテキストボックスを配置します
             txtMain.Dock = DockStyle.Fill;
 
-            //ダイアログの初期設定 ver1.0.1
+            //ダイアログの初期設定
             openFileDialog.Filter = 
                 "テキストファイル(*.txt)|*.txt" + "|" + 
                 "すべてのファイル(*.*)|*.*";
@@ -76,6 +105,18 @@ namespace NineCubed.Memo
                 e.Cancel = true;
                 ShowErrorMsgBox(ex);
             }
+        }
+
+        /// <summary>
+        /// MainForm の FormClosed イベント
+        /// フォームが閉じられた時に呼ばれます。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //Configを保存します
+            SaveConfig();
         }
 
         /// <summary>
@@ -140,6 +181,54 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
+        /// Configを読み込みます
+        /// </summary>
+        private void LoadConfig() {
+            _config = AppConfig.Load();
+            if (_config != null) {
+                //Configが読み込めた場合
+
+                //フォームの位置とサイズを設定します
+                this.StartPosition = FormStartPosition.Manual;
+                this.Left   = _config.form_left;
+                this.Top    = _config.form_top;
+                this.Width  = _config.form_width;
+                this.Height = _config.form_height;
+            } else {
+                //Configが読み込めなかった場合
+
+                //デフォルト値を設定します
+                _config = new AppConfig();
+
+                //フォームを中央に表示します
+                var screenBounds = Screen.PrimaryScreen.Bounds;
+                this.Width  = (int)(screenBounds.Width  * 0.6);
+                this.Height = (int)(screenBounds.Height * 0.6);
+                this.StartPosition = FormStartPosition.CenterScreen;
+            }
+        }
+
+        /// <summary>
+        /// Configを保存します
+        /// </summary>
+        private void SaveConfig() {
+            //ウィンドウが最小化、最大化されている場合は、標準に戻します
+            //(Configに保存する際のサイズがわからないため)
+            if (this.WindowState != FormWindowState.Normal) {
+                this.WindowState = FormWindowState.Normal;
+            }
+
+            //Configに現在の状態を設定します
+            _config.form_left   = this.Left;
+            _config.form_top    = this.Top;
+            _config.form_width  = this.Width;
+            _config.form_height = this.Height;
+
+            //Configを保存します
+            _config.Save();
+        }
+
+        /// <summary>
         /// メニュー・ヘルプ・バージョン情報 の Clickイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -192,7 +281,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// ver1.0.5
         /// メニュー・ファイル・開く（文字コード指定） の Clickイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -309,6 +397,14 @@ namespace NineCubed.Memo
             CheckedMenu_MenuFile_NewLine();
         }
 
+        //メニュー・編集の Clickイベント
+        private void menuEdit_Undo_Click  (object sender, EventArgs e) { txtMain.Undo(); }
+        private void menuEdit_Redo_Click  (object sender, EventArgs e) { txtMain.Redo(); }
+        private void menuEdit_Cut_Click   (object sender, EventArgs e) { txtMain.Cut(); }
+        private void menuEdit_Copy_Click  (object sender, EventArgs e) { txtMain.Copy(); }
+        private void menuEdit_Paste_Click (object sender, EventArgs e) { txtMain.Paste(); }
+        private void menuEdit_Delete_Click(object sender, EventArgs e) { txtMain.SelectedText = ""; }
+
         /// <summary>
         /// ツールバー・ファイル・新規作成 の Clickイベント
         /// </summary>
@@ -387,6 +483,7 @@ namespace NineCubed.Memo
 
         /// <summary>
         /// テキストファイルを開きます
+        /// 保存確認と開くダイアログの表示を行います。
         /// </summary>
         /// <param name="encoding"></param>
         private void OpenFile(Encoding encoding = null)
@@ -403,24 +500,34 @@ namespace NineCubed.Memo
 
                     //ファイルの読み込み
                     string path = openFileDialog.FileName;
-                    _textFile.TextEncoding = encoding; //文字コード
-                    _textFile.NewLineCode = null;      //改行コード(自動判別)
-                    _textFile.Load(path);
-                    txtMain.Text = _textFile.Text;
-
-                    //変更なしにします
-                    txtMain.Modified = false;
-
-                    //フォームのタイトルを設定します
-                    SetFormTitle();
-
-                    //メニュー・文字コードのメニューに、チェックをつけます
-                    CheckedMenu_MenuFile_Encoding();
-
-                    //メニュー・改行コードのメニューに、チェックをつけます
-                    CheckedMenu_MenuFile_NewLine();
+                    OpenFileSub(path, encoding);
                 }
             }
+        }
+
+        /// <summary>
+        /// テキストファイルを開きます
+        /// 保存確認と開くダイアログの表示は行いません
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="encoding"></param>
+        private void OpenFileSub(string path, Encoding encoding = null) {
+            _textFile.TextEncoding = encoding; //文字コード
+            _textFile.NewLineCode = null;      //改行コード(自動判別)
+            _textFile.Load(path);
+            txtMain.Text = _textFile.Text;
+
+            //変更なしにします
+            txtMain.Modified = false;
+
+            //フォームのタイトルを設定します
+            SetFormTitle();
+
+            //メニュー・文字コードのメニューに、チェックをつけます
+            CheckedMenu_MenuFile_Encoding();
+
+            //メニュー・改行コードのメニューに、チェックをつけます
+            CheckedMenu_MenuFile_NewLine();
         }
 
         /// <summary>
@@ -565,6 +672,35 @@ namespace NineCubed.Memo
             menuFile_NewLine_LF.Checked   = newLineCode.Equals("\n");
         }
 
+        /// <summary>
+        /// ポップアップメニュー・切り取り の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void popupMenuForTextbox_Cut_Click(object sender, EventArgs e)
+        {
+            txtMain.Cut();
+        }
+
+        /// <summary>
+        /// ポップアップメニュー・コピー の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void popupMenuForTextbox_Copy_Click(object sender, EventArgs e)
+        {
+            txtMain.Copy();
+        }
+
+        /// <summary>
+        /// ポップアップメニュー・貼り付け の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void popupMenuForTextbox_Paste_Click(object sender, EventArgs e)
+        {
+            txtMain.Paste();
+        }
 
     } //class
 }

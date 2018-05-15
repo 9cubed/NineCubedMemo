@@ -67,6 +67,8 @@
     <Compile Include="Common\Files\CsvFile.cs" />
     <Compile Include="Common\Files\IFile.cs" />
     <Compile Include="Common\Files\TextFile.cs" />
+    <Compile Include="Common\Utils\SerializeUtils.cs" />
+    <Compile Include="Memo\AppConfig.cs" />
     <Compile Include="Memo\Exceptions\CancelException.cs" />
     <Compile Include="Memo\MainForm.cs">
       <SubType>Form</SubType>

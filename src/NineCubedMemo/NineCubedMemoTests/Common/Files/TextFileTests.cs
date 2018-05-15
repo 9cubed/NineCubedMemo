@@ -89,10 +89,13 @@ namespace NineCubed.Common.Files.Tests
                 textFile.NewLineCode  = null;
                 textFile.Load(path);
                 Assert.AreEqual(textFile.IsReadOnly, true);
+
+
+                //読み取り専用のファイルはテスト終了後に残ってしまうため、読み取り専用を解除
+                File.SetAttributes(path, FileAttributes.Normal);
             }
 
         } //LoadTest()
-
 
         [TestMethod()]
         public void SaveTest()
