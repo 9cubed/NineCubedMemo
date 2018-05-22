@@ -70,6 +70,8 @@
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
     <Compile Include="Memo\Exceptions\CancelException.cs" />
+    <Compile Include="Memo\Interfaces\ISearchString.cs" />
+    <Compile Include="Memo\Interfaces\SearchData.cs" />
     <Compile Include="Memo\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,12 +79,21 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Utils\StringUtils.cs" />
+    <Compile Include="Memo\SearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Memo\SearchForm.Designer.cs">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Utils\FileUtils.cs" />
     <Compile Include="__.cs" />
     <EmbeddedResource Include="Memo\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\SearchForm.resx">
+      <DependentUpon>SearchForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

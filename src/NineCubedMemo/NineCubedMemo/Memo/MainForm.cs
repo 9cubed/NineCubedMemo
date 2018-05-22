@@ -1,22 +1,25 @@
 ﻿using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
+using NineCubed.Memo.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NineCubed.Memo
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, ISearchString
     {
         /// <summary>
         /// テキストファイルデータ
@@ -41,7 +44,7 @@ namespace NineCubed.Memo
             InitializeComponent();
 
             //Configを読み込みます
-            LoadConfig();
+            _config = AppConfig.Load(this);
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace NineCubed.Memo
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             //Configを保存します
-            SaveConfig();
+            _config.Save();
         }
 
         /// <summary>
@@ -178,54 +181,6 @@ namespace NineCubed.Memo
 
             //タブで止まる位置を設定します
             textBox.SelectionTabs = tabArray;
-        }
-
-        /// <summary>
-        /// Configを読み込みます
-        /// </summary>
-        private void LoadConfig() {
-            _config = AppConfig.Load();
-            if (_config != null) {
-                //Configが読み込めた場合
-
-                //フォームの位置とサイズを設定します
-                this.StartPosition = FormStartPosition.Manual;
-                this.Left   = _config.form_left;
-                this.Top    = _config.form_top;
-                this.Width  = _config.form_width;
-                this.Height = _config.form_height;
-            } else {
-                //Configが読み込めなかった場合
-
-                //デフォルト値を設定します
-                _config = new AppConfig();
-
-                //フォームを中央に表示します
-                var screenBounds = Screen.PrimaryScreen.Bounds;
-                this.Width  = (int)(screenBounds.Width  * 0.6);
-                this.Height = (int)(screenBounds.Height * 0.6);
-                this.StartPosition = FormStartPosition.CenterScreen;
-            }
-        }
-
-        /// <summary>
-        /// Configを保存します
-        /// </summary>
-        private void SaveConfig() {
-            //ウィンドウが最小化、最大化されている場合は、標準に戻します
-            //(Configに保存する際のサイズがわからないため)
-            if (this.WindowState != FormWindowState.Normal) {
-                this.WindowState = FormWindowState.Normal;
-            }
-
-            //Configに現在の状態を設定します
-            _config.form_left   = this.Left;
-            _config.form_top    = this.Top;
-            _config.form_width  = this.Width;
-            _config.form_height = this.Height;
-
-            //Configを保存します
-            _config.Save();
         }
 
         /// <summary>
@@ -404,6 +359,59 @@ namespace NineCubed.Memo
         private void menuEdit_Copy_Click  (object sender, EventArgs e) { txtMain.Copy(); }
         private void menuEdit_Paste_Click (object sender, EventArgs e) { txtMain.Paste(); }
         private void menuEdit_Delete_Click(object sender, EventArgs e) { txtMain.SelectedText = ""; }
+
+        /// <summary>
+        /// メニュー・検索・検索 の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuSearch_Search_Click(object sender, EventArgs e)
+        {
+            //検索画面を表示します
+            string searchString = (txtMain.SelectedText.Length > 0) ? txtMain.SelectedText : _searchData.SearchString;
+            _searchData.SearchString = searchString;
+            SearchForm.ShowForm(this, _searchData);
+        }
+
+        /// <summary>
+        /// メニュー・検索・前方検索 の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuSearch_SearchForward_Click(object sender, EventArgs e)
+        {
+            SearchForward(_searchData.SearchString, _searchData.IgnoreCase);
+        }
+
+        /// <summary>
+        /// メニュー・検索・後方検索 の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuSearch_SearchBackward_Click(object sender, EventArgs e)
+        {
+            SearchBackward(_searchData.SearchString, _searchData.IgnoreCase);
+        }
+
+        /// <summary>
+        /// メニュー・検索・前方置換 の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuSearch_ReplaceForward_Click(object sender, EventArgs e)
+        {
+            ReplaceForward(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
+        }
+
+        /// <summary>
+        /// メニュー・検索・後方置換 の click イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuSearch_ReplaceBackward_Click(object sender, EventArgs e)
+        {
+            ReplaceBackward(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
+        }
 
         /// <summary>
         /// ツールバー・ファイル・新規作成 の Clickイベント
@@ -700,6 +708,156 @@ namespace NineCubed.Memo
         private void popupMenuForTextbox_Paste_Click(object sender, EventArgs e)
         {
             txtMain.Paste();
+        }
+
+        /// <summary>
+        /// 検索条件
+        /// </summary>
+        private SearchData _searchData = new SearchData();
+
+        /// <summary>
+        /// 前方検索します。テキストの末尾へ向けて検索します。
+        /// </summary>
+        /// <param name="searchString">検索文字列</param>
+        /// <param name="ignoreCase">大文字・小文字を無視します</param>
+        /// <returns>見つかった位置</returns>
+        public int SearchForward(string searchString, bool ignoreCase)
+        {
+            //検索条件を保持します
+            _searchData.SearchString = searchString;
+            _searchData.IgnoreCase = ignoreCase;
+
+            //フォーカス設定
+            txtMain.Focus();
+
+            //検索する
+            //選択文字列が検索文字列と同じ場合は、次の文字列から検索します
+            int offset = txtMain.SelectedText.Equals(searchString, getStringComparison(ignoreCase)) ? 1 : 0;
+            int index = txtMain.Text.IndexOf(searchString, txtMain.SelectionStart + offset, getStringComparison(ignoreCase));
+            if (index >= 0) {
+                //見つかった場合
+                txtMain.Select(index, searchString.Length);
+            }
+
+            return index;
+        }
+
+        /// <summary>
+        /// 後方検索します。テキストの先頭へ向けて検索します。
+        /// </summary>
+        /// <param name="searchString">検索文字列</param>
+        /// <param name="ignoreCase">大文字・小文字を無視します</param>
+        /// <returns>見つかった位置</returns>
+        public int SearchBackward(string searchString, bool ignoreCase)
+        {
+            //検索条件を保持します
+            _searchData.SearchString = searchString;
+            _searchData.IgnoreCase = ignoreCase;
+
+            //フォーカス設定
+            txtMain.Focus();
+
+            //検索開始位置の設定
+            int searchStartIndex = (txtMain.SelectionStart + searchString.Length - 1) - 1;
+            if (searchStartIndex < 0) return -1; //先頭の場合は処理を抜けます
+
+            //検索開始位置が末尾以降になる場合は、検索開始位置を末尾にします
+            if (searchStartIndex > txtMain.Text.Length) searchStartIndex = txtMain.Text.Length;
+
+            //検索
+            int index = txtMain.Text.LastIndexOf(searchString, searchStartIndex, getStringComparison(ignoreCase));
+            if (index >= 0) {
+                //見つかった場合
+                txtMain.Select(index, searchString.Length);
+            }
+
+            return index;
+        }
+
+
+        /// <summary>
+        /// 前方置換します。
+        /// </summary>
+        /// <param name="searchString">検索文字列</param>
+        /// <param name="replaceString">置換文字列</param>
+        /// <param name="ignoreCase">大文字・小文字を無視します</param>
+        /// <returns>見つかった位置</returns>
+        public int ReplaceForward(string searchString, string replaceString, bool ignoreCase)
+        {
+            //検索条件を保持します
+            _searchData.ReplaceString = replaceString;
+
+            //フォーカス設定
+            txtMain.Focus();
+
+            //選択文字列が検索文字列と同じ場合は置換します
+            if (txtMain.SelectedText.Equals(searchString, getStringComparison(ignoreCase))) {
+                //同じ場合
+                txtMain.SelectedText = replaceString;
+            }
+
+            //前方検索をします
+            int index = SearchForward(searchString, ignoreCase);
+            return index;
+        }
+        /// <summary>
+        /// 後方置換します。
+        /// </summary>
+        /// <param name="searchString">検索文字列</param>
+        /// <param name="replaceString">置換文字列</param>
+        /// <param name="ignoreCase">大文字・小文字を無視します</param>
+        /// <returns>見つかった位置</returns>
+        public int ReplaceBackward(string searchString, string replaceString, bool ignoreCase)
+        {
+            //検索条件を保持します
+            _searchData.ReplaceString = replaceString;
+
+            //フォーカス設定
+            txtMain.Focus();
+
+            //選択文字列が検索文字列と同じ場合は置換します
+            if (txtMain.SelectedText.Equals(searchString, getStringComparison(ignoreCase))) {
+                //同じ場合
+
+                //カーソルの位置を保存します(SelectedText に設定をすると、カーソルが後ろに移動するため)
+                int oldSelectionStart = txtMain.SelectionStart;
+
+                //置換します
+                txtMain.SelectedText = replaceString;
+
+                //カーソルの位置を復元します
+                txtMain.SelectionStart = oldSelectionStart;
+            }
+
+            //後方検索をします
+            int index = SearchBackward(searchString, ignoreCase);
+
+            return index;
+        }
+
+        /// <summary>
+        /// 全置換します。
+        /// </summary>
+        /// <param name="searchString">検索文字列</param>
+        /// <param name="replaceString">置換文字列</param>
+        /// <param name="ignoreCase">大文字・小文字を無視します</param>
+        public void ReplaceAll(string searchString, string replaceString, bool ignoreCase)
+        {
+            txtMain.SelectionStart = 0;  //カーソルを先頭に移動します
+            txtMain.SelectionLength = 0; //文字列を未選択にします
+            int index = 0;
+            while (index >= 0) {
+                index = ReplaceForward(searchString, replaceString, ignoreCase);
+            }
+        }
+
+        /// <summary>
+        /// 大文字・小文字の条件を取得します
+        /// </summary>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        private StringComparison getStringComparison(bool ignoreCase) {
+            return ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         }
 
     } //class
