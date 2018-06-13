@@ -1,4 +1,5 @@
-﻿using NineCubed.Common.Files;
+﻿using NineCubed.Common.Controls;
+using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
 using NineCubed.Memo.Interfaces;
@@ -27,14 +28,21 @@ namespace NineCubed.Memo
         private TextFile _textFile { get; set; }
 
         /// <summary>
-        /// テキストボックスの左側の余白のサイズ
-        /// </summary>
-        private const int TextBoxMarginLeft = 6;
-
-        /// <summary>
         /// Config
         /// </summary>
         private AppConfig _config;
+
+        /// <summary>
+        /// 検索条件
+        /// </summary>
+        private SearchData _searchData = new SearchData();
+
+        /// <summary>
+        /// 検索条件
+        /// </summary>
+        public SearchData GetSearchData() {
+            return _searchData;
+        }
 
         /// <summary>
         /// コンストラクタ
@@ -78,8 +86,14 @@ namespace NineCubed.Memo
             }
 
             //テキストボックスを初期化します
-            InitTextBox(txtMain);
+            txtMain.Initialize(_config.memo_font_name, _config.memo_font_size);
 
+            //テキストボックスのドラッグ＆ドロップ対応 
+            txtMain.AllowDrop = true; //D&Dを許可します
+            txtMain.DragEnter += TxtMain_DragEnter;
+            txtMain.DragDrop  += TxtMain_DragDrop;
+            //(設定したのを忘れなければプロパティで設定しても問題ありません)
+            
             //隙間がなくなるようにテキストボックスを配置します
             txtMain.Dock = DockStyle.Fill;
 
@@ -88,8 +102,51 @@ namespace NineCubed.Memo
                 "テキストファイル(*.txt)|*.txt" + "|" + 
                 "すべてのファイル(*.*)|*.*";
             saveFileDialog.Filter = openFileDialog.Filter;
+
+            //ポップアップメニューを追加します
+            addPopupMenuItem();
         }
 
+        //ポップアップメニューを追加します
+        private void addPopupMenuItem() {
+
+            {
+                //小文字にします
+                var menu = new ToolStripMenuItem { Text= "A → a" };
+                menu.Click += (sender, e) => {
+                    txtMain.SelectedText = txtMain.SelectedText.ToLower();
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+
+            {
+                //大文字にします
+                var menu = new ToolStripMenuItem { Text= "a → A" };
+                menu.Click += (sender, e) => {
+                    txtMain.SelectedText = txtMain.SelectedText.ToUpper();
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+
+            {
+                //全角にします
+                var menu = new ToolStripMenuItem { Text= "半角 → 全角" };
+                menu.Click += (sender, e) => {
+                    txtMain.SelectedText = StringUtils.HankakuToZenkaku(txtMain.SelectedText);
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+
+            {
+                //半角にします
+                var menu = new ToolStripMenuItem { Text= "全角 → 半角" };
+                menu.Click += (sender, e) => {
+                    txtMain.SelectedText = StringUtils.ZenkakuToHankaku(txtMain.SelectedText);
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+        }
+        
         /// <summary>
         /// MainForm の FormClosing イベント
         /// フォームが閉じられる直前に呼ばれます。
@@ -118,69 +175,11 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //Configを保存します
-            _config.Save();
-        }
-
-        /// <summary>
-        /// テキストボックスを初期化します
-        /// </summary>
-        /// <param name="textBox">初期化するテキストボックス</param>
-        private void InitTextBox(RichTextBox textBox, string fontName = "ＭＳ ゴシック", float fontSize = 12, int tabSize = 4)
-        {
-            //折り返さないようにします
-            textBox.WordWrap = false;
-
-            //タブを入力できるようにします。false にすると、別のコントロールにフォーカスが移動してしまい、タブを入力できません
-            textBox.AcceptsTab = true;
-
-            //文字の幅が同じするため、等幅フォントの「ＭＳ ゴシック」にします
-            textBox.Font = new Font(fontName, fontSize);
-
-            //デフォルトでは、半角英数字は英語フォント、それ以外は日本語フォントを使う DualFont になっているため、AutoFont だけを再設定します
-            //この設定をしないと、半角の「i」の幅がものすごく狭くなってしまう
-            textBox.LanguageOption = RichTextBoxLanguageOptions.AutoFont;
-
-            //テキストボックスの左の内側に余白を設定します
-            textBox.SelectionIndent = TextBoxMarginLeft;
-
-            //左の余白がリセットされる不具合があるため、コメントアウトしました
-            //URLが入力された時に書式が変わらないようにする
-            //textBox.DetectUrls = false; //true にすると、LinkClickedイベントでクリックされたURL(e.LinkText)が取得できる
-
-            //タブの位置を設定します
-            SetSelectionTabs(textBox, tabSize);
-
-            //変更なしにします
-            textBox.Modified = false;
-        }
-
-        /// <summary>
-        /// テキストボックスにタブの停止位置を設定します
-        /// 
-        /// タブの停止位置は、1タブ＝半角スペース4個分、などのように指定できません
-        /// 実際に描画される1文字分の幅を取得して、そこからタブが止まる位置を計算して設定しています
-        /// </summary>
-        /// <param name="textBox">テキストボックス</param>
-        /// <param name="tabSize">1タブあたりの文字数</param>
-        private void SetSelectionTabs(RichTextBox textBox, int tabSize)
-        {
-            //1文字の幅のサイズを取得します
-            int charWidth = 0;
-            using (Graphics g = this.CreateGraphics()) {
-                Size size = TextRenderer.MeasureText(g, "A", textBox.Font, new Size(int.MaxValue, int.MaxValue), TextFormatFlags.NoPadding);
-                charWidth = size.Width;
+            try {
+                //Configを保存します
+                _config.Save();
+            } catch (Exception) {
             }
-
-            //タブで止まる位置を配列に設定します
-            int[] tabArray = new int[32]; //32より多く設定するとエラーとなる
-            for (int i = 0; i < tabArray.Count(); i++)
-            {
-                tabArray[i] = (charWidth * tabSize * (i + 1) + textBox.SelectionIndent); //textBox.SelectionIndent はテキスト内の左側の余白サイズ
-            }
-
-            //タブで止まる位置を設定します
-            textBox.SelectionTabs = tabArray;
         }
 
         /// <summary>
@@ -353,12 +352,12 @@ namespace NineCubed.Memo
         }
 
         //メニュー・編集の Clickイベント
-        private void menuEdit_Undo_Click  (object sender, EventArgs e) { txtMain.Undo(); }
-        private void menuEdit_Redo_Click  (object sender, EventArgs e) { txtMain.Redo(); }
-        private void menuEdit_Cut_Click   (object sender, EventArgs e) { txtMain.Cut(); }
-        private void menuEdit_Copy_Click  (object sender, EventArgs e) { txtMain.Copy(); }
-        private void menuEdit_Paste_Click (object sender, EventArgs e) { txtMain.Paste(); }
-        private void menuEdit_Delete_Click(object sender, EventArgs e) { txtMain.SelectedText = ""; }
+        private void menuEdit_Undo_Click  (object sender, EventArgs e) { txtMain.Undo();   }
+        private void menuEdit_Redo_Click  (object sender, EventArgs e) { txtMain.Redo();   }
+        private void menuEdit_Cut_Click   (object sender, EventArgs e) { txtMain.Cut();    }
+        private void menuEdit_Copy_Click  (object sender, EventArgs e) { txtMain.Copy();   }
+        private void menuEdit_Paste_Click (object sender, EventArgs e) { txtMain.Paste();  }
+        private void menuEdit_Delete_Click(object sender, EventArgs e) { txtMain.Delete(); }
 
         /// <summary>
         /// メニュー・検索・検索 の click イベント
@@ -380,7 +379,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_SearchForward_Click(object sender, EventArgs e)
         {
-            SearchForward(_searchData.SearchString, _searchData.IgnoreCase);
+            SearchForward();
         }
 
         /// <summary>
@@ -390,7 +389,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_SearchBackward_Click(object sender, EventArgs e)
         {
-            SearchBackward(_searchData.SearchString, _searchData.IgnoreCase);
+            SearchBackward();
         }
 
         /// <summary>
@@ -400,7 +399,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_ReplaceForward_Click(object sender, EventArgs e)
         {
-            ReplaceForward(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
+            ReplaceForward();
         }
 
         /// <summary>
@@ -410,38 +409,13 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_ReplaceBackward_Click(object sender, EventArgs e)
         {
-            ReplaceBackward(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
+            ReplaceBackward();
         }
 
-        /// <summary>
-        /// ツールバー・ファイル・新規作成 の Clickイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void toolFile_New_Click(object sender, EventArgs e)
-        {
-            menuFile_New_Click(sender, e);
-        }
-
-        /// <summary>
-        /// ツールバー・ファイル・開く の Clickイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void toolFile_Open_Click(object sender, EventArgs e)
-        {
-            menuFile_Open_Click(sender, e);
-        }
-
-        /// <summary>
-        /// ツールバー・ファイル・保存 の Clickイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void toolFile_Save_Click(object sender, EventArgs e)
-        {
-            menuFile_Save_Click(sender, e);
-        }
+        // ツールバー の Clickイベント
+        private void toolFile_New_Click(object sender, EventArgs e)  { menuFile_New_Click(sender, e);  }
+        private void toolFile_Open_Click(object sender, EventArgs e) { menuFile_Open_Click(sender, e); }
+        private void toolFile_Save_Click(object sender, EventArgs e) { menuFile_Save_Click(sender, e); }
 
         /// <summary>
         /// テキストボックスの Modified の Changedイベント
@@ -452,6 +426,40 @@ namespace NineCubed.Memo
         {
             //フォームのタイトルを設定します
             SetFormTitle();
+        }
+
+        /// <summary>
+        /// テキストボックスの DragEnter の Changedイベント
+        /// ドラッグしてテキストボックスに入った時に発生します。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TxtMain_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        /// <summary>
+        /// テキストボックスの DragDrop の Changedイベント
+        /// テキストボックスにドロップされた時に発生します。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TxtMain_DragDrop(object sender, DragEventArgs e)
+        {
+	        if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+	            foreach (string path in (string[])e.Data.GetData(DataFormats.FileDrop)) {
+                    try {
+                        //テキストに変更がある場合は、ファイルの保存確認をして、ファイルを保存します
+                        ConfirmAndSave();
+
+                        //ファイルを開きます
+                        OpenFileSub(path);
+                    } catch (Exception) {
+                    }
+                    return;
+	            }
+	        }
         }
 
         /// <summary>
@@ -637,7 +645,8 @@ namespace NineCubed.Memo
             title.Append(_textFile.Path ?? "無題");
 
             //文字コードを追加します
-            title.Append(" [" + _textFile.TextEncoding.EncodingName);
+            title.Append(" [");
+            title.Append(_textFile.TextEncoding.EncodingName);
 
             //BOMの有無を追加します
             title.Append( ((_textFile.TextEncoding.GetPreamble().Length > 0) ? ":BOMあり" : ""));
@@ -680,184 +689,73 @@ namespace NineCubed.Memo
             menuFile_NewLine_LF.Checked   = newLineCode.Equals("\n");
         }
 
-        /// <summary>
-        /// ポップアップメニュー・切り取り の click イベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void popupMenuForTextbox_Cut_Click(object sender, EventArgs e)
-        {
-            txtMain.Cut();
-        }
-
-        /// <summary>
-        /// ポップアップメニュー・コピー の click イベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void popupMenuForTextbox_Copy_Click(object sender, EventArgs e)
-        {
-            txtMain.Copy();
-        }
-
-        /// <summary>
-        /// ポップアップメニュー・貼り付け の click イベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void popupMenuForTextbox_Paste_Click(object sender, EventArgs e)
-        {
-            txtMain.Paste();
-        }
-
-        /// <summary>
-        /// 検索条件
-        /// </summary>
-        private SearchData _searchData = new SearchData();
+        // ポップアップメニュー の click イベント
+        private void popupMenuForTextbox_Cut_Click  (object sender, EventArgs e) { txtMain.Cut();   }
+        private void popupMenuForTextbox_Copy_Click (object sender, EventArgs e) { txtMain.Copy();  }
+        private void popupMenuForTextbox_Paste_Click(object sender, EventArgs e) { txtMain.Paste(); }
 
         /// <summary>
         /// 前方検索します。テキストの末尾へ向けて検索します。
         /// </summary>
-        /// <param name="searchString">検索文字列</param>
-        /// <param name="ignoreCase">大文字・小文字を無視します</param>
         /// <returns>見つかった位置</returns>
-        public int SearchForward(string searchString, bool ignoreCase)
+        public int SearchForward()
         {
-            //検索条件を保持します
-            _searchData.SearchString = searchString;
-            _searchData.IgnoreCase = ignoreCase;
-
             //フォーカス設定
             txtMain.Focus();
 
             //検索する
-            //選択文字列が検索文字列と同じ場合は、次の文字列から検索します
-            int offset = txtMain.SelectedText.Equals(searchString, getStringComparison(ignoreCase)) ? 1 : 0;
-            int index = txtMain.Text.IndexOf(searchString, txtMain.SelectionStart + offset, getStringComparison(ignoreCase));
-            if (index >= 0) {
-                //見つかった場合
-                txtMain.Select(index, searchString.Length);
-            }
-
+            int index = txtMain.SearchForward(_searchData.SearchString, _searchData.IgnoreCase);
             return index;
         }
 
         /// <summary>
         /// 後方検索します。テキストの先頭へ向けて検索します。
         /// </summary>
-        /// <param name="searchString">検索文字列</param>
-        /// <param name="ignoreCase">大文字・小文字を無視します</param>
         /// <returns>見つかった位置</returns>
-        public int SearchBackward(string searchString, bool ignoreCase)
+        public int SearchBackward()
         {
-            //検索条件を保持します
-            _searchData.SearchString = searchString;
-            _searchData.IgnoreCase = ignoreCase;
-
             //フォーカス設定
             txtMain.Focus();
 
-            //検索開始位置の設定
-            int searchStartIndex = (txtMain.SelectionStart + searchString.Length - 1) - 1;
-            if (searchStartIndex < 0) return -1; //先頭の場合は処理を抜けます
-
-            //検索開始位置が末尾以降になる場合は、検索開始位置を末尾にします
-            if (searchStartIndex > txtMain.Text.Length) searchStartIndex = txtMain.Text.Length;
-
-            //検索
-            int index = txtMain.Text.LastIndexOf(searchString, searchStartIndex, getStringComparison(ignoreCase));
-            if (index >= 0) {
-                //見つかった場合
-                txtMain.Select(index, searchString.Length);
-            }
-
+            //検索する
+            int index = txtMain.SearchBackward(_searchData.SearchString, _searchData.IgnoreCase);
             return index;
         }
-
 
         /// <summary>
         /// 前方置換します。
         /// </summary>
-        /// <param name="searchString">検索文字列</param>
-        /// <param name="replaceString">置換文字列</param>
-        /// <param name="ignoreCase">大文字・小文字を無視します</param>
         /// <returns>見つかった位置</returns>
-        public int ReplaceForward(string searchString, string replaceString, bool ignoreCase)
+        public int ReplaceForward()
         {
-            //検索条件を保持します
-            _searchData.ReplaceString = replaceString;
-
             //フォーカス設定
             txtMain.Focus();
 
-            //選択文字列が検索文字列と同じ場合は置換します
-            if (txtMain.SelectedText.Equals(searchString, getStringComparison(ignoreCase))) {
-                //同じ場合
-                txtMain.SelectedText = replaceString;
-            }
-
-            //前方検索をします
-            int index = SearchForward(searchString, ignoreCase);
+            //前方置換します
+            int index = txtMain.ReplaceForward(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
             return index;
         }
+
         /// <summary>
         /// 後方置換します。
         /// </summary>
-        /// <param name="searchString">検索文字列</param>
-        /// <param name="replaceString">置換文字列</param>
-        /// <param name="ignoreCase">大文字・小文字を無視します</param>
         /// <returns>見つかった位置</returns>
-        public int ReplaceBackward(string searchString, string replaceString, bool ignoreCase)
+        public int ReplaceBackward()
         {
-            //検索条件を保持します
-            _searchData.ReplaceString = replaceString;
-
             //フォーカス設定
             txtMain.Focus();
 
-            //選択文字列が検索文字列と同じ場合は置換します
-            if (txtMain.SelectedText.Equals(searchString, getStringComparison(ignoreCase))) {
-                //同じ場合
-
-                //カーソルの位置を保存します(SelectedText に設定をすると、カーソルが後ろに移動するため)
-                int oldSelectionStart = txtMain.SelectionStart;
-
-                //置換します
-                txtMain.SelectedText = replaceString;
-
-                //カーソルの位置を復元します
-                txtMain.SelectionStart = oldSelectionStart;
-            }
-
-            //後方検索をします
-            int index = SearchBackward(searchString, ignoreCase);
-
+            //後方置換します
+            int index = txtMain.ReplaceBackward(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
             return index;
         }
 
         /// <summary>
         /// 全置換します。
         /// </summary>
-        /// <param name="searchString">検索文字列</param>
-        /// <param name="replaceString">置換文字列</param>
-        /// <param name="ignoreCase">大文字・小文字を無視します</param>
-        public void ReplaceAll(string searchString, string replaceString, bool ignoreCase)
+        public void ReplaceAll()
         {
-            txtMain.SelectionStart = 0;  //カーソルを先頭に移動します
-            txtMain.SelectionLength = 0; //文字列を未選択にします
-            int index = 0;
-            while (index >= 0) {
-                index = ReplaceForward(searchString, replaceString, ignoreCase);
-            }
-        }
-
-        /// <summary>
-        /// 大文字・小文字の条件を取得します
-        /// </summary>
-        /// <param name="ignoreCase"></param>
-        /// <returns></returns>
-        private StringComparison getStringComparison(bool ignoreCase) {
-            return ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            txtMain.ReplaceAll(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
         }
 
     } //class

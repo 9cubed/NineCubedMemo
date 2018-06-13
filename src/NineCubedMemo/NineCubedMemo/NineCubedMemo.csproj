@@ -63,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Controls\TextBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Common\Files\BinaryFile.cs" />
     <Compile Include="Common\Files\CsvFile.cs" />
     <Compile Include="Common\Files\IFile.cs" />
@@ -133,5 +136,6 @@
   <ItemGroup>
     <Content Include="メモ.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

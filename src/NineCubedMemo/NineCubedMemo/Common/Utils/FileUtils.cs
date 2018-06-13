@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace NineCubed.Common.Utils
 {
     /// <summary>
-    /// ver1.0.4
     /// ファイル関連のユーティリティークラス
     /// </summary>
     public class FileUtils

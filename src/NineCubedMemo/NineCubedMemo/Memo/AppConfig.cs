@@ -81,5 +81,9 @@ namespace NineCubed.Memo
         public int form_width  = 0;
         public int form_height = 0;
 
+        //フォント
+        public string memo_font_name = "ＭＳ ゴシック";
+        public float  memo_font_size = 12;
+
     } //class
 }

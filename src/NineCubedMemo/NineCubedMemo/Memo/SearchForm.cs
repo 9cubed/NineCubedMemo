@@ -16,17 +16,12 @@ namespace NineCubed.Memo
         /// <summary>
         /// 検索ターゲット
         /// </summary>
-        ISearchString _target= null;
+        ISearchString _target = null;
 
         /// <summary>
         /// フォーム。シングルトン。
         /// </summary>
         static SearchForm _form = null;
-
-        /// <summary>
-        /// 検索条件
-        /// </summary>
-        public SearchData Data { get; set; }
 
         /// <summary>
         /// コンストラクタ
@@ -49,9 +44,6 @@ namespace NineCubed.Memo
                 _form = new SearchForm(target);
             }
 
-            //検索条件を保持します
-            _form.Data = searchData;
-
             //入力欄に検索条件を反映します
             _form.txtSearch.Text  = searchData.SearchString;
             _form.txtReplace.Text = searchData.ReplaceString;
@@ -67,7 +59,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnSearchBackward_Click(object sender, EventArgs e)
         {
-            _target.SearchBackward(txtSearch.Text, !chkCase.Checked);
+            _target.SearchBackward();
         }
 
         /// <summary>
@@ -77,7 +69,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnSearchForward_Click(object sender, EventArgs e)
         {
-            _target.SearchForward(txtSearch.Text, !chkCase.Checked);
+            _target.SearchForward();
         }
 
         /// <summary>
@@ -87,7 +79,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnReplaceBackward_Click(object sender, EventArgs e)
         {
-            _target.ReplaceBackward(txtSearch.Text, txtReplace.Text, !chkCase.Checked);
+            _target.ReplaceBackward();
         }
 
         /// <summary>
@@ -97,7 +89,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnReplaceForward_Click(object sender, EventArgs e)
         {
-            _target.ReplaceForward(txtSearch.Text, txtReplace.Text, !chkCase.Checked);
+            _target.ReplaceForward();
         }
 
         /// <summary>
@@ -107,7 +99,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnReplaceAll_Click(object sender, EventArgs e)
         {
-            _target.ReplaceAll(txtSearch.Text, txtReplace.Text, !chkCase.Checked);
+            _target.ReplaceAll();
         }
 
         /// <summary>
@@ -166,7 +158,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            _form.Data.SearchString = txtSearch.Text;
+            _target.GetSearchData().SearchString = txtSearch.Text;
         }
 
         /// <summary>
@@ -176,7 +168,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void txtReplace_TextChanged(object sender, EventArgs e)
         {
-            _form.Data.ReplaceString = txtReplace.Text;
+            _target.GetSearchData().ReplaceString = txtReplace.Text;
         }
 
         /// <summary>
@@ -186,7 +178,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void chkCase_CheckedChanged(object sender, EventArgs e)
         {
-            _form.Data.IgnoreCase = !chkCase.Checked;
+            _target.GetSearchData().IgnoreCase = !chkCase.Checked;
         }
 
     } //class

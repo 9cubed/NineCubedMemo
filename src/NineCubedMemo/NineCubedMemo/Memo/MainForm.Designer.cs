@@ -30,11 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.txtMain = new System.Windows.Forms.RichTextBox();
             this.popupMenuForTextbox = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.popupMenuForTextbox_Cut = new System.Windows.Forms.ToolStripMenuItem();
             this.popupMenuForTextbox_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.popupMenuForTextbox_Paste = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuBar = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_New = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,29 +82,21 @@
             this.toolFile_Save = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.txtMain = new NineCubed.Common.Controls.TextBoxEx();
             this.popupMenuForTextbox.SuspendLayout();
             this.menuBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // txtMain
-            // 
-            this.txtMain.ContextMenuStrip = this.popupMenuForTextbox;
-            this.txtMain.Location = new System.Drawing.Point(64, 85);
-            this.txtMain.Name = "txtMain";
-            this.txtMain.Size = new System.Drawing.Size(207, 161);
-            this.txtMain.TabIndex = 0;
-            this.txtMain.Text = "";
-            this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
             // 
             // popupMenuForTextbox
             // 
             this.popupMenuForTextbox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.popupMenuForTextbox_Cut,
             this.popupMenuForTextbox_Copy,
-            this.popupMenuForTextbox_Paste});
+            this.popupMenuForTextbox_Paste,
+            this.toolStripMenuItem1});
             this.popupMenuForTextbox.Name = "popupMenuForTextbox";
-            this.popupMenuForTextbox.Size = new System.Drawing.Size(116, 70);
+            this.popupMenuForTextbox.Size = new System.Drawing.Size(116, 76);
             // 
             // popupMenuForTextbox_Cut
             // 
@@ -127,6 +119,11 @@
             this.popupMenuForTextbox_Paste.Text = "貼り付け";
             this.popupMenuForTextbox_Paste.Click += new System.EventHandler(this.popupMenuForTextbox_Paste_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(112, 6);
+            // 
             // menuBar
             // 
             this.menuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -136,7 +133,7 @@
             this.menuHelp});
             this.menuBar.Location = new System.Drawing.Point(0, 0);
             this.menuBar.Name = "menuBar";
-            this.menuBar.Size = new System.Drawing.Size(579, 24);
+            this.menuBar.Size = new System.Drawing.Size(869, 24);
             this.menuBar.TabIndex = 1;
             this.menuBar.Text = "menuStrip1";
             // 
@@ -159,6 +156,7 @@
             // menuFile_New
             // 
             this.menuFile_New.Name = "menuFile_New";
+            this.menuFile_New.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.menuFile_New.Size = new System.Drawing.Size(189, 22);
             this.menuFile_New.Text = "新規作成";
             this.menuFile_New.Click += new System.EventHandler(this.menuFile_New_Click);
@@ -166,6 +164,7 @@
             // menuFile_Open
             // 
             this.menuFile_Open.Name = "menuFile_Open";
+            this.menuFile_Open.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.menuFile_Open.Size = new System.Drawing.Size(189, 22);
             this.menuFile_Open.Text = "開く";
             this.menuFile_Open.Click += new System.EventHandler(this.menuFile_Open_Click);
@@ -228,6 +227,7 @@
             // menuFile_Save
             // 
             this.menuFile_Save.Name = "menuFile_Save";
+            this.menuFile_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.menuFile_Save.Size = new System.Drawing.Size(189, 22);
             this.menuFile_Save.Text = "上書き保存";
             this.menuFile_Save.Click += new System.EventHandler(this.menuFile_Save_Click);
@@ -469,7 +469,7 @@
             this.toolFile_Save});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(579, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(869, 27);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -509,11 +509,21 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
+            // txtMain
+            // 
+            this.txtMain.ContextMenuStrip = this.popupMenuForTextbox;
+            this.txtMain.Location = new System.Drawing.Point(74, 79);
+            this.txtMain.Name = "txtMain";
+            this.txtMain.Size = new System.Drawing.Size(262, 171);
+            this.txtMain.TabIndex = 3;
+            this.txtMain.Text = "";
+            this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(579, 344);
+            this.ClientSize = new System.Drawing.Size(869, 344);
             this.Controls.Add(this.txtMain);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuBar);
@@ -534,8 +544,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.RichTextBox txtMain;
         private System.Windows.Forms.MenuStrip menuBar;
         private System.Windows.Forms.ToolStripMenuItem menuFile;
         private System.Windows.Forms.ToolStripMenuItem menuFile_New;
@@ -587,5 +595,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceForward;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceBackward;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_Search;
+        private Common.Controls.TextBoxEx txtMain;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
