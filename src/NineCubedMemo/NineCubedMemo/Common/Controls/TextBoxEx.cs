@@ -19,6 +19,24 @@ namespace NineCubed.Common.Controls
         private const int TextBoxMarginLeft = 6;
 
         /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public TextBoxEx() {
+            InitializeComponent();
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // TextBoxEx
+            // 
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxEx_KeyDown);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxEx_KeyPress);
+            this.ResumeLayout(false);
+        }
+
+        /// <summary>
         /// テキストボックスを初期化します
         /// </summary>
         public void Initialize(string fontName = "ＭＳ ゴシック", float fontSize = 12, int tabSize = 4)
@@ -167,6 +185,142 @@ namespace NineCubed.Common.Controls
         private StringComparison getStringComparison(bool ignoreCase) {
             return ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         }
+
+        /// <summary>
+        /// 書式なしのテキストフォーマットでペーストします。
+        /// </summary>
+        public new void Paste() {
+            //テキスト形式でペーストします
+            var textFormat = DataFormats.GetFormat(DataFormats.Text);
+            this.Paste(textFormat);
+        }
+
+        /// <summary>
+        /// KeyDownイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBoxEx_KeyDown(object sender, KeyEventArgs e)
+        {
+            //デフォルトのペーストは書式付きになるため、独自のペーストで処理します
+            if (e.Control && e.KeyCode.Equals(Keys.V)) {
+                e.Handled = true; //Ctrl+V のKeyDownを処理済みにします。デフォルトのペーストが実行されなくなる。
+                this.Paste();     //ペーストします
+                return;
+            }
+            
+            //タブの場合はインデントします
+            if (e.KeyCode == Keys.Tab) {
+                Indent(e);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// KeyPressイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBoxEx_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //タブが押された場合は、タブが入力されないようにするため、処理済みにします
+            if (e.KeyChar == 9) {
+                e.Handled = true; //処理済み
+                return;
+            }
+        }
+
+        /// <summary>
+        /// インデントします
+        /// </summary>
+        /// <param name="e"></param>
+        private void Indent(KeyEventArgs e) {
+
+            //文字列が選択されていない場合は、タブの挿入または削除を行う
+            if (this.SelectedText.Length == 0) {
+
+                if (e.Shift) {
+                    //カーソルの前にタブがあれば、そのタブを削除する
+                    if (this.Text.Substring(this.SelectionStart - 1, 1).Equals("\t") || 
+                        this.Text.Substring(this.SelectionStart - 1, 1).Equals(" ")) {
+                        this.SelectionStart = this.SelectionStart - 1;
+                        this.SelectionLength = 1;
+                        this.SelectedText = "";
+                    }
+
+                } else {
+                    //カーソルの位置にタブを挿入する
+                    this.SelectedText = "\t";
+                }
+
+                return;
+            }
+
+            //選択されている行の範囲を取得します
+            int startLineNo = this.GetLineFromCharIndex(this.SelectionStart);
+            int endLineNo   = this.GetLineFromCharIndex(this.SelectionEnd);
+            
+            if (e.Shift) {
+                //Shift押下 -> インデント解除
+                
+                //タブを置換するため、対象の行全体を選択します
+                SelecteLine(startLineNo, endLineNo);
+
+                //インデント解除処理(先頭)
+                //選択文字列の先頭がタブかスペースの場合は削除します
+                //下の一括置換で最初のタブとスペースは置換できないので個別に処理しています
+                string target = this.SelectedText;
+                if (target.StartsWith("\t") || target.StartsWith(" ")) target = this.SelectedText.Substring(1);
+
+                //インデント解除処理
+                //行の先頭のスペースとタブを削除します
+                //タブだけで置換すると、行の先頭以外のタブも置換されてしまうため、\nを付けています
+                target = target.Replace("\n " , "\n");
+                target = target.Replace("\n\t", "\n");
+                this.SelectedText = target;
+
+            } else {
+                //Shift押下していない -> インデント
+
+                //行全体が選択されるように再選択します
+                SelecteLine(startLineNo, endLineNo);
+
+                //選択文字列の改行を「改行 + タブ」にして、さらに先頭にタブを追加します
+                string target = this.SelectedText;
+                this.SelectedText = 
+                    "\t" +                        //先頭は個別にタブ追加
+                    target.Replace("\n", "\n\t"); //先頭以外は改行を「改行+タブ」に置換
+            }
+
+            //行全体が選択されるように再選択します
+            SelecteLine(startLineNo, endLineNo);
+        }
+
+        //指定された行を選択します
+        private void SelecteLine(int startLineNo, int endLineNo) {
+            //選択されている行の先頭のIndexを取得します
+            int startIndex = this.GetFirstCharIndexFromLine(startLineNo);
+            int endIndex   = this.GetFirstCharIndexFromLine(endLineNo);
+
+            //最終行の末尾のIndexを取得します
+            endIndex = endIndex + this.Lines[endLineNo].Length;
+
+            //行全体が選択されるように選択します
+            this.SelectionStart = startIndex;
+            this.SelectionLength = endIndex - startIndex;
+        }
+
+
+        /// <summary>
+        /// 選択されている文字列の末尾のインデックスを返します
+        /// </summary>
+        /// <returns></returns>
+        public int SelectionEnd {
+            get {
+                return this.SelectionStart + this.SelectionLength - 1;
+            }
+        }
+
 
     } //class
 }

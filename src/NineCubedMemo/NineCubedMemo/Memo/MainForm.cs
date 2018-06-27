@@ -9,11 +9,13 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -756,6 +758,83 @@ namespace NineCubed.Memo
         public void ReplaceAll()
         {
             txtMain.ReplaceAll(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
+        }
+
+        private void txtMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            //F12キーが押された行に画像のパスが含まれる場合は、画像を表示します
+            if (e.KeyCode == Keys.F12) {
+                //カーソルがある行を取得します
+                int lineNo = txtMain.GetLineFromCharIndex(txtMain.SelectionStart);
+
+                //選択されている文字列のパスを開きます
+                var selectedText = txtMain.SelectedText.Trim(' ', '\"', '\'', '\n');
+                if (selectedText.Length > 0) {
+                    _openByNative(selectedText);
+                    return;
+                }
+
+                //画像パスを検出します
+                var path = DetectImagePath(txtMain.Lines[lineNo].ToLower());
+                if (path != null) {
+                    _openByNative(path);
+                    return;
+                }
+            }
+
+            if (e.KeyCode == Keys.V && e.Control) {
+
+                if (Clipboard.ContainsImage()) {
+                    //クリップボードに画像がある場合
+
+                    //作業フォルダがない場合は作成します
+                    string dirPath = Path.Combine(__.GetAppDirPath(), "output");
+                    if (Directory.Exists(dirPath) == false) Directory.CreateDirectory(dirPath);
+
+                    //クリップボードに画像形式のデータが入っている場合
+                    Image img = Clipboard.GetImage();
+                    string fileName = GetImgFileName();
+                    string path = Path.Combine(dirPath, fileName);
+
+                    //画像をファイルに出力します
+                    img.Save(path, ImageFormat.Png);
+
+                    //パスを貼り付けます
+                    txtMain.SelectedText = path + "\n";
+
+                    e.Handled = true; //Ctrl+V を処理済みにします
+                    return;
+                }
+            }
+
+            //ファイルを開きます
+            void _openByNative(string path) {
+                try {
+                    if (File.Exists(path) || Directory.Exists(path)) {
+                        Process.Start(path);
+                        e.Handled = true;
+                    }
+                } catch (Exception ex) {
+                    MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+        } //txtMain_KeyDown()
+
+        //文字列中の画像のパスを検出します。フルパスのみ対応。
+        private string DetectImagePath(string text) {
+            text = text.ToLower();
+            var match = Regex.Match(text, @"[a-z]:(\\|/).*\.(jpg|jpeg|bmp|gif|png)");
+
+            if (match.Success) return match.Value;
+            return null;
+        }
+
+        //画像のファイル名を返します
+        private string GetImgFileName()
+        {
+            string fileName = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff") + ".png";
+            return fileName;
         }
 
     } //class

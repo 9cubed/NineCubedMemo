@@ -77,5 +77,15 @@ namespace NineCubed
             return sumTime / tryCount;
         }
 
+        /// <summary>
+        /// アプリケーションのフォルダのパスを返します
+        /// </summary>
+        /// <returns></returns>
+        public static string GetAppDirPath()
+        {
+            //return Application.StartupPath;
+            return AppDomain.CurrentDomain.BaseDirectory;
+        }
+
     } //class
 }

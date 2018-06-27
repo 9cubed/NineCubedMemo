@@ -518,6 +518,7 @@
             this.txtMain.TabIndex = 3;
             this.txtMain.Text = "";
             this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
+            this.txtMain.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMain_KeyDown);
             // 
             // MainForm
             // 
@@ -527,6 +528,7 @@
             this.Controls.Add(this.txtMain);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuBar);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuBar;
             this.Name = "MainForm";
             this.Text = "メモ帳";
