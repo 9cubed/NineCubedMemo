@@ -56,6 +56,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Common\Calculation\CalculatorTests.cs" />
     <Compile Include="Common\Files\TextFileTests.cs" />
     <Compile Include="Common\Utils\FileUtilsTests.cs" />
     <Compile Include="Common\Utils\SerializeUtilsTests.cs" />

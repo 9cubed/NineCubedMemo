@@ -1,4 +1,5 @@
-﻿using NineCubed.Common.Controls;
+﻿using NineCubed.Common.Calculation;
+using NineCubed.Common.Controls;
 using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
@@ -144,6 +145,18 @@ namespace NineCubed.Memo
                 var menu = new ToolStripMenuItem { Text= "全角 → 半角" };
                 menu.Click += (sender, e) => {
                     txtMain.SelectedText = StringUtils.ZenkakuToHankaku(txtMain.SelectedText);
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+
+            {
+                //計算します
+                var menu = new ToolStripMenuItem { Text= "計算します" };
+                menu.Click += (sender, e) => {
+                    var result = Calculator.Calc(txtMain.SelectedText);
+                    txtMain.SelectionStart = txtMain.SelectionStart + txtMain.SelectedText.Length;
+                    txtMain.SelectionLength = 0;
+                    txtMain.SelectedText = " = " + result;
                 };
                 popupMenuForTextbox.Items.Add(menu);
             }
