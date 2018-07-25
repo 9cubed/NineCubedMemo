@@ -20,7 +20,7 @@ namespace NineCubed.Common.Calculation
                 int indexEnd = 0;
                 while ((indexEnd = formula.IndexOf(')')) >= 0) {
                     //一番深いところにある括弧の式を取得します
-                    int indexStart = formula.Substring(0, indexEnd).LastIndexOf('(');
+                    int indexStart = formula.LastIndexOf('(', indexEnd);
                     var subFormula = formula.Substring(indexStart + 1, indexEnd - indexStart - 1);
 
                     //式を計算します
