@@ -35,6 +35,7 @@
             this.popupMenuForTextbox_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.popupMenuForTextbox_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.popupMenuForTextbox_SetKeyMacro = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBar = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_New = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,6 +75,11 @@
             this.menuSearch_SearchBackward = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSearch_ReplaceForward = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSearch_ReplaceBackward = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMacro = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMacro_StartRec = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMacro_Play = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMacro_List = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMacro_Set = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelp_version = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -94,35 +100,43 @@
             this.popupMenuForTextbox_Cut,
             this.popupMenuForTextbox_Copy,
             this.popupMenuForTextbox_Paste,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.popupMenuForTextbox_SetKeyMacro});
             this.popupMenuForTextbox.Name = "popupMenuForTextbox";
-            this.popupMenuForTextbox.Size = new System.Drawing.Size(116, 76);
+            this.popupMenuForTextbox.Size = new System.Drawing.Size(150, 98);
             // 
             // popupMenuForTextbox_Cut
             // 
             this.popupMenuForTextbox_Cut.Name = "popupMenuForTextbox_Cut";
-            this.popupMenuForTextbox_Cut.Size = new System.Drawing.Size(115, 22);
+            this.popupMenuForTextbox_Cut.Size = new System.Drawing.Size(149, 22);
             this.popupMenuForTextbox_Cut.Text = "切り取り";
             this.popupMenuForTextbox_Cut.Click += new System.EventHandler(this.popupMenuForTextbox_Cut_Click);
             // 
             // popupMenuForTextbox_Copy
             // 
             this.popupMenuForTextbox_Copy.Name = "popupMenuForTextbox_Copy";
-            this.popupMenuForTextbox_Copy.Size = new System.Drawing.Size(115, 22);
+            this.popupMenuForTextbox_Copy.Size = new System.Drawing.Size(149, 22);
             this.popupMenuForTextbox_Copy.Text = "コピー";
             this.popupMenuForTextbox_Copy.Click += new System.EventHandler(this.popupMenuForTextbox_Copy_Click);
             // 
             // popupMenuForTextbox_Paste
             // 
             this.popupMenuForTextbox_Paste.Name = "popupMenuForTextbox_Paste";
-            this.popupMenuForTextbox_Paste.Size = new System.Drawing.Size(115, 22);
+            this.popupMenuForTextbox_Paste.Size = new System.Drawing.Size(149, 22);
             this.popupMenuForTextbox_Paste.Text = "貼り付け";
             this.popupMenuForTextbox_Paste.Click += new System.EventHandler(this.popupMenuForTextbox_Paste_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(112, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(146, 6);
+            // 
+            // popupMenuForTextbox_SetKeyMacro
+            // 
+            this.popupMenuForTextbox_SetKeyMacro.Name = "popupMenuForTextbox_SetKeyMacro";
+            this.popupMenuForTextbox_SetKeyMacro.Size = new System.Drawing.Size(149, 22);
+            this.popupMenuForTextbox_SetKeyMacro.Text = "キー操作の登録";
+            this.popupMenuForTextbox_SetKeyMacro.Click += new System.EventHandler(this.popupMenuForTextbox_SetKeyMacro_Click);
             // 
             // menuBar
             // 
@@ -130,6 +144,7 @@
             this.menuFile,
             this.menuEdit,
             this.menuSearch,
+            this.menuMacro,
             this.menuHelp});
             this.menuBar.Location = new System.Drawing.Point(0, 0);
             this.menuBar.Name = "menuBar";
@@ -445,6 +460,47 @@
             this.menuSearch_ReplaceBackward.Text = "後方置換";
             this.menuSearch_ReplaceBackward.Click += new System.EventHandler(this.menuSearch_ReplaceBackward_Click);
             // 
+            // menuMacro
+            // 
+            this.menuMacro.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuMacro_StartRec,
+            this.menuMacro_Play,
+            this.menuMacro_List,
+            this.menuMacro_Set});
+            this.menuMacro.Name = "menuMacro";
+            this.menuMacro.Size = new System.Drawing.Size(46, 20);
+            this.menuMacro.Text = "マクロ";
+            // 
+            // menuMacro_StartRec
+            // 
+            this.menuMacro_StartRec.Name = "menuMacro_StartRec";
+            this.menuMacro_StartRec.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.menuMacro_StartRec.Size = new System.Drawing.Size(222, 22);
+            this.menuMacro_StartRec.Text = "キー操作の記録開始・終了";
+            this.menuMacro_StartRec.Click += new System.EventHandler(this.menuMacro_StartRec_Click);
+            // 
+            // menuMacro_Play
+            // 
+            this.menuMacro_Play.Name = "menuMacro_Play";
+            this.menuMacro_Play.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.menuMacro_Play.Size = new System.Drawing.Size(222, 22);
+            this.menuMacro_Play.Text = "キー操作の再生";
+            this.menuMacro_Play.Click += new System.EventHandler(this.menuMacro_Play_Click);
+            // 
+            // menuMacro_List
+            // 
+            this.menuMacro_List.Name = "menuMacro_List";
+            this.menuMacro_List.Size = new System.Drawing.Size(222, 22);
+            this.menuMacro_List.Text = "キー操作の出力";
+            this.menuMacro_List.Click += new System.EventHandler(this.menuMacro_List_Click);
+            // 
+            // menuMacro_Set
+            // 
+            this.menuMacro_Set.Name = "menuMacro_Set";
+            this.menuMacro_Set.Size = new System.Drawing.Size(222, 22);
+            this.menuMacro_Set.Text = "キー操作の登録";
+            this.menuMacro_Set.Click += new System.EventHandler(this.menuMacro_Set_Click);
+            // 
             // menuHelp
             // 
             this.menuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -599,5 +655,11 @@
         private System.Windows.Forms.ToolStripMenuItem menuSearch_Search;
         private Common.Controls.TextBoxEx txtMain;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem menuMacro;
+        private System.Windows.Forms.ToolStripMenuItem menuMacro_StartRec;
+        private System.Windows.Forms.ToolStripMenuItem menuMacro_Play;
+        private System.Windows.Forms.ToolStripMenuItem menuMacro_List;
+        private System.Windows.Forms.ToolStripMenuItem menuMacro_Set;
+        private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_SetKeyMacro;
     }
 }

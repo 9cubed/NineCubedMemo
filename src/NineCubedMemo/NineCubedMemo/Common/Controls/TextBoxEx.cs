@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +14,26 @@ namespace NineCubed.Common.Controls
     [ToolboxItem(true)]
     public class TextBoxEx : RichTextBox
     {
+        //入力コンテキストの取得
+        [DllImport("Imm32.dll")]
+        private static extern IntPtr ImmGetContext(IntPtr hWnd);
+
+        //漢字変換に関する情報の取得
+        //https://msdn.microsoft.com/ja-jp/library/cc447983.aspx
+        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
+        private static extern int ImmGetCompositionString(IntPtr hIMC, int dwIndex, byte[] lpBuf, int dwBufLen);
+
+        //入力コンテキストなどの解放
+        [DllImport("Imm32.dll")]
+        private static extern bool ImmReleaseContext(IntPtr hWnd, IntPtr hIMC);
+
+        /// <summary>
+        /// IMEで漢字変換が確定した時のイベント
+        /// </summary>
+        public delegate void ImeConvertedEventHandler(object sender, string selectedString);
+        public event ImeConvertedEventHandler ImeConverted = null;
+
+
         /// <summary>
         /// テキストボックスの左側の余白のサイズ
         /// </summary>
@@ -104,6 +125,8 @@ namespace NineCubed.Common.Controls
 
         public int SearchForward(string searchString, bool ignoreCase)
         {
+            if (string.IsNullOrEmpty(searchString)) return -1; //検索文字列が空の場合は処理しない
+
             //選択文字列が検索文字列と同じ場合は、次の文字列から検索します
             int offset = this.SelectedText.Equals(searchString, getStringComparison(ignoreCase)) ? 1 : 0;
             int index = this.Text.IndexOf(searchString, this.SelectionStart + offset, getStringComparison(ignoreCase));
@@ -117,6 +140,8 @@ namespace NineCubed.Common.Controls
 
         public int SearchBackward(string searchString, bool ignoreCase)
         {
+            if (string.IsNullOrEmpty(searchString)) return -1; //検索文字列が空の場合は処理しない
+
             //検索開始位置の設定
             int searchStartIndex = (this.SelectionStart + searchString.Length - 1) - 1;
             if (searchStartIndex < 0) return -1; //先頭の場合は処理を抜けます
@@ -135,6 +160,8 @@ namespace NineCubed.Common.Controls
 
         public int ReplaceForward(string searchString, string replaceString, bool ignoreCase)
         {
+            if (string.IsNullOrEmpty(searchString)) return -1; //検索文字列が空の場合は処理しない
+
             //選択文字列が検索文字列と同じ場合は置換します
             if (this.SelectedText.Equals(searchString, getStringComparison(ignoreCase))) {
                 //同じ場合
@@ -148,6 +175,8 @@ namespace NineCubed.Common.Controls
 
         public int ReplaceBackward(string searchString, string replaceString, bool ignoreCase)
         {
+            if (string.IsNullOrEmpty(searchString)) return -1; //検索文字列が空の場合は処理しない
+
             //選択文字列が検索文字列と同じ場合は置換します
             if (this.SelectedText.Equals(searchString, getStringComparison(ignoreCase))) {
                 //同じ場合
@@ -310,7 +339,6 @@ namespace NineCubed.Common.Controls
             this.SelectionLength = endIndex - startIndex;
         }
 
-
         /// <summary>
         /// 選択されている文字列の末尾のインデックスを返します
         /// </summary>
@@ -319,6 +347,47 @@ namespace NineCubed.Common.Controls
             get {
                 return this.SelectionStart + this.SelectionLength - 1;
             }
+        }
+
+        /// <summary>
+        /// ウィンドウプロシージゃー
+        /// Windowsメッセージを処理します
+        /// </summary>
+        /// <param name="m"></param>
+        protected override void WndProc(ref Message m) {
+
+            const int WM_IME_COMPOSITION = 0x10F;  //IMEに関するメッセージ
+            const int GCS_RESULTSTR      = 0x0800; //漢字変換した文字列の取得
+
+            if (m.Msg == WM_IME_COMPOSITION) {
+                //テキストボックスの入力コンテキストを取得します
+                IntPtr hIMC = ImmGetContext(this.Handle);
+
+                try {
+                    //漢字変換した文字列のバッファサイズを取得します (nullは含んでいない)
+                    int length = ImmGetCompositionString(hIMC, GCS_RESULTSTR, null, 0);
+                    if (length > 0) {
+                        //バッファ確保
+                        byte[] lpBuf = new byte[length];
+
+                        //漢字変換した文字列を取得します
+                        ImmGetCompositionString(hIMC, GCS_RESULTSTR, lpBuf, length);
+
+                        //UNICODEのバイト配列 -> 文字列
+                        string selectedString = Encoding.Unicode.GetString(lpBuf);
+                        
+                        //漢字変換確定イベントを発生させます
+                        if (this.ImeConverted != null) ImeConverted(this, selectedString);
+                    }
+
+                } finally {
+                    //入力コンテキストなどを解放します
+                    ImmReleaseContext(this.Handle, hIMC);
+                }
+            }
+
+            //Windows メッセージを処理します
+            base.WndProc(ref m);
         }
 
 

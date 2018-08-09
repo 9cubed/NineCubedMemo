@@ -48,6 +48,11 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
+        /// キー操作マクロ
+        /// </summary>
+        private KeyMacro _keyMacro;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public MainForm()
@@ -56,6 +61,9 @@ namespace NineCubed.Memo
 
             //Configを読み込みます
             _config = AppConfig.Load(this);
+
+            //キー操作マクロの初期設定
+            _keyMacro = new KeyMacro(txtMain);
         }
 
         /// <summary>
@@ -96,7 +104,7 @@ namespace NineCubed.Memo
             txtMain.DragEnter += TxtMain_DragEnter;
             txtMain.DragDrop  += TxtMain_DragDrop;
             //(設定したのを忘れなければプロパティで設定しても問題ありません)
-            
+
             //隙間がなくなるようにテキストボックスを配置します
             txtMain.Dock = DockStyle.Fill;
 
@@ -394,6 +402,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_SearchForward_Click(object sender, EventArgs e)
         {
+            //キー操作の記録
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("{F3}");
+
             SearchForward();
         }
 
@@ -404,6 +415,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_SearchBackward_Click(object sender, EventArgs e)
         {
+            //キー操作の記録
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("+{F3}");
+
             SearchBackward();
         }
 
@@ -414,6 +428,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_ReplaceForward_Click(object sender, EventArgs e)
         {
+            //キー操作の記録
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("^{F3}");
+
             ReplaceForward();
         }
 
@@ -424,6 +441,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuSearch_ReplaceBackward_Click(object sender, EventArgs e)
         {
+            //キー操作の記録
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("+^{F3}");
+
             ReplaceBackward();
         }
 
@@ -677,6 +697,11 @@ namespace NineCubed.Memo
             //テキストが変更されている場合は、(*) をつける
             title.Append(txtMain.Modified ? "(*)" : "");
 
+            //キー操作の記録中
+            if (_keyMacro.IsRecording) {
+                title.Append(" 【 REC 】");
+            }
+
             //フォームのタイトルを設定します
             this.Text = title.ToString();
         }
@@ -708,6 +733,7 @@ namespace NineCubed.Memo
         private void popupMenuForTextbox_Cut_Click  (object sender, EventArgs e) { txtMain.Cut();   }
         private void popupMenuForTextbox_Copy_Click (object sender, EventArgs e) { txtMain.Copy();  }
         private void popupMenuForTextbox_Paste_Click(object sender, EventArgs e) { txtMain.Paste(); }
+        private void popupMenuForTextbox_SetKeyMacro_Click(object sender, EventArgs e) { menuMacro_Set_Click(sender, e); } //キー操作の登録
 
         /// <summary>
         /// 前方検索します。テキストの末尾へ向けて検索します。
@@ -773,6 +799,12 @@ namespace NineCubed.Memo
             txtMain.ReplaceAll(_searchData.SearchString, _searchData.ReplaceString, _searchData.IgnoreCase);
         }
 
+
+        /// <summary>
+        /// テキストボックスのKeyDownイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtMain_KeyDown(object sender, KeyEventArgs e)
         {
             //F12キーが押された行に画像のパスが含まれる場合は、画像を表示します
@@ -848,6 +880,44 @@ namespace NineCubed.Memo
         {
             string fileName = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff") + ".png";
             return fileName;
+        }
+
+        private void menuMacro_StartRec_Click(object sender, EventArgs e)
+        {
+            if (_keyMacro.IsRecording == false) {
+                //キー操作の記録を開始します
+                _keyMacro.StartRecording();
+
+            } else {
+                //キー操作の記録を停止します
+                _keyMacro.StopRecording();
+            }
+
+            //フォームのタイトルを設定します
+            SetFormTitle();
+        }
+
+        private void menuMacro_Play_Click(object sender, EventArgs e)
+        {
+            //キー操作を再生します
+            _keyMacro.Play();
+        }
+
+        //キー操作をテキストに出力します
+        private void menuMacro_List_Click(object sender, EventArgs e)
+        {
+            var sb = new StringBuilder();
+            foreach (var key in _keyMacro.KeyList) {
+                sb.Append(key + "\n");
+            }
+            txtMain.SelectionLength = 0;
+            txtMain.SelectedText = sb.ToString();
+        }
+
+        private void menuMacro_Set_Click(object sender, EventArgs e)
+        {
+            if (txtMain.SelectionLength == 0) return;
+            _keyMacro.KeyList = txtMain.SelectedText.Split('\n').ToList();
         }
 
     } //class

@@ -80,6 +80,7 @@
     <Compile Include="Memo\Exceptions\CancelException.cs" />
     <Compile Include="Memo\Interfaces\ISearchString.cs" />
     <Compile Include="Memo\Interfaces\SearchData.cs" />
+    <Compile Include="Memo\KeyMacro.cs" />
     <Compile Include="Memo\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
