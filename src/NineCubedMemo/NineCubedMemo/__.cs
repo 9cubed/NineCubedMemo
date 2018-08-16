@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace NineCubed
 {
@@ -85,6 +86,21 @@ namespace NineCubed
         {
             //return Application.StartupPath;
             return AppDomain.CurrentDomain.BaseDirectory;
+        }
+
+        public static void ShowInfoMsgBox(string msg) {
+            MessageBox.Show(msg, "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        public static void ShowWarnMsgBox(string msg) {
+            MessageBox.Show(msg, "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        public static void ShowErrorMsgBox(Exception e)
+        {
+            ShowErrorMsgBox("エラーが発生しました。\n" + e.Message);
+        }
+        public static void ShowErrorMsgBox(string msg)
+        {
+            MessageBox.Show(msg, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
     } //class

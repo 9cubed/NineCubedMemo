@@ -4,6 +4,7 @@ using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
 using NineCubed.Memo.Interfaces;
+using NineCubed.Memo.Menus;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,7 +29,10 @@ namespace NineCubed.Memo
         /// <summary>
         /// テキストファイルデータ
         /// </summary>
-        private TextFile _textFile { get; set; }
+        private IFile _textFile { get; set; }
+        public IFile GetTextFile() {
+            return _textFile;
+        }
 
         /// <summary>
         /// Config
@@ -79,12 +83,11 @@ namespace NineCubed.Memo
                 //(EXEにファイルをD&D、送るメニューでファイル指定、ショートカットで引数指定による起動)
 
                 //ファイルを開きます
-                _textFile = new TextFile();
                 try {
-                    OpenFileSub(args[1], null);
+                    OpenFileSub(args[1], new TextFile());
                 } catch (Exception ex) {
                     //例外が発生した場合は、アプリを終了させます
-                    ShowErrorMsgBox(ex);
+                    __.ShowErrorMsgBox(ex);
                     this.Dispose();
                     return;
                 }
@@ -158,6 +161,55 @@ namespace NineCubed.Memo
             }
 
             {
+                //10進数 -> 16進数
+                var menu = new ToolStripMenuItem { Text= "10進数 -> 16進数" };
+                menu.Click += (sender, e) => {
+                    var result = StringUtils.DecimalToHex(txtMain.SelectedText);
+                    if (result != null) {
+                        txtMain.SelectedText = result;
+                    } else {
+                        __.ShowErrorMsgBox("変換できませんでした。");
+                    }
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+
+            {
+                //16進数 -> 10進数
+                var menu = new ToolStripMenuItem { Text= "16進数 -> 10進数" };
+                menu.Click += (sender, e) => {
+                    var result = StringUtils.HexToDecimal(txtMain.SelectedText);
+                    if (result != null) {
+                        txtMain.SelectedText = result;
+                    } else {
+                        __.ShowErrorMsgBox("変換できませんでした。");
+                    }
+
+                };
+                popupMenuForTextbox.Items.Add(menu);
+            }
+
+            {
+                //16進数 → 文字列
+                var parentMenu = new ToolStripMenuItem { Text= "16進数 → 文字列" };
+                popupMenuForTextbox.Items.Add(parentMenu);
+                parentMenu.DropDownItems.Add(new HexToStrMenu("シフトJIS", txtMain, Encoding.GetEncoding(932)));
+                parentMenu.DropDownItems.Add(new HexToStrMenu("UTF-8",     txtMain, new UTF8Encoding(false)));
+                parentMenu.DropDownItems.Add(new HexToStrMenu("UTF-16",    txtMain, Encoding.Unicode));
+                parentMenu.DropDownItems.Add(new HexToStrMenu("EUC-JP",    txtMain, Encoding.GetEncoding(51932)));
+            }
+
+            {
+                //文字列 -> 16進数
+                var parentMenu = new ToolStripMenuItem { Text= "文字列 → 16進数 " };
+                popupMenuForTextbox.Items.Add(parentMenu);
+                parentMenu.DropDownItems.Add(new StrToHexMenu("シフトJIS", this, txtMain, Encoding.GetEncoding(932)));
+                parentMenu.DropDownItems.Add(new StrToHexMenu("UTF-8",     this, txtMain, new UTF8Encoding(false)));
+                parentMenu.DropDownItems.Add(new StrToHexMenu("UTF-16",    this, txtMain, Encoding.Unicode));
+                parentMenu.DropDownItems.Add(new StrToHexMenu("EUC-JP",    this, txtMain, Encoding.GetEncoding(51932)));
+            }
+
+            {
                 //計算します
                 var menu = new ToolStripMenuItem { Text= "計算します" };
                 menu.Click += (sender, e) => {
@@ -186,7 +238,7 @@ namespace NineCubed.Memo
                 e.Cancel = true;
             } catch (Exception ex) {
                 e.Cancel = true;
-                ShowErrorMsgBox(ex);
+                __.ShowErrorMsgBox(ex);
             }
         }
 
@@ -236,7 +288,7 @@ namespace NineCubed.Memo
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
-                ShowErrorMsgBox(ex);
+                __.ShowErrorMsgBox(ex);
             }
         }
 
@@ -249,11 +301,11 @@ namespace NineCubed.Memo
         {
             try {
                 //テキストファイルを開きます
-                OpenFile();
+                OpenFile(new TextFile());
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
-                ShowErrorMsgBox(ex);
+                __.ShowErrorMsgBox(ex);
             }
         }
 
@@ -274,17 +326,19 @@ namespace NineCubed.Memo
 
             try {
                 //テキストファイルを開きます
-                OpenFile(encoding);
+                var newFile = new TextFile();
+                if (encoding != null) newFile.TextEncoding = encoding;
+                OpenFile(newFile);
 
                 //BOMにより自動的に文字コードが変更された場合は、警告を表示します
-                if (encoding.CodePage != _textFile.TextEncoding.CodePage) {
-                    MessageBox.Show("自動判別により文字コードを変更しました。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (encoding.CodePage != ((TextFile)_textFile).TextEncoding.CodePage) {
+                    __.ShowWarnMsgBox("自動判別により文字コードを変更しました。");
                 }
 
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
-                ShowErrorMsgBox(ex);
+                __.ShowErrorMsgBox(ex);
             }
         }
 
@@ -301,7 +355,7 @@ namespace NineCubed.Memo
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
-                ShowErrorMsgBox(ex);
+                __.ShowErrorMsgBox(ex);
             }
         }
 
@@ -318,7 +372,7 @@ namespace NineCubed.Memo
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
-                ShowErrorMsgBox(ex);
+                __.ShowErrorMsgBox(ex);
             }
         }
 
@@ -329,6 +383,11 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuFile_Encoding_Sub(object sender, EventArgs e)
         {
+            if ((_textFile is BinaryFile)) {
+                __.ShowErrorMsgBox("バイナリ形式で開いているため、文字コードを指定できません。");
+                return;
+            }
+
             //エンコーディングを設定します
             Encoding encoding = null;
             if (menuFile_Encoding_ShiftJIS     == sender) encoding = Encoding.GetEncoding(932);   //Shift JIS
@@ -337,7 +396,7 @@ namespace NineCubed.Memo
             if (menuFile_Encoding_UTF16_LE_BOM == sender) encoding = Encoding.GetEncoding(1200);  //UTF-16 LE
             if (menuFile_Encoding_UTF16_BE_BOM == sender) encoding = Encoding.GetEncoding(1201);  //UTF-16 BE
             if (menuFile_Encoding_EucJp        == sender) encoding = Encoding.GetEncoding(51932); //EUC-JP
-            _textFile.TextEncoding = encoding;
+            ((TextFile)_textFile).TextEncoding = encoding;
 
             //テキストを変更ありにします
             txtMain.Modified = true;
@@ -346,7 +405,7 @@ namespace NineCubed.Memo
             SetFormTitle();
 
             //メニュー・文字コードのメニューに、チェックをつけます
-            CheckedMenu_MenuFile_Encoding();
+            CheckedMenu_MenuFile_Encoding(encoding);
         }
 
         /// <summary>
@@ -357,12 +416,17 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void menuFile_NewLine_Sub(object sender, EventArgs e)
         {
+            if ((_textFile is BinaryFile)) {
+                __.ShowErrorMsgBox("バイナリ形式で開いているため、改行コードを指定できません。");
+                return;
+            }
+
             //改行コードを設定します
             string newLineCode = null;
             if (menuFile_NewLine_CRLF == sender) newLineCode = "\r\n";
             if (menuFile_NewLine_CR   == sender) newLineCode = "\r";
             if (menuFile_NewLine_LF   == sender) newLineCode = "\n";
-            _textFile.NewLineCode = newLineCode;
+            ((TextFile)_textFile).NewLineCode = newLineCode;
 
             //テキストを変更ありにします
             txtMain.Modified = true;
@@ -371,7 +435,7 @@ namespace NineCubed.Memo
             SetFormTitle();
 
             //メニュー・改行コードのメニューに、チェックをつけます
-            CheckedMenu_MenuFile_NewLine();
+            CheckedMenu_MenuFile_NewLine(newLineCode);
         }
 
         //メニュー・編集の Clickイベント
@@ -489,7 +553,7 @@ namespace NineCubed.Memo
                         ConfirmAndSave();
 
                         //ファイルを開きます
-                        OpenFileSub(path);
+                        OpenFileSub(path, new TextFile());
                     } catch (Exception) {
                     }
                     return;
@@ -516,19 +580,19 @@ namespace NineCubed.Memo
                 _textFile = new TextFile();
 
                 //文字コードをシフトJISにします
-                _textFile.SetEncodingShiftJIS();
+                ((TextFile)_textFile).SetEncodingShiftJIS();
 
                 //改行コードは \r\n にします
-                _textFile.NewLineCode = "\r\n";
+                ((TextFile)_textFile).NewLineCode = "\r\n";
 
                 //フォームのタイトルを設定します
                 SetFormTitle();
 
                 //メニュー・文字コードのメニューに、チェックをつけます
-                CheckedMenu_MenuFile_Encoding();
+                CheckedMenu_MenuFile_Encoding(((TextFile)_textFile).TextEncoding);
 
                 //メニュー・改行コードのメニューに、チェックをつけます
-                CheckedMenu_MenuFile_NewLine();
+                CheckedMenu_MenuFile_NewLine(((TextFile)_textFile).NewLineCode);
             }
         }
 
@@ -536,8 +600,8 @@ namespace NineCubed.Memo
         /// テキストファイルを開きます
         /// 保存確認と開くダイアログの表示を行います。
         /// </summary>
-        /// <param name="encoding"></param>
-        private void OpenFile(Encoding encoding = null)
+        /// <param name="newFile"></param>
+        private void OpenFile(IFile newFile)
         {
             //テキストに変更がある場合は、ファイルの保存確認をして、ファイルを保存します
             ConfirmAndSave();
@@ -551,7 +615,7 @@ namespace NineCubed.Memo
 
                     //ファイルの読み込み
                     string path = openFileDialog.FileName;
-                    OpenFileSub(path, encoding);
+                    OpenFileSub(path, newFile);
                 }
             }
         }
@@ -561,10 +625,9 @@ namespace NineCubed.Memo
         /// 保存確認と開くダイアログの表示は行いません
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="encoding"></param>
-        private void OpenFileSub(string path, Encoding encoding = null) {
-            _textFile.TextEncoding = encoding; //文字コード
-            _textFile.NewLineCode = null;      //改行コード(自動判別)
+        /// <param name="newFile"></param>
+        private void OpenFileSub(string path, IFile newFile) {
+            _textFile = newFile;
             _textFile.Load(path);
             txtMain.Text = _textFile.Text;
 
@@ -574,11 +637,13 @@ namespace NineCubed.Memo
             //フォームのタイトルを設定します
             SetFormTitle();
 
-            //メニュー・文字コードのメニューに、チェックをつけます
-            CheckedMenu_MenuFile_Encoding();
+            if (_textFile is TextFile) {
+                //メニュー・文字コードのメニューに、チェックをつけます
+                CheckedMenu_MenuFile_Encoding(((TextFile)_textFile).TextEncoding);
 
-            //メニュー・改行コードのメニューに、チェックをつけます
-            CheckedMenu_MenuFile_NewLine();
+                //メニュー・改行コードのメニューに、チェックをつけます
+                CheckedMenu_MenuFile_NewLine(((TextFile)_textFile).NewLineCode);
+            }
         }
 
         /// <summary>
@@ -647,15 +712,6 @@ namespace NineCubed.Memo
         }
 
         /// <summary>
-        /// エラーメッセージを表示します
-        /// </summary>
-        /// <param name="e">発生した例外</param>
-        private void ShowErrorMsgBox(Exception e)
-        {
-            MessageBox.Show("エラーが発生しました。\n" + e.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        /// <summary>
         /// 保存確認メッセージを表示します
         /// </summary>
         /// <returns>押されたボタン</returns>
@@ -679,21 +735,30 @@ namespace NineCubed.Memo
             //パスが未設定の場合は「無題」にする
             title.Append(_textFile.Path ?? "無題");
 
-            //文字コードを追加します
-            title.Append(" [");
-            title.Append(_textFile.TextEncoding.EncodingName);
+            //テキスト形式で開いている場合は、文字コードを追加します
+            if (_textFile is TextFile) {
+                title.Append(" [");
+                title.Append(((TextFile)_textFile).TextEncoding.EncodingName);
 
-            //BOMの有無を追加します
-            title.Append( ((_textFile.TextEncoding.GetPreamble().Length > 0) ? ":BOMあり" : ""));
+                //BOMの有無を追加します
+                title.Append(
+                    ( ((TextFile)_textFile).TextEncoding.GetPreamble().Length > 0 ) ? ":BOMあり" : ""
+                );
 
-            //改行コードを追加します
-            if (_textFile.NewLineCode.Length == 2) {
-                title.Append(":CRLF");
-            } else {
-                title.Append(_textFile.NewLineCode.Equals("\r") ? ":CR" : ":LF");
+                //改行コードを追加します
+                if (((TextFile)_textFile).NewLineCode.Length == 2) {
+                    title.Append(":CRLF");
+                } else {
+                    title.Append(((TextFile)_textFile).NewLineCode.Equals("\r") ? ":CR" : ":LF");
+                }
+                title.Append("]");
             }
-            title.Append("]");
             
+            //テキスト形式で開いている場合は、バイナリ形式
+            if (_textFile is BinaryFile) {
+                title.Append(" [バイナリ形式]");
+            }
+
             //テキストが変更されている場合は、(*) をつける
             title.Append(txtMain.Modified ? "(*)" : "");
 
@@ -709,24 +774,23 @@ namespace NineCubed.Memo
         /// <summary>
         /// メニュー・ファイル・文字コードのメニューに、チェックをつけます
         /// </summary>
-        private void CheckedMenu_MenuFile_Encoding() {
-            Encoding encoding = _textFile.TextEncoding;
-            menuFile_Encoding_ShiftJIS.Checked     = encoding.CodePage == 932;
-            menuFile_Encoding_UTF8.Checked         = encoding.CodePage == 65001 && encoding.GetPreamble().Length == 0;
-            menuFile_Encoding_UTF8_BOM.Checked     = encoding.CodePage == 65001 && encoding.GetPreamble().Length >  0;
+        private void CheckedMenu_MenuFile_Encoding(Encoding encoding) {
+            menuFile_Encoding_ShiftJIS    .Checked = encoding.CodePage == 932;
+            menuFile_Encoding_UTF8        .Checked = encoding.CodePage == 65001 && encoding.GetPreamble().Length == 0;
+            menuFile_Encoding_UTF8_BOM    .Checked = encoding.CodePage == 65001 && encoding.GetPreamble().Length >  0;
             menuFile_Encoding_UTF16_LE_BOM.Checked = encoding.CodePage == 1200;
             menuFile_Encoding_UTF16_BE_BOM.Checked = encoding.CodePage == 1201;
-            menuFile_Encoding_EucJp.Checked        = encoding.CodePage == 51932;
+            menuFile_Encoding_EucJp       .Checked = encoding.CodePage == 51932;
         }
 
         /// <summary>
         /// メニュー・ファイル・改行コードのメニューに、チェックをつけます
         /// </summary>
-        private void CheckedMenu_MenuFile_NewLine() {
-            string newLineCode = _textFile.NewLineCode;
+        private void CheckedMenu_MenuFile_NewLine(string newLineCode) {
+            //string newLineCode = ((TextFile)_textFile).NewLineCode;
             menuFile_NewLine_CRLF.Checked = newLineCode.Equals("\r\n");
-            menuFile_NewLine_CR.Checked   = newLineCode.Equals("\r");
-            menuFile_NewLine_LF.Checked   = newLineCode.Equals("\n");
+            menuFile_NewLine_CR  .Checked = newLineCode.Equals("\r");
+            menuFile_NewLine_LF  .Checked = newLineCode.Equals("\n");
         }
 
         // ポップアップメニュー の click イベント
@@ -920,5 +984,26 @@ namespace NineCubed.Memo
             _keyMacro.KeyList = txtMain.SelectedText.Split('\n').ToList();
         }
 
+        /// <summary>
+        /// メニュー・ファイル・開く(バイナリー形式) の Clickイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuFile_Open_Binary_Click(object sender, EventArgs e)
+        {
+            try {
+                //テキストファイルを開きます
+                OpenFile(new BinaryFile());
+            } catch (CancelException) {
+                //キャンセル時
+            } catch (Exception ex) {
+                __.ShowErrorMsgBox(ex);
+            }
+        }
+
+        private void menuFile_Encoding_Click(object sender, EventArgs e)
+        {
+
+        }
     } //class
 }

@@ -121,5 +121,28 @@ namespace NineCubed.Common.Utils
             }
         }
 
+        /// <summary>
+        /// 10進数 -> 16進数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string DecimalToHex(string s) {
+            if (Int64.TryParse(s, out Int64 value) == false) return null;//数値に変換できない場合
+            return Convert.ToString(value, 16);
+        }
+
+        /// <summary>
+        /// 16進数 -> 10進数
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public static string HexToDecimal(string hex) {
+            string result = null;
+            try {
+                result = Convert.ToInt64(hex, 16).ToString();
+            } catch (Exception) {}
+            return result;
+        }
+
     } //class
 }

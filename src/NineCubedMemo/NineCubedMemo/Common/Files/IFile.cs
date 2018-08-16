@@ -8,7 +8,6 @@ namespace NineCubed.Common.Files
 {
 
     /// <summary>
-    /// ver1.0.4
     /// ファイル用インターフェース
     /// </summary>
     public interface IFile
@@ -17,6 +16,14 @@ namespace NineCubed.Common.Files
         /// ファイルのパス
         /// </summary>
         string Path { get; set; }
+
+        /// <summary>
+        /// テキスト
+        /// 改行コードは \n に統一して保持する
+        /// 
+        /// 注意：ファイルに保存する時は、NewLineCodeプロパティ(改行コード)を使う
+        /// </summary>
+        string Text { get; set; }
 
         /// <summary>
         /// ファイルが読み取り専用かどうか

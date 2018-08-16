@@ -47,6 +47,7 @@
             this.menuFile_Open_UTF16_LE_BOM = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Open_UTF16_BE_BOM = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Open_EucJp = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFile_Open_Binary = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Close = new System.Windows.Forms.ToolStripMenuItem();
@@ -158,6 +159,7 @@
             this.menuFile_New,
             this.menuFile_Open,
             this.menuFile_Open_Encoding,
+            this.menuFile_Open_Binary,
             this.menuFile_Save,
             this.menuFile_SaveAs,
             this.menuFile_Close,
@@ -239,6 +241,13 @@
             this.menuFile_Open_EucJp.Text = "EUC-JP";
             this.menuFile_Open_EucJp.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
+            // menuFile_Open_Binary
+            // 
+            this.menuFile_Open_Binary.Name = "menuFile_Open_Binary";
+            this.menuFile_Open_Binary.Size = new System.Drawing.Size(189, 22);
+            this.menuFile_Open_Binary.Text = "開く（バイナリ形式）";
+            this.menuFile_Open_Binary.Click += new System.EventHandler(this.menuFile_Open_Binary_Click);
+            // 
             // menuFile_Save
             // 
             this.menuFile_Save.Name = "menuFile_Save";
@@ -272,46 +281,47 @@
             this.menuFile_Encoding.Name = "menuFile_Encoding";
             this.menuFile_Encoding.Size = new System.Drawing.Size(189, 22);
             this.menuFile_Encoding.Text = "文字コード";
+            this.menuFile_Encoding.Click += new System.EventHandler(this.menuFile_Encoding_Click);
             // 
             // menuFile_Encoding_ShiftJIS
             // 
             this.menuFile_Encoding_ShiftJIS.Name = "menuFile_Encoding_ShiftJIS";
-            this.menuFile_Encoding_ShiftJIS.Size = new System.Drawing.Size(164, 22);
+            this.menuFile_Encoding_ShiftJIS.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Encoding_ShiftJIS.Text = "Shift JIS";
             this.menuFile_Encoding_ShiftJIS.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
             // 
             // menuFile_Encoding_UTF8
             // 
             this.menuFile_Encoding_UTF8.Name = "menuFile_Encoding_UTF8";
-            this.menuFile_Encoding_UTF8.Size = new System.Drawing.Size(164, 22);
+            this.menuFile_Encoding_UTF8.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Encoding_UTF8.Text = "UTF-8";
             this.menuFile_Encoding_UTF8.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
             // 
             // menuFile_Encoding_UTF8_BOM
             // 
             this.menuFile_Encoding_UTF8_BOM.Name = "menuFile_Encoding_UTF8_BOM";
-            this.menuFile_Encoding_UTF8_BOM.Size = new System.Drawing.Size(164, 22);
+            this.menuFile_Encoding_UTF8_BOM.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Encoding_UTF8_BOM.Text = "UTF-8 BOM付き";
             this.menuFile_Encoding_UTF8_BOM.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
             // 
             // menuFile_Encoding_UTF16_LE_BOM
             // 
             this.menuFile_Encoding_UTF16_LE_BOM.Name = "menuFile_Encoding_UTF16_LE_BOM";
-            this.menuFile_Encoding_UTF16_LE_BOM.Size = new System.Drawing.Size(164, 22);
+            this.menuFile_Encoding_UTF16_LE_BOM.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Encoding_UTF16_LE_BOM.Text = "UTF-16 BOM (LE)";
             this.menuFile_Encoding_UTF16_LE_BOM.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
             // 
             // menuFile_Encoding_UTF16_BE_BOM
             // 
             this.menuFile_Encoding_UTF16_BE_BOM.Name = "menuFile_Encoding_UTF16_BE_BOM";
-            this.menuFile_Encoding_UTF16_BE_BOM.Size = new System.Drawing.Size(164, 22);
+            this.menuFile_Encoding_UTF16_BE_BOM.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Encoding_UTF16_BE_BOM.Text = "UTF-16 BOM (BE)";
             this.menuFile_Encoding_UTF16_BE_BOM.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
             // 
             // menuFile_Encoding_EucJp
             // 
             this.menuFile_Encoding_EucJp.Name = "menuFile_Encoding_EucJp";
-            this.menuFile_Encoding_EucJp.Size = new System.Drawing.Size(164, 22);
+            this.menuFile_Encoding_EucJp.Size = new System.Drawing.Size(180, 22);
             this.menuFile_Encoding_EucJp.Text = "EUC-JP";
             this.menuFile_Encoding_EucJp.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
             // 
@@ -661,5 +671,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuMacro_List;
         private System.Windows.Forms.ToolStripMenuItem menuMacro_Set;
         private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_SetKeyMacro;
+        private System.Windows.Forms.ToolStripMenuItem menuFile_Open_Binary;
     }
 }

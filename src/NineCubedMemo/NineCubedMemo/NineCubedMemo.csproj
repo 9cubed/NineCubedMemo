@@ -74,6 +74,7 @@
     <Compile Include="Common\Files\CsvFile.cs" />
     <Compile Include="Common\Files\IFile.cs" />
     <Compile Include="Common\Files\TextFile.cs" />
+    <Compile Include="Common\Utils\BinaryUtils.cs" />
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
@@ -88,6 +89,12 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Utils\StringUtils.cs" />
+    <Compile Include="Memo\Menus\HexToStrMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Menus\StrToHexMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\SearchForm.cs">
       <SubType>Form</SubType>
     </Compile>

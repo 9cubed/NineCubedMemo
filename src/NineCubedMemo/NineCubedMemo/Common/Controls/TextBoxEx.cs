@@ -350,7 +350,7 @@ namespace NineCubed.Common.Controls
         }
 
         /// <summary>
-        /// ウィンドウプロシージゃー
+        /// ウィンドウプロシージャー
         /// Windowsメッセージを処理します
         /// </summary>
         /// <param name="m"></param>
