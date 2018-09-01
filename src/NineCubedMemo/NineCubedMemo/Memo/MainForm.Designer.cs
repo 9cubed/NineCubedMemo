@@ -28,17 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.popupMenuForTextbox = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.popupMenuForTextbox_Cut = new System.Windows.Forms.ToolStripMenuItem();
-            this.popupMenuForTextbox_Copy = new System.Windows.Forms.ToolStripMenuItem();
-            this.popupMenuForTextbox_Paste = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.popupMenuForTextbox_SetKeyMacro = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBar = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_New = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Open_Encoding = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Open_ShiftJIS = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,17 +43,6 @@
             this.menuFile_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Close = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding_ShiftJIS = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding_UTF8 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding_UTF8_BOM = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding_UTF16_LE_BOM = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding_UTF16_BE_BOM = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_Encoding_EucJp = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_NewLine = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_NewLine_CRLF = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_NewLine_CR = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuFile_NewLine_LF = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_End = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEdit_Undo = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,6 +57,7 @@
             this.menuSearch_SearchBackward = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSearch_ReplaceForward = new System.Windows.Forms.ToolStripMenuItem();
             this.menuSearch_ReplaceBackward = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuSearch_ReplaceAll = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMacro = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMacro_StartRec = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMacro_Play = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,60 +66,13 @@
             this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelp_version = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolFile_New = new System.Windows.Forms.ToolStripButton();
             this.toolFile_Open = new System.Windows.Forms.ToolStripButton();
             this.toolFile_Save = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.txtMain = new NineCubed.Common.Controls.TextBoxEx();
-            this.popupMenuForTextbox.SuspendLayout();
             this.menuBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // popupMenuForTextbox
-            // 
-            this.popupMenuForTextbox.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.popupMenuForTextbox_Cut,
-            this.popupMenuForTextbox_Copy,
-            this.popupMenuForTextbox_Paste,
-            this.toolStripMenuItem1,
-            this.popupMenuForTextbox_SetKeyMacro});
-            this.popupMenuForTextbox.Name = "popupMenuForTextbox";
-            this.popupMenuForTextbox.Size = new System.Drawing.Size(150, 98);
-            // 
-            // popupMenuForTextbox_Cut
-            // 
-            this.popupMenuForTextbox_Cut.Name = "popupMenuForTextbox_Cut";
-            this.popupMenuForTextbox_Cut.Size = new System.Drawing.Size(149, 22);
-            this.popupMenuForTextbox_Cut.Text = "切り取り";
-            this.popupMenuForTextbox_Cut.Click += new System.EventHandler(this.popupMenuForTextbox_Cut_Click);
-            // 
-            // popupMenuForTextbox_Copy
-            // 
-            this.popupMenuForTextbox_Copy.Name = "popupMenuForTextbox_Copy";
-            this.popupMenuForTextbox_Copy.Size = new System.Drawing.Size(149, 22);
-            this.popupMenuForTextbox_Copy.Text = "コピー";
-            this.popupMenuForTextbox_Copy.Click += new System.EventHandler(this.popupMenuForTextbox_Copy_Click);
-            // 
-            // popupMenuForTextbox_Paste
-            // 
-            this.popupMenuForTextbox_Paste.Name = "popupMenuForTextbox_Paste";
-            this.popupMenuForTextbox_Paste.Size = new System.Drawing.Size(149, 22);
-            this.popupMenuForTextbox_Paste.Text = "貼り付け";
-            this.popupMenuForTextbox_Paste.Click += new System.EventHandler(this.popupMenuForTextbox_Paste_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(146, 6);
-            // 
-            // popupMenuForTextbox_SetKeyMacro
-            // 
-            this.popupMenuForTextbox_SetKeyMacro.Name = "popupMenuForTextbox_SetKeyMacro";
-            this.popupMenuForTextbox_SetKeyMacro.Size = new System.Drawing.Size(149, 22);
-            this.popupMenuForTextbox_SetKeyMacro.Text = "キー操作の登録";
-            this.popupMenuForTextbox_SetKeyMacro.Click += new System.EventHandler(this.popupMenuForTextbox_SetKeyMacro_Click);
             // 
             // menuBar
             // 
@@ -156,27 +91,16 @@
             // menuFile
             // 
             this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFile_New,
             this.menuFile_Open,
             this.menuFile_Open_Encoding,
             this.menuFile_Open_Binary,
             this.menuFile_Save,
             this.menuFile_SaveAs,
             this.menuFile_Close,
-            this.menuFile_Encoding,
-            this.menuFile_NewLine,
             this.menuFile_End});
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size(53, 20);
             this.menuFile.Text = "ファイル";
-            // 
-            // menuFile_New
-            // 
-            this.menuFile_New.Name = "menuFile_New";
-            this.menuFile_New.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.menuFile_New.Size = new System.Drawing.Size(189, 22);
-            this.menuFile_New.Text = "新規作成";
-            this.menuFile_New.Click += new System.EventHandler(this.menuFile_New_Click);
             // 
             // menuFile_Open
             // 
@@ -268,93 +192,7 @@
             this.menuFile_Close.Name = "menuFile_Close";
             this.menuFile_Close.Size = new System.Drawing.Size(189, 22);
             this.menuFile_Close.Text = "閉じる";
-            // 
-            // menuFile_Encoding
-            // 
-            this.menuFile_Encoding.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFile_Encoding_ShiftJIS,
-            this.menuFile_Encoding_UTF8,
-            this.menuFile_Encoding_UTF8_BOM,
-            this.menuFile_Encoding_UTF16_LE_BOM,
-            this.menuFile_Encoding_UTF16_BE_BOM,
-            this.menuFile_Encoding_EucJp});
-            this.menuFile_Encoding.Name = "menuFile_Encoding";
-            this.menuFile_Encoding.Size = new System.Drawing.Size(189, 22);
-            this.menuFile_Encoding.Text = "文字コード";
-            this.menuFile_Encoding.Click += new System.EventHandler(this.menuFile_Encoding_Click);
-            // 
-            // menuFile_Encoding_ShiftJIS
-            // 
-            this.menuFile_Encoding_ShiftJIS.Name = "menuFile_Encoding_ShiftJIS";
-            this.menuFile_Encoding_ShiftJIS.Size = new System.Drawing.Size(180, 22);
-            this.menuFile_Encoding_ShiftJIS.Text = "Shift JIS";
-            this.menuFile_Encoding_ShiftJIS.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
-            // 
-            // menuFile_Encoding_UTF8
-            // 
-            this.menuFile_Encoding_UTF8.Name = "menuFile_Encoding_UTF8";
-            this.menuFile_Encoding_UTF8.Size = new System.Drawing.Size(180, 22);
-            this.menuFile_Encoding_UTF8.Text = "UTF-8";
-            this.menuFile_Encoding_UTF8.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
-            // 
-            // menuFile_Encoding_UTF8_BOM
-            // 
-            this.menuFile_Encoding_UTF8_BOM.Name = "menuFile_Encoding_UTF8_BOM";
-            this.menuFile_Encoding_UTF8_BOM.Size = new System.Drawing.Size(180, 22);
-            this.menuFile_Encoding_UTF8_BOM.Text = "UTF-8 BOM付き";
-            this.menuFile_Encoding_UTF8_BOM.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
-            // 
-            // menuFile_Encoding_UTF16_LE_BOM
-            // 
-            this.menuFile_Encoding_UTF16_LE_BOM.Name = "menuFile_Encoding_UTF16_LE_BOM";
-            this.menuFile_Encoding_UTF16_LE_BOM.Size = new System.Drawing.Size(180, 22);
-            this.menuFile_Encoding_UTF16_LE_BOM.Text = "UTF-16 BOM (LE)";
-            this.menuFile_Encoding_UTF16_LE_BOM.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
-            // 
-            // menuFile_Encoding_UTF16_BE_BOM
-            // 
-            this.menuFile_Encoding_UTF16_BE_BOM.Name = "menuFile_Encoding_UTF16_BE_BOM";
-            this.menuFile_Encoding_UTF16_BE_BOM.Size = new System.Drawing.Size(180, 22);
-            this.menuFile_Encoding_UTF16_BE_BOM.Text = "UTF-16 BOM (BE)";
-            this.menuFile_Encoding_UTF16_BE_BOM.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
-            // 
-            // menuFile_Encoding_EucJp
-            // 
-            this.menuFile_Encoding_EucJp.Name = "menuFile_Encoding_EucJp";
-            this.menuFile_Encoding_EucJp.Size = new System.Drawing.Size(180, 22);
-            this.menuFile_Encoding_EucJp.Text = "EUC-JP";
-            this.menuFile_Encoding_EucJp.Click += new System.EventHandler(this.menuFile_Encoding_Sub);
-            // 
-            // menuFile_NewLine
-            // 
-            this.menuFile_NewLine.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFile_NewLine_CRLF,
-            this.menuFile_NewLine_CR,
-            this.menuFile_NewLine_LF});
-            this.menuFile_NewLine.Name = "menuFile_NewLine";
-            this.menuFile_NewLine.Size = new System.Drawing.Size(189, 22);
-            this.menuFile_NewLine.Text = "改行コード";
-            // 
-            // menuFile_NewLine_CRLF
-            // 
-            this.menuFile_NewLine_CRLF.Name = "menuFile_NewLine_CRLF";
-            this.menuFile_NewLine_CRLF.Size = new System.Drawing.Size(100, 22);
-            this.menuFile_NewLine_CRLF.Text = "CRLF";
-            this.menuFile_NewLine_CRLF.Click += new System.EventHandler(this.menuFile_NewLine_Sub);
-            // 
-            // menuFile_NewLine_CR
-            // 
-            this.menuFile_NewLine_CR.Name = "menuFile_NewLine_CR";
-            this.menuFile_NewLine_CR.Size = new System.Drawing.Size(100, 22);
-            this.menuFile_NewLine_CR.Text = "CR";
-            this.menuFile_NewLine_CR.Click += new System.EventHandler(this.menuFile_NewLine_Sub);
-            // 
-            // menuFile_NewLine_LF
-            // 
-            this.menuFile_NewLine_LF.Name = "menuFile_NewLine_LF";
-            this.menuFile_NewLine_LF.Size = new System.Drawing.Size(100, 22);
-            this.menuFile_NewLine_LF.Text = "LF";
-            this.menuFile_NewLine_LF.Click += new System.EventHandler(this.menuFile_NewLine_Sub);
+            this.menuFile_Close.Click += new System.EventHandler(this.menuFile_Close_Click);
             // 
             // menuFile_End
             // 
@@ -424,7 +262,8 @@
             this.menuSearch_SearchForward,
             this.menuSearch_SearchBackward,
             this.menuSearch_ReplaceForward,
-            this.menuSearch_ReplaceBackward});
+            this.menuSearch_ReplaceBackward,
+            this.menuSearch_ReplaceAll});
             this.menuSearch.Name = "menuSearch";
             this.menuSearch.Size = new System.Drawing.Size(43, 20);
             this.menuSearch.Text = "検索";
@@ -469,6 +308,13 @@
             this.menuSearch_ReplaceBackward.Size = new System.Drawing.Size(199, 22);
             this.menuSearch_ReplaceBackward.Text = "後方置換";
             this.menuSearch_ReplaceBackward.Click += new System.EventHandler(this.menuSearch_ReplaceBackward_Click);
+            // 
+            // menuSearch_ReplaceAll
+            // 
+            this.menuSearch_ReplaceAll.Name = "menuSearch_ReplaceAll";
+            this.menuSearch_ReplaceAll.Size = new System.Drawing.Size(199, 22);
+            this.menuSearch_ReplaceAll.Text = "全て置換";
+            this.menuSearch_ReplaceAll.Click += new System.EventHandler(this.menuSearch_ReplaceAll_Click);
             // 
             // menuMacro
             // 
@@ -530,7 +376,6 @@
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolFile_New,
             this.toolFile_Open,
             this.toolFile_Save});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
@@ -538,17 +383,6 @@
             this.toolStrip1.Size = new System.Drawing.Size(869, 27);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolFile_New
-            // 
-            this.toolFile_New.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolFile_New.Image = ((System.Drawing.Image)(resources.GetObject("toolFile_New.Image")));
-            this.toolFile_New.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolFile_New.Name = "toolFile_New";
-            this.toolFile_New.Size = new System.Drawing.Size(24, 24);
-            this.toolFile_New.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
-            this.toolFile_New.ToolTipText = "新規作成";
-            this.toolFile_New.Click += new System.EventHandler(this.toolFile_New_Click);
             // 
             // toolFile_Open
             // 
@@ -575,23 +409,11 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
-            // txtMain
-            // 
-            this.txtMain.ContextMenuStrip = this.popupMenuForTextbox;
-            this.txtMain.Location = new System.Drawing.Point(74, 79);
-            this.txtMain.Name = "txtMain";
-            this.txtMain.Size = new System.Drawing.Size(262, 171);
-            this.txtMain.TabIndex = 3;
-            this.txtMain.Text = "";
-            this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
-            this.txtMain.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMain_KeyDown);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(869, 344);
-            this.Controls.Add(this.txtMain);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuBar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -601,7 +423,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.popupMenuForTextbox.ResumeLayout(false);
             this.menuBar.ResumeLayout(false);
             this.menuBar.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
@@ -614,14 +435,12 @@
         #endregion
         private System.Windows.Forms.MenuStrip menuBar;
         private System.Windows.Forms.ToolStripMenuItem menuFile;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_New;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Open;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Save;
         private System.Windows.Forms.ToolStripMenuItem menuFile_SaveAs;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Close;
         private System.Windows.Forms.ToolStripMenuItem menuFile_End;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton toolFile_New;
         private System.Windows.Forms.ToolStripButton toolFile_Open;
         private System.Windows.Forms.ToolStripButton toolFile_Save;
         private System.Windows.Forms.ToolStripMenuItem menuEdit;
@@ -642,35 +461,18 @@
         private System.Windows.Forms.ToolStripMenuItem menuFile_Open_UTF16_LE_BOM;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Open_UTF16_BE_BOM;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Open_EucJp;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding_ShiftJIS;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding_UTF8;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding_UTF8_BOM;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding_UTF16_LE_BOM;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding_UTF16_BE_BOM;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_Encoding_EucJp;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_NewLine;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_NewLine_CRLF;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_NewLine_CR;
-        private System.Windows.Forms.ToolStripMenuItem menuFile_NewLine_LF;
-        private System.Windows.Forms.ContextMenuStrip popupMenuForTextbox;
-        private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_Cut;
-        private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_Copy;
-        private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_Paste;
         private System.Windows.Forms.ToolStripMenuItem menuSearch;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_SearchForward;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_SearchBackward;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceForward;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceBackward;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_Search;
-        private Common.Controls.TextBoxEx txtMain;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem menuMacro;
         private System.Windows.Forms.ToolStripMenuItem menuMacro_StartRec;
         private System.Windows.Forms.ToolStripMenuItem menuMacro_Play;
         private System.Windows.Forms.ToolStripMenuItem menuMacro_List;
         private System.Windows.Forms.ToolStripMenuItem menuMacro_Set;
-        private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_SetKeyMacro;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Open_Binary;
+        private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceAll;
     }
 }

@@ -86,8 +86,10 @@ namespace NineCubed.Common.Files
         /// テキストファイルを書き込みます
         /// </summary>
         /// <param name="path">パス</param>
-        public void Save(string path)
+        public void Save(string path = null)
         {
+            if (path == null) path = this.Path;
+
             using(var writer = new FileStream(path, FileMode.Create, FileAccess.Write)) {
                 //改行コードを変更します
                 string text = this.Text.Replace("\n", this.NewLineCode);
@@ -123,8 +125,10 @@ namespace NineCubed.Common.Files
         /// 引数で自動判別のフラグを持たさせたいが、I/F合わなくなるため、追加していません。要検討。
         /// </summary>
         /// <param name="path">パス</param>
-        public void Load(string path)
+        public void Load(string path = null)
         {
+            if (path == null) path = this.Path;
+
             if ((new FileInfo(path)).Length >= 1024 * 1024 * 50) {
                 //ファイルサイズが50MBを超える場合はエラーとする。TODO:Configで設定させる
                 throw new Exception("ファイルサイズが50MBを越えています。");

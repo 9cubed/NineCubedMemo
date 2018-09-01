@@ -72,12 +72,19 @@
     </Compile>
     <Compile Include="Common\Files\BinaryFile.cs" />
     <Compile Include="Common\Files\CsvFile.cs" />
+    <Compile Include="Common\Files\AnyFile.cs" />
     <Compile Include="Common\Files\IFile.cs" />
     <Compile Include="Common\Files\TextFile.cs" />
     <Compile Include="Common\Utils\BinaryUtils.cs" />
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IEditPlugin.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IEncodingPlugin.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IFilePlugin.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IKeyMacroPlugin.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\INewLinePlugin.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IPlugin.cs" />
     <Compile Include="Memo\Exceptions\CancelException.cs" />
     <Compile Include="Memo\Interfaces\ISearchString.cs" />
     <Compile Include="Memo\Interfaces\SearchData.cs" />
@@ -95,6 +102,14 @@
     <Compile Include="Memo\Menus\StrToHexMenu.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\Interfaces\ISearchPlugin.cs" />
+    <Compile Include="Memo\Plugins\PluginManager.cs" />
+    <Compile Include="Memo\Plugins\TextEditor\TextEditorPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\TextEditor\TextEditorPlugin.Designer.cs">
+      <DependentUpon>TextEditorPlugin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Memo\SearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +125,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\TextEditor\TextEditorPlugin.resx">
+      <DependentUpon>TextEditorPlugin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\SearchForm.resx">
       <DependentUpon>SearchForm.cs</DependentUpon>

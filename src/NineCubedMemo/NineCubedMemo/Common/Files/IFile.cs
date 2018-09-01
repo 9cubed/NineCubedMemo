@@ -35,13 +35,13 @@ namespace NineCubed.Common.Files
         /// テキストファイルを書き込みます
         /// <param name="path">パス</param>
         /// </summary>
-        void Save(string path);
+        void Save(string path = null);
 
         /// <summary>
         /// テキストファイルを読み込みます
         /// </summary>
         /// <param name="path">パス</param>
-        void Load(string path);
+        void Load(string path = null);
 
     } //interface
 }

@@ -50,6 +50,7 @@ namespace NineCubed.Memo
             _form.chkCase.Checked = !searchData.IgnoreCase;
 
             _form.Show();
+            _form.Activate(); //フォームをアクティブにします
         }
 
         /// <summary>
