@@ -31,5 +31,10 @@ namespace NineCubed.Memo.Plugins.Interfaces
         /// プラグインの終了処理
         /// </summary>
         void ClosePlugin();
+
+        /// <summary>
+        /// フォーカスを設定します
+        /// </summary>
+        void SetFocus();
     }
 }

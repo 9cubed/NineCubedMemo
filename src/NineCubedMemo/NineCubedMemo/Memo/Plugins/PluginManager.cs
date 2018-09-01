@@ -126,19 +126,19 @@ namespace NineCubed.Memo.Plugins
         }
 
         /// <summary>
-        /// プラグインをリストから削除します
-        /// </summary>
-        /// <param name="plugin"></param>
-        public void RemovePlugin(IPlugin plugin) {
-            _pluginList.Remove(plugin);
-        }
-
-        /// <summary>
         /// プラグインを終了します
         /// </summary>
-        public void ClosePlugin(IPlugin plugin) {
+        public bool ClosePlugin(IPlugin plugin) {
+            //プラグインを終了できるか？
             if (plugin.CanClosePlugin()) {
+                //プラグインを終了します
                 plugin.ClosePlugin();
+
+                //プラグインリストからプラグインを削除します
+                _pluginList.Remove(plugin);
+                return true;
+            } else {
+                return false;
             }
         }
 

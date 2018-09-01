@@ -249,7 +249,12 @@ namespace NineCubed.Memo
         private void menuFile_Close_Click(object sender, EventArgs e)
         {
             if (_pluginManager.ActivePlugin != null) {
+
+                //アクティブプラグインを終了します
                 _pluginManager.ClosePlugin( _pluginManager.ActivePlugin );
+
+                //アクティブプラグインを未設定にします
+                _pluginManager.ActivePlugin = null; 
             }
         }
 
@@ -344,7 +349,9 @@ namespace NineCubed.Memo
 
                 //TODO タブができるまでの暫定処理。現在のプラグインを強制的に閉じます。
                 if (_pluginManager.ActivePlugin != null) {
-                    _pluginManager.ClosePlugin(_pluginManager.ActivePlugin);
+                    if (_pluginManager.ClosePlugin(_pluginManager.ActivePlugin)) {
+                        _pluginManager.ActivePlugin = null;
+                    }
                 }
 
                 //TODO タブにプラグインを追加します
@@ -352,6 +359,9 @@ namespace NineCubed.Memo
                 control.Parent = this;
                 control.Dock = DockStyle.Fill;
                 control.BringToFront();
+
+                //プラグインにフォーカスを与えます
+                ((IPlugin)plugin).SetFocus();
             }
 
             return (IPlugin)plugin;

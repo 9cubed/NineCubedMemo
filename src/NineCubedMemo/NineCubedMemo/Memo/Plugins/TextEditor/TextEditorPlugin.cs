@@ -547,6 +547,12 @@ namespace NineCubed.Memo.Plugins.TextEditor
             this.Dispose();
         }
 
+        /// <summary>
+        /// フォーカスを設定します
+        /// </summary>
+        public void SetFocus() {
+            txtMain.Focus();
+        }
 
         /******************************************************************************
          * 
