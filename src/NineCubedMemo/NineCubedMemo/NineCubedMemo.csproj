@@ -81,9 +81,9 @@
     <Compile Include="Memo\AppConfig.cs" />
     <Compile Include="Memo\Plugins\EventManager.cs" />
     <Compile Include="Memo\Plugins\Events\EventParam.cs" />
-    <Compile Include="Memo\Plugins\Events\IPluginClosedEvent.cs" />
-    <Compile Include="Memo\Plugins\Events\ITitleChangedEvent.cs" />
-    <Compile Include="Memo\Plugins\Events\IPluginCreatedEvent.cs" />
+    <Compile Include="Memo\Plugins\Events\PluginClosedEventParam.cs" />
+    <Compile Include="Memo\Plugins\Events\PluginCreatedEventParam.cs" />
+    <Compile Include="Memo\Plugins\Events\TitleChangedEventParam.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IEditPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IFilePlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IKeyMacroPlugin.cs" />
