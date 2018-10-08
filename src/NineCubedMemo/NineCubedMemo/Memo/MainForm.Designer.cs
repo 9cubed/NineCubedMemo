@@ -70,6 +70,8 @@
             this.toolFile_Save = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.menuDebug = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuDebug_createTestPlugin = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -81,7 +83,8 @@
             this.menuEdit,
             this.menuSearch,
             this.menuMacro,
-            this.menuHelp});
+            this.menuHelp,
+            this.menuDebug});
             this.menuBar.Location = new System.Drawing.Point(0, 0);
             this.menuBar.Name = "menuBar";
             this.menuBar.Size = new System.Drawing.Size(869, 24);
@@ -190,6 +193,7 @@
             // menuFile_Close
             // 
             this.menuFile_Close.Name = "menuFile_Close";
+            this.menuFile_Close.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.menuFile_Close.Size = new System.Drawing.Size(189, 22);
             this.menuFile_Close.Text = "閉じる";
             this.menuFile_Close.Click += new System.EventHandler(this.menuFile_Close_Click);
@@ -199,6 +203,7 @@
             this.menuFile_End.Name = "menuFile_End";
             this.menuFile_End.Size = new System.Drawing.Size(189, 22);
             this.menuFile_End.Text = "終了";
+            this.menuFile_End.Click += new System.EventHandler(this.menuFile_End_Click);
             // 
             // menuEdit
             // 
@@ -216,42 +221,42 @@
             // menuEdit_Undo
             // 
             this.menuEdit_Undo.Name = "menuEdit_Undo";
-            this.menuEdit_Undo.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Undo.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Undo.Text = "元に戻す";
             this.menuEdit_Undo.Click += new System.EventHandler(this.menuEdit_Undo_Click);
             // 
             // menuEdit_Redo
             // 
             this.menuEdit_Redo.Name = "menuEdit_Redo";
-            this.menuEdit_Redo.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Redo.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Redo.Text = "やり直す";
             this.menuEdit_Redo.Click += new System.EventHandler(this.menuEdit_Redo_Click);
             // 
             // menuEdit_Cut
             // 
             this.menuEdit_Cut.Name = "menuEdit_Cut";
-            this.menuEdit_Cut.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Cut.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Cut.Text = "切り取り";
             this.menuEdit_Cut.Click += new System.EventHandler(this.menuEdit_Cut_Click);
             // 
             // menuEdit_Copy
             // 
             this.menuEdit_Copy.Name = "menuEdit_Copy";
-            this.menuEdit_Copy.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Copy.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Copy.Text = "コピー";
             this.menuEdit_Copy.Click += new System.EventHandler(this.menuEdit_Copy_Click);
             // 
             // menuEdit_Paste
             // 
             this.menuEdit_Paste.Name = "menuEdit_Paste";
-            this.menuEdit_Paste.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Paste.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Paste.Text = "貼り付け";
             this.menuEdit_Paste.Click += new System.EventHandler(this.menuEdit_Paste_Click);
             // 
             // menuEdit_Delete
             // 
             this.menuEdit_Delete.Name = "menuEdit_Delete";
-            this.menuEdit_Delete.Size = new System.Drawing.Size(117, 22);
+            this.menuEdit_Delete.Size = new System.Drawing.Size(180, 22);
             this.menuEdit_Delete.Text = "削除";
             this.menuEdit_Delete.Click += new System.EventHandler(this.menuEdit_Delete_Click);
             // 
@@ -368,7 +373,7 @@
             // menuHelp_version
             // 
             this.menuHelp_version.Name = "menuHelp_version";
-            this.menuHelp_version.Size = new System.Drawing.Size(142, 22);
+            this.menuHelp_version.Size = new System.Drawing.Size(180, 22);
             this.menuHelp_version.Text = "バージョン情報";
             this.menuHelp_version.Click += new System.EventHandler(this.menuHelp_version_Click);
             // 
@@ -408,6 +413,21 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog1";
+            // 
+            // menuDebug
+            // 
+            this.menuDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuDebug_createTestPlugin});
+            this.menuDebug.Name = "menuDebug";
+            this.menuDebug.Size = new System.Drawing.Size(55, 20);
+            this.menuDebug.Text = "デバッグ";
+            // 
+            // menuDebug_createTestPlugin
+            // 
+            this.menuDebug_createTestPlugin.Name = "menuDebug_createTestPlugin";
+            this.menuDebug_createTestPlugin.Size = new System.Drawing.Size(180, 22);
+            this.menuDebug_createTestPlugin.Text = "テストプラグインの生成";
+            this.menuDebug_createTestPlugin.Click += new System.EventHandler(this.menuDebug_createTestPlugin_Click);
             // 
             // MainForm
             // 
@@ -474,5 +494,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuMacro_Set;
         private System.Windows.Forms.ToolStripMenuItem menuFile_Open_Binary;
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceAll;
+        private System.Windows.Forms.ToolStripMenuItem menuDebug;
+        private System.Windows.Forms.ToolStripMenuItem menuDebug_createTestPlugin;
     }
 }

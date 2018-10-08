@@ -84,8 +84,7 @@ namespace NineCubed
         /// <returns></returns>
         public static string GetAppDirPath()
         {
-            //return Application.StartupPath;
-            return AppDomain.CurrentDomain.BaseDirectory;
+            return Application.StartupPath;
         }
 
         public static void ShowInfoMsgBox(string msg) {

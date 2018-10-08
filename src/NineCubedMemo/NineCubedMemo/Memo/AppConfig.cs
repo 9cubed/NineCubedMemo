@@ -14,7 +14,7 @@ namespace NineCubed.Memo
         /// <summary>
         /// Config ファイルのパス
         /// </summary>
-        const string PATH = "config.xml";
+        static string _path = Path.Combine(__.GetAppDirPath(), "config.xml");
 
         /// <summary>
         /// メインフォーム
@@ -35,7 +35,7 @@ namespace NineCubed.Memo
             this.form_height = _mainForm.Height;
 
             //Configを保存します
-            SerializeUtils.SerializeToFile(this, PATH);
+            SerializeUtils.SerializeToFile(this, _path);
         }
 
         /// <summary>
@@ -45,9 +45,9 @@ namespace NineCubed.Memo
         public static AppConfig Load(MainForm mainForm) {
             AppConfig config = null;
 
-            if (File.Exists(PATH)) {
+            if (File.Exists(_path)) {
                 //Configファイルがある場合、Configファイルを読み込みます
-                config = (AppConfig)SerializeUtils.DeserializeFromFile(typeof(AppConfig), PATH);
+                config = (AppConfig)SerializeUtils.DeserializeFromFile(typeof(AppConfig), _path);
 
                 //フォームの位置とサイズを設定します
                 mainForm.StartPosition = FormStartPosition.Manual;

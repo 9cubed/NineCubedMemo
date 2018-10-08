@@ -79,8 +79,12 @@
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
+    <Compile Include="Memo\Plugins\EventManager.cs" />
+    <Compile Include="Memo\Plugins\Events\EventParam.cs" />
+    <Compile Include="Memo\Plugins\Events\IPluginClosedEvent.cs" />
+    <Compile Include="Memo\Plugins\Events\ITitleChangedEvent.cs" />
+    <Compile Include="Memo\Plugins\Events\IPluginCreatedEvent.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IEditPlugin.cs" />
-    <Compile Include="Memo\Plugins\Interfaces\IEncodingPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IFilePlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IKeyMacroPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\INewLinePlugin.cs" />
@@ -104,6 +108,15 @@
     </Compile>
     <Compile Include="Memo\Plugins\Interfaces\ISearchPlugin.cs" />
     <Compile Include="Memo\Plugins\PluginManager.cs" />
+    <Compile Include="Memo\Plugins\Tab\TabPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Test\TestPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Test\TestPlugin.Designer.cs">
+      <DependentUpon>TestPlugin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Memo\Plugins\TextEditor\TextEditorPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -125,6 +138,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\Tab\TabPlugin.resx">
+      <DependentUpon>TabPlugin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\Test\TestPlugin.resx">
+      <DependentUpon>TestPlugin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\TextEditor\TextEditorPlugin.resx">
       <DependentUpon>TextEditorPlugin.cs</DependentUpon>

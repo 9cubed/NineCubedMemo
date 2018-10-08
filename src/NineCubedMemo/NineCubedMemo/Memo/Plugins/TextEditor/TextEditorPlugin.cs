@@ -18,6 +18,7 @@ using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Common.Files;
 using NineCubed.Memo.Interfaces;
 using NineCubed.Common.Controls;
+using NineCubed.Memo.Plugins.Events;
 
 namespace NineCubed.Memo.Plugins.TextEditor
 {
@@ -50,7 +51,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
             InitializeComponent();
 
             //プラグインマネージャーを保持します
-            _pluginManager = PluginManager.GetPluginManager();
+            _pluginManager = PluginManager.GetInstance();
 
             //テキストボックスを初期化します
             txtMain.Initialize(
@@ -218,7 +219,6 @@ namespace NineCubed.Memo.Plugins.TextEditor
         }
 
 
-        //TODO メソッド名要検討。今後タブのタイトルとステータスの両方に設定することになる。
         /// <summary>
         /// ステータスバーにタイトルを設定します
         /// </summary>
@@ -276,10 +276,11 @@ namespace NineCubed.Memo.Plugins.TextEditor
             statusPath.Text = title.ToString(); //TODO ステータスバーに長い文字列を設定すると表示されない
 
             //ファイル名をプラグインのタイトルとして保持します（タブのタイトルになります）
-            this.Title = Path.GetFileName(this.TargetFile.Path);
+            this.Title = Path.GetFileName(this.TargetFile.Path) + (txtMain.Modified ? "(*)" : "");
 
-            //タイトル変更イベントを発生させます（タブにタイトルが変更したことを通知します）
-            _pluginManager.RaiseTitleChangedEvent(this);
+            //タイトル変更イベントを発生させます
+            var param = new TitleChangedEventParam{ Plugin = this };
+            _pluginManager.GetEventManager().RaiseEvent(TitleChangedEventParam.Name, this, param);
         }
 
         //文字列中の画像のパスを検出します。フルパスのみ対応。
@@ -333,6 +334,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// <param name="e"></param>
         private void TxtMain_DragDrop(object sender, DragEventArgs e)
         {
+
             //TODO _pluginManager に対して、プラグインの生成依頼を出す
             /*
 	        if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
@@ -552,6 +554,9 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// </summary>
         public void SetFocus() {
             txtMain.Focus();
+
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
         }
 
         /******************************************************************************
@@ -786,6 +791,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
             if (txtMain.SelectionLength == 0) return;
             _keyMacro.KeyList = txtMain.SelectedText.Split('\n').ToList();
         }
+
 
     } //class
 }

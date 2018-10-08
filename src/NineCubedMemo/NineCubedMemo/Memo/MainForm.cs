@@ -2,7 +2,10 @@
 using NineCubed.Memo.Exceptions;
 using NineCubed.Memo.Interfaces;
 using NineCubed.Memo.Plugins;
+using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
+using NineCubed.Memo.Plugins.Tab;
+using NineCubed.Memo.Plugins.Test;
 using NineCubed.Memo.Plugins.TextEditor;
 using System;
 using System.Diagnostics;
@@ -43,19 +46,8 @@ namespace NineCubed.Memo
             _config = AppConfig.Load(this);
 
             //ConfigをPluginManagerに設定します
-            _pluginManager = PluginManager.GetPluginManager();
+            _pluginManager = PluginManager.GetInstance();
             _pluginManager.Config = _config;
-
-            //TODO タブで実装する
-            _pluginManager.TitleChanged += PluginTitleChanged;
-        }
-
-        //TODO タブで実装する
-        //TitleChange のテスト
-        private void PluginTitleChanged(IPlugin plugin)
-        {
-            //TODO タブの中からタイトルが変更されたプラグインを探して、タブのタイトルを設定する
-            this.Text = plugin.Title;
         }
 
         /// <summary>
@@ -65,6 +57,13 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //タブプラグインを生成します
+            //プラグインを生成します
+            var tabPlugin = (TabPlugin)_pluginManager.CreatePluginInstance(typeof(TabPlugin));
+            tabPlugin.Parent = this;
+            tabPlugin.Dock = DockStyle.Fill;
+            tabPlugin.BringToFront();
+
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
                 //コマンドライン引数がある場合
@@ -74,7 +73,13 @@ namespace NineCubed.Memo
                 try {
                     var file = new AnyFile();
                     file.Path = args[1];
-                    OpenFile(null, file);
+                    var plugin = OpenFile(null, file);
+                    if (plugin != null) {
+                        //プラグイン生成イベントを発生させます
+                        var param = new PluginCreatedEventParam { Plugin = plugin };
+                        _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
+                    }
+
                 } catch (Exception ex) {
                     //例外が発生した場合は、アプリを終了させます
                     __.ShowErrorMsgBox(ex);
@@ -130,9 +135,14 @@ namespace NineCubed.Memo
                 //全てのプラグインを終了します
                 _pluginManager.CloseAllPlugins();
 
+                //デバッグ用チェック処理
+                _pluginManager.CheckPluginLeak();
+                _pluginManager.GetEventManager().CheckEventLeak();
+
                 //Configを保存します
                 _config.Save();
-            } catch (Exception) {
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -163,7 +173,13 @@ namespace NineCubed.Memo
         {
             try {
                 //テキストファイルを開きます
-                OpenFile(null, new AnyFile());
+                var plugin = OpenFile(null, new AnyFile());
+                if (plugin != null) {
+                    //プラグイン生成イベントを発生させます
+                    var param = new PluginCreatedEventParam { Plugin = plugin };
+                    _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
+                }
+
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
@@ -199,6 +215,10 @@ namespace NineCubed.Memo
                 if (encoding.CodePage != targetFile.TextEncoding.CodePage) {
                     __.ShowWarnMsgBox("自動判別により文字コードを変更しました。");
                 }
+
+                //プラグイン生成イベントを発生させます
+                var param = new PluginCreatedEventParam { Plugin = plugin };
+                _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
 
             } catch (CancelException) {
                 //キャンセル時
@@ -249,12 +269,8 @@ namespace NineCubed.Memo
         private void menuFile_Close_Click(object sender, EventArgs e)
         {
             if (_pluginManager.ActivePlugin != null) {
-
                 //アクティブプラグインを終了します
                 _pluginManager.ClosePlugin( _pluginManager.ActivePlugin );
-
-                //アクティブプラグインを未設定にします
-                _pluginManager.ActivePlugin = null; 
             }
         }
 
@@ -314,7 +330,7 @@ namespace NineCubed.Memo
 
 
         /// <summary>
-        /// テキストファイルを開きます
+        /// ファイルをプラグインで開きます
         /// </summary>
         /// <param name="pluginType">プラグインの型</param>
         /// <param name="file">ファイル</param>
@@ -344,25 +360,7 @@ namespace NineCubed.Memo
             }
 
             //ファイルを開きます
-            if (plugin.OpenFile(file)) {
-                //ファイルが開けた場合
-
-                //TODO タブができるまでの暫定処理。現在のプラグインを強制的に閉じます。
-                if (_pluginManager.ActivePlugin != null) {
-                    if (_pluginManager.ClosePlugin(_pluginManager.ActivePlugin)) {
-                        _pluginManager.ActivePlugin = null;
-                    }
-                }
-
-                //TODO タブにプラグインを追加します
-                var control = ((Control)((IPlugin)plugin).GetComponent());
-                control.Parent = this;
-                control.Dock = DockStyle.Fill;
-                control.BringToFront();
-
-                //プラグインにフォーカスを与えます
-                ((IPlugin)plugin).SetFocus();
-            }
+            plugin.OpenFile(file);
 
             return (IPlugin)plugin;
         }
@@ -439,13 +437,39 @@ namespace NineCubed.Memo
         {
             try {
                 //テキストエディターでバイナリ形式でファイルを開きます
-                OpenFile(typeof(TextEditorPlugin), new BinaryFile());
+                var plugin = OpenFile(typeof(TextEditorPlugin), new BinaryFile());
+
+                //プラグイン生成イベントを発生させます
+                var param = new PluginCreatedEventParam { Plugin = plugin };
+                _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
+
             } catch (CancelException) {
                 //キャンセル時
             } catch (Exception ex) {
                 __.ShowErrorMsgBox(ex);
             }
         }
+
+        private void menuFile_End_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
+        }
+
+        /// <summary>
+        /// テストプラグインを生成します
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuDebug_createTestPlugin_Click(object sender, EventArgs e)
+        {
+            //プラグインを生成します
+            var plugin = (IPlugin)_pluginManager.CreatePluginInstance(typeof(TestPlugin));
+
+            //プラグイン生成イベントを発生させます
+            var param = new PluginCreatedEventParam { Plugin = plugin };
+            _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
+        }
+
 
         /// <summary>
         /// 前方検索します。テキストの末尾へ向けて検索します。

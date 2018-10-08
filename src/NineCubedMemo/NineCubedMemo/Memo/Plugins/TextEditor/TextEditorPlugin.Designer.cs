@@ -206,7 +206,7 @@
             // txtMain
             // 
             this.txtMain.ContextMenuStrip = this.popupMenuForTextbox;
-            this.txtMain.Location = new System.Drawing.Point(41, 28);
+            this.txtMain.Location = new System.Drawing.Point(47, 21);
             this.txtMain.Name = "txtMain";
             this.txtMain.Size = new System.Drawing.Size(262, 171);
             this.txtMain.TabIndex = 4;
@@ -219,8 +219,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.statusBar);
             this.Controls.Add(this.txtMain);
+            this.Controls.Add(this.statusBar);
             this.Name = "TextEditorPlugin";
             this.Size = new System.Drawing.Size(924, 315);
             this.Load += new System.EventHandler(this.TextEditorPlugin_Load);
