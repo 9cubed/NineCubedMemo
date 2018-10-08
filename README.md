@@ -31,19 +31,19 @@ __強調__
   
 # ソース
 ```
-    TEST
+TEST
 ```
 
 ```C#
-    public void main() {
-        Console.Writeline("test");
-    }
+public void main() {
+    Console.Writeline("test");
+}
 ```
 
 ```C#:test.cs
-    public void main() {
-        Console.Writeline("test");
-    }
+public void main() {
+    Console.Writeline("test");
+}
 ```
   
 # リスト
