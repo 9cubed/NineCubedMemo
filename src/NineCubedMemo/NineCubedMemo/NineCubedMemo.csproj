@@ -218,10 +218,10 @@
     <Content Include="resource\file\hdd.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="resource\file\pc.png">
+    <Content Include="resource\file\removable.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="resource\file\removable.png">
+    <Content Include="resource\file\root.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="resource\icon\icon.ico" />
