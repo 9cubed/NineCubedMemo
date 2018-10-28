@@ -26,8 +26,9 @@ namespace NineCubed.Memo.Plugins.Test
 
             //イベントハンドラーを登録します
             _pluginManager.GetEventManager().AddEventHandler(PluginCreatedEventParam.Name, this);
-            _pluginManager.GetEventManager().AddEventHandler(PluginClosedEventParam.Name, this);
-            _pluginManager.GetEventManager().AddEventHandler(TitleChangedEventParam.Name, this);
+            _pluginManager.GetEventManager().AddEventHandler( PluginClosedEventParam.Name, this);
+            _pluginManager.GetEventManager().AddEventHandler( TitleChangedEventParam.Name, this);
+            _pluginManager.GetEventManager().AddEventHandler(  DirSelectedEventParam.Name, this);
 
             //コントロールを配置します
             pnlTop.Dock = DockStyle.Top;
@@ -98,7 +99,7 @@ namespace NineCubed.Memo.Plugins.Test
             var plugin = ((PluginCreatedEventParam)param).Plugin;
 
             //ログ出力
-            txtLog.Text += plugin.GetType().FullName + " が生成されました。\n";
+            AddLog(plugin.GetType().FullName + " が生成されました。");
         }
 
         /// <summary>
@@ -111,7 +112,7 @@ namespace NineCubed.Memo.Plugins.Test
             var plugin = ((PluginClosedEventParam)param).Plugin;
 
             //ログ出力
-            txtLog.Text += plugin.GetType().FullName + " が削除されました。\n";
+            AddLog(plugin.GetType().FullName + " が削除されました。");
         }
 
         /// <summary>
@@ -125,7 +126,23 @@ namespace NineCubed.Memo.Plugins.Test
             var plugin = ((TitleChangedEventParam)param).Plugin;
 
             //ログ出力
-            txtLog.Text += plugin.GetType().FullName + " のタイトルが、" + plugin.Title + " に変更されました。\n";
+            AddLog(plugin.GetType().FullName + " のタイトルが、" + plugin.Title + " に変更されました。");
+        }
+
+        /// <summary>
+        /// ディレクトリ選択イベント
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="sender"></param>
+        public void PluginEvent_DirSelected(EventParam param, object sender)
+        {
+            //ログ出力
+            AddLog(((DirSelectedEventParam)param).Path + " が選択されました。");
+        }
+
+        //テキストボックスにログを出力します
+        private void AddLog(string log) {
+            txtLog.Text += log + "\n";
         }
 
 

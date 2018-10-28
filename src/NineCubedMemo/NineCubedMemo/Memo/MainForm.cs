@@ -1,14 +1,17 @@
 ﻿using NineCubed.Common.Files;
+using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
 using NineCubed.Memo.Interfaces;
 using NineCubed.Memo.Plugins;
 using NineCubed.Memo.Plugins.Events;
+using NineCubed.Memo.Plugins.FileTree;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Memo.Plugins.Tab;
 using NineCubed.Memo.Plugins.Test;
 using NineCubed.Memo.Plugins.TextEditor;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -57,12 +60,62 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //スプリッターの初期化
+            splitVertical.Parent = this;
+            splitVertical.Dock = DockStyle.Fill;
+            splitVertical.FixedPanel = FixedPanel.Panel1; //スプリッターを移動した際に、左のパネルをリサイズしないようにする
+            splitVertical.SplitterWidth = 6;
+            splitVertical.SplitterDistance = 180; //スプリッターの位置
+            splitVertical.BackColor        = Color.LightGray; //スプリッターのバーの色
+            splitVertical.Panel1.BackColor = SystemColors.Control;
+            splitVertical.Panel2.BackColor = SystemColors.Control;
+
+            splitHorizon.Parent = splitVertical.Panel1;
+            splitHorizon.Dock = DockStyle.Fill;
+            splitHorizon.FixedPanel = FixedPanel.Panel1; 
+            splitHorizon.SplitterWidth = 6;
+            splitHorizon.SplitterDistance = splitHorizon.Height / 2; //スプリッターの位置
+            splitHorizon.BackColor        = Color.LightGray; //スプリッターのバーの色
+            splitHorizon.Panel1.BackColor = SystemColors.Control;
+            splitHorizon.Panel2.BackColor = SystemColors.Control;
+
+            //ファイルツリービュープラグインの初期化
+            var fileTreePlugin = (FileTreePlugin)_pluginManager.CreatePluginInstance(typeof(FileTreePlugin));
+            fileTreePlugin.Dock = DockStyle.Fill;
+            fileTreePlugin.Parent = splitHorizon.Panel1;
+
+            
+            
+            /*
+            //説明用ツリービュー
+            var treeView = new TreeView();
+
+            treeView.Dock = DockStyle.Fill;
+            treeView.Parent = splitHorizon.Panel2;
+
+            var rootNode = new TreeNode("ルート");
+            treeView.Nodes.Add(rootNode);
+            
+            rootNode.Nodes.Add(new TreeNode("c:"));
+            rootNode.Nodes.Add(new TreeNode("d:"));
+
+            {
+                var node = new TreeNode("e:");
+                rootNode.Nodes.Add(node);
+
+                node.Nodes.Add("ダミー");
+            }
+            */
+
+
             //タブプラグインを生成します
             //プラグインを生成します
             var tabPlugin = (TabPlugin)_pluginManager.CreatePluginInstance(typeof(TabPlugin));
-            tabPlugin.Parent = this;
+            tabPlugin.Parent = splitVertical.Panel2;
+            tabPlugin.Dock = DockStyle.None;
             tabPlugin.Dock = DockStyle.Fill;
             tabPlugin.BringToFront();
+
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {

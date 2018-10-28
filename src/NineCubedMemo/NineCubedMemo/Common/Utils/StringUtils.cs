@@ -144,5 +144,46 @@ namespace NineCubed.Common.Utils
             return result;
         }
 
+        // 文字列の左側から指定した数の文字列を返します。
+        public static String Left(String target, int length)
+        {
+            if (length <= 0)                  return "";
+            if (string.IsNullOrEmpty(target)) return "";
+            if (length >= target.Length)      return target;
+            
+            return target.Substring(0, length);
+        }
+
+        // 文字列の右側から指定した数の文字列を返します。
+        public static String Right(String target, int length)
+        {
+            if (length < 0)                   return "";
+            if (string.IsNullOrEmpty(target)) return "";
+            if (length >= target.Length)      return target;
+
+            return target.Substring(target.Length - length, length);
+        }
+
+        // 文字列の左側から指定した数の文字列を削除して返します。
+        public static String RemoveLeft(String target, int length)
+        {
+            if (length < 0)                   return target;
+            if (string.IsNullOrEmpty(target)) return "";
+            if (length >= target.Length)      return "";
+
+            return target.Substring(length);
+        }
+
+        // 文字列の右側から指定した数の文字列を削除して返します。
+        public static String RemoveRight(String target, int length)
+        {
+            if (length < 0)                   return target;
+            if (string.IsNullOrEmpty(target)) return "";
+            if (length >= target.Length)      return "";
+
+            return target.Substring(0, target.Length - length);
+        }
+
+
     } //class
 }

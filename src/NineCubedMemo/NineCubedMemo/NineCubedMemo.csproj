@@ -67,6 +67,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Calculation\Calculator.cs" />
+    <Compile Include="Common\Controls\FileTree\DirTreeNode.cs" />
+    <Compile Include="Common\Controls\FileTree\DriveTreeNode.cs" />
+    <Compile Include="Common\Controls\FileTree\DummyTreeNode.cs" />
+    <Compile Include="Common\Controls\FileTree\FileTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Controls\FileTree\SpecialTreeNode.cs" />
     <Compile Include="Common\Controls\TextBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -80,10 +87,14 @@
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
     <Compile Include="Memo\Plugins\EventManager.cs" />
+    <Compile Include="Memo\Plugins\Events\DirSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\EventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginClosedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginCreatedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\TitleChangedEventParam.cs" />
+    <Compile Include="Memo\Plugins\FileTree\FileTreePlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\Interfaces\IEditPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IFilePlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IKeyMacroPlugin.cs" />
@@ -133,11 +144,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Utils\FileUtils.cs" />
     <Compile Include="__.cs" />
+    <EmbeddedResource Include="Common\Controls\FileTree\FileTreeView.resx">
+      <DependentUpon>FileTreeView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Common\Controls\TextBoxEx.resx">
       <DependentUpon>TextBoxEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\FileTree\FileTreePlugin.resx">
+      <DependentUpon>FileTreePlugin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\Tab\TabPlugin.resx">
       <DependentUpon>TabPlugin.cs</DependentUpon>
@@ -170,6 +187,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="resource\icon\icon.xcf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -188,6 +206,32 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <Content Include="resource\file\cd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\file\closed_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\file\opened_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\file\hdd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\file\pc.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\file\removable.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resource\icon\icon.ico" />
+    <Content Include="resource\icon\icon16.png" />
+    <Content Include="resource\icon\icon24.png" />
+    <Content Include="resource\icon\icon32.png" />
+    <Content Include="resource\icon\icon48.png" />
+    <Content Include="resource\toolbar\new.png" />
+    <Content Include="resource\toolbar\open.png" />
+    <Content Include="resource\toolbar\save.png" />
     <Content Include="メモ.txt" />
   </ItemGroup>
   <ItemGroup />

@@ -65,15 +65,22 @@
             this.menuMacro_Set = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelp_version = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuDebug = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuDebug_createTestPlugin = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolFile_Open = new System.Windows.Forms.ToolStripButton();
             this.toolFile_Save = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.menuDebug = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuDebug_createTestPlugin = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitHorizon = new System.Windows.Forms.SplitContainer();
+            this.splitVertical = new System.Windows.Forms.SplitContainer();
+            this.fileTreeView1 = new NineCubed.Common.Controls.FileTree.FileTreeView();
             this.menuBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitHorizon)).BeginInit();
+            this.splitHorizon.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitVertical)).BeginInit();
+            this.splitVertical.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuBar
@@ -221,42 +228,42 @@
             // menuEdit_Undo
             // 
             this.menuEdit_Undo.Name = "menuEdit_Undo";
-            this.menuEdit_Undo.Size = new System.Drawing.Size(180, 22);
+            this.menuEdit_Undo.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Undo.Text = "元に戻す";
             this.menuEdit_Undo.Click += new System.EventHandler(this.menuEdit_Undo_Click);
             // 
             // menuEdit_Redo
             // 
             this.menuEdit_Redo.Name = "menuEdit_Redo";
-            this.menuEdit_Redo.Size = new System.Drawing.Size(180, 22);
+            this.menuEdit_Redo.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Redo.Text = "やり直す";
             this.menuEdit_Redo.Click += new System.EventHandler(this.menuEdit_Redo_Click);
             // 
             // menuEdit_Cut
             // 
             this.menuEdit_Cut.Name = "menuEdit_Cut";
-            this.menuEdit_Cut.Size = new System.Drawing.Size(180, 22);
+            this.menuEdit_Cut.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Cut.Text = "切り取り";
             this.menuEdit_Cut.Click += new System.EventHandler(this.menuEdit_Cut_Click);
             // 
             // menuEdit_Copy
             // 
             this.menuEdit_Copy.Name = "menuEdit_Copy";
-            this.menuEdit_Copy.Size = new System.Drawing.Size(180, 22);
+            this.menuEdit_Copy.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Copy.Text = "コピー";
             this.menuEdit_Copy.Click += new System.EventHandler(this.menuEdit_Copy_Click);
             // 
             // menuEdit_Paste
             // 
             this.menuEdit_Paste.Name = "menuEdit_Paste";
-            this.menuEdit_Paste.Size = new System.Drawing.Size(180, 22);
+            this.menuEdit_Paste.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Paste.Text = "貼り付け";
             this.menuEdit_Paste.Click += new System.EventHandler(this.menuEdit_Paste_Click);
             // 
             // menuEdit_Delete
             // 
             this.menuEdit_Delete.Name = "menuEdit_Delete";
-            this.menuEdit_Delete.Size = new System.Drawing.Size(180, 22);
+            this.menuEdit_Delete.Size = new System.Drawing.Size(117, 22);
             this.menuEdit_Delete.Text = "削除";
             this.menuEdit_Delete.Click += new System.EventHandler(this.menuEdit_Delete_Click);
             // 
@@ -373,9 +380,24 @@
             // menuHelp_version
             // 
             this.menuHelp_version.Name = "menuHelp_version";
-            this.menuHelp_version.Size = new System.Drawing.Size(180, 22);
+            this.menuHelp_version.Size = new System.Drawing.Size(142, 22);
             this.menuHelp_version.Text = "バージョン情報";
             this.menuHelp_version.Click += new System.EventHandler(this.menuHelp_version_Click);
+            // 
+            // menuDebug
+            // 
+            this.menuDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuDebug_createTestPlugin});
+            this.menuDebug.Name = "menuDebug";
+            this.menuDebug.Size = new System.Drawing.Size(55, 20);
+            this.menuDebug.Text = "デバッグ";
+            // 
+            // menuDebug_createTestPlugin
+            // 
+            this.menuDebug_createTestPlugin.Name = "menuDebug_createTestPlugin";
+            this.menuDebug_createTestPlugin.Size = new System.Drawing.Size(178, 22);
+            this.menuDebug_createTestPlugin.Text = "テストプラグインの生成";
+            this.menuDebug_createTestPlugin.Click += new System.EventHandler(this.menuDebug_createTestPlugin_Click);
             // 
             // toolStrip1
             // 
@@ -414,26 +436,50 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
-            // menuDebug
+            // splitHorizon
             // 
-            this.menuDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuDebug_createTestPlugin});
-            this.menuDebug.Name = "menuDebug";
-            this.menuDebug.Size = new System.Drawing.Size(55, 20);
-            this.menuDebug.Text = "デバッグ";
+            this.splitHorizon.BackColor = System.Drawing.SystemColors.Control;
+            this.splitHorizon.Location = new System.Drawing.Point(53, 74);
+            this.splitHorizon.Name = "splitHorizon";
+            this.splitHorizon.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitHorizon.Size = new System.Drawing.Size(142, 239);
+            this.splitHorizon.SplitterDistance = 94;
+            this.splitHorizon.TabIndex = 4;
             // 
-            // menuDebug_createTestPlugin
+            // splitVertical
             // 
-            this.menuDebug_createTestPlugin.Name = "menuDebug_createTestPlugin";
-            this.menuDebug_createTestPlugin.Size = new System.Drawing.Size(180, 22);
-            this.menuDebug_createTestPlugin.Text = "テストプラグインの生成";
-            this.menuDebug_createTestPlugin.Click += new System.EventHandler(this.menuDebug_createTestPlugin_Click);
+            this.splitVertical.BackColor = System.Drawing.SystemColors.Control;
+            this.splitVertical.Location = new System.Drawing.Point(236, 175);
+            this.splitVertical.Name = "splitVertical";
+            // 
+            // splitVertical.Panel1
+            // 
+            this.splitVertical.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            // 
+            // splitVertical.Panel2
+            // 
+            this.splitVertical.Panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.splitVertical.Size = new System.Drawing.Size(263, 138);
+            this.splitVertical.SplitterDistance = 107;
+            this.splitVertical.TabIndex = 5;
+            // 
+            // fileTreeView1
+            // 
+            this.fileTreeView1.DriveNodeVisible = true;
+            this.fileTreeView1.Location = new System.Drawing.Point(618, 101);
+            this.fileTreeView1.Name = "fileTreeView1";
+            this.fileTreeView1.Size = new System.Drawing.Size(179, 181);
+            this.fileTreeView1.SpecialFolderNodeVisible = true;
+            this.fileTreeView1.TabIndex = 3;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(869, 344);
+            this.Controls.Add(this.splitVertical);
+            this.Controls.Add(this.splitHorizon);
+            this.Controls.Add(this.fileTreeView1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuBar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -447,6 +493,10 @@
             this.menuBar.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitHorizon)).EndInit();
+            this.splitHorizon.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitVertical)).EndInit();
+            this.splitVertical.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -496,5 +546,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceAll;
         private System.Windows.Forms.ToolStripMenuItem menuDebug;
         private System.Windows.Forms.ToolStripMenuItem menuDebug_createTestPlugin;
+        private Common.Controls.FileTree.FileTreeView fileTreeView1;
+        private System.Windows.Forms.SplitContainer splitHorizon;
+        private System.Windows.Forms.SplitContainer splitVertical;
     }
 }
