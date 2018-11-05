@@ -67,6 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Calculation\Calculator.cs" />
+    <Compile Include="Common\Controls\FileList\FileListGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Common\Controls\FileTree\DirTreeNode.cs" />
     <Compile Include="Common\Controls\FileTree\DriveTreeNode.cs" />
     <Compile Include="Common\Controls\FileTree\DummyTreeNode.cs" />
@@ -87,11 +90,15 @@
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
     <Compile Include="Memo\Plugins\EventManager.cs" />
+    <Compile Include="Memo\Plugins\Events\FileSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\DirSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\EventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginClosedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginCreatedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\TitleChangedEventParam.cs" />
+    <Compile Include="Memo\Plugins\FileList\FileListPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\FileTree\FileTreePlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -118,6 +125,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Memo\Plugins\Interfaces\ISearchPlugin.cs" />
+    <Compile Include="Memo\Plugins\PluginCreateParam.cs" />
+    <Compile Include="Memo\Plugins\PluginLoader\PluginLoaderPlugin.cs" />
     <Compile Include="Memo\Plugins\PluginManager.cs" />
     <Compile Include="Memo\Plugins\Tab\TabPlugin.cs">
       <SubType>Component</SubType>
@@ -144,6 +153,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Utils\FileUtils.cs" />
     <Compile Include="__.cs" />
+    <EmbeddedResource Include="Common\Controls\FileList\FileListGrid.resx">
+      <DependentUpon>FileListGrid.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Common\Controls\FileTree\FileTreeView.resx">
       <DependentUpon>FileTreeView.cs</DependentUpon>
     </EmbeddedResource>
@@ -152,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\FileList\FileListPlugin.resx">
+      <DependentUpon>FileListPlugin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\FileTree\FileTreePlugin.resx">
       <DependentUpon>FileTreePlugin.cs</DependentUpon>

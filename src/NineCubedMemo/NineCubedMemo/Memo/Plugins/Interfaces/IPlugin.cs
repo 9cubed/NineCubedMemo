@@ -36,5 +36,22 @@ namespace NineCubed.Memo.Plugins.Interfaces
         /// フォーカスを設定します
         /// </summary>
         void SetFocus();
+
+        /// <summary>
+        /// 初期処理を行います
+        /// 初期化に失敗した場合などは false を返すとプラグインが破棄されます
+        /// この段階ではまだ他のプラグインに配置されていないため、コンポーネントのサイズなどは取得できません
+        /// </summary>
+        /// <returns>false:初期化失敗。プラグインが破棄されます。</returns>
+        bool Initialize(PluginCreateParam param);
+
+        /// <summary>
+        /// プラグイン配置後の初期化処理を行います
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        void InitializePlaced();
+
+
     }
 }

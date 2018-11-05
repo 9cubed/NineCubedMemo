@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace NineCubed.Memo.Plugins.Events
 {
-    public class DirSelectedEventParam : EventParam
+    public class FileSelectedEventParam : EventParam
     {
         //イベント名
-        public static string Name = "PluginEvent_DirSelected";
+        public static string Name = "PluginEvent_FileSelected";
 
-        //選択されたディレクトリのパス
+        //選択されたファイルのパス
         public string Path { get; set; }
     }
 }

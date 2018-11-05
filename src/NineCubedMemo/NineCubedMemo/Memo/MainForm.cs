@@ -1,11 +1,14 @@
-﻿using NineCubed.Common.Files;
+﻿using NineCubed.Common.Controls.FileList;
+using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
 using NineCubed.Memo.Interfaces;
 using NineCubed.Memo.Plugins;
 using NineCubed.Memo.Plugins.Events;
+using NineCubed.Memo.Plugins.FileList;
 using NineCubed.Memo.Plugins.FileTree;
 using NineCubed.Memo.Plugins.Interfaces;
+using NineCubed.Memo.Plugins.PluginLoader;
 using NineCubed.Memo.Plugins.Tab;
 using NineCubed.Memo.Plugins.Test;
 using NineCubed.Memo.Plugins.TextEditor;
@@ -51,6 +54,9 @@ namespace NineCubed.Memo
             //ConfigをPluginManagerに設定します
             _pluginManager = PluginManager.GetInstance();
             _pluginManager.Config = _config;
+
+            //プラグインローダープラグインを生成します
+            _pluginManager.CreatePluginInstance(typeof(PluginLoaderPlugin));
         }
 
         /// <summary>
@@ -80,38 +86,17 @@ namespace NineCubed.Memo
             splitHorizon.Panel2.BackColor = SystemColors.Control;
 
             //ファイルツリービュープラグインの初期化
-            var fileTreePlugin = (FileTreePlugin)_pluginManager.CreatePluginInstance(typeof(FileTreePlugin));
-            fileTreePlugin.Dock = DockStyle.Fill;
-            fileTreePlugin.Parent = splitHorizon.Panel1;
+            var fileTreePlugin = (FileTreePlugin)_pluginManager.CreatePluginInstance(typeof(FileTreePlugin), null, splitHorizon.Panel1);
 
-            
-            
-            /*
-            //説明用ツリービュー
-            var treeView = new TreeView();
-
-            treeView.Dock = DockStyle.Fill;
-            treeView.Parent = splitHorizon.Panel2;
-
-            var rootNode = new TreeNode("ルート");
-            treeView.Nodes.Add(rootNode);
-            
-            rootNode.Nodes.Add(new TreeNode("c:"));
-            rootNode.Nodes.Add(new TreeNode("d:"));
-
-            {
-                var node = new TreeNode("e:");
-                rootNode.Nodes.Add(node);
-
-                node.Nodes.Add("ダミー");
-            }
-            */
+            //ファイルリストプラグインの初期化
+            var fileListPlugin = (FileListPlugin)_pluginManager.CreatePluginInstance(typeof(FileListPlugin), null, splitHorizon.Panel2);
+            fileListPlugin.ShowFileList(@"D:\");
 
 
             //タブプラグインを生成します
             //プラグインを生成します
-            var tabPlugin = (TabPlugin)_pluginManager.CreatePluginInstance(typeof(TabPlugin));
-            tabPlugin.Parent = splitVertical.Panel2;
+            var tabPlugin = (TabPlugin)_pluginManager.CreatePluginInstance(typeof(TabPlugin), null, splitVertical.Panel2);
+            //tabPlugin.Parent = splitVertical.Panel2;
             tabPlugin.Dock = DockStyle.None;
             tabPlugin.Dock = DockStyle.Fill;
             tabPlugin.BringToFront();
@@ -225,13 +210,8 @@ namespace NineCubed.Memo
         private void menuFile_Open_Click(object sender, EventArgs e)
         {
             try {
-                //テキストファイルを開きます
-                var plugin = OpenFile(null, new AnyFile());
-                if (plugin != null) {
-                    //プラグイン生成イベントを発生させます
-                    var param = new PluginCreatedEventParam { Plugin = plugin };
-                    _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
-                }
+                //ファイルをプラグインで開きます
+                OpenFile(null, new AnyFile());
 
             } catch (CancelException) {
                 //キャンセル時
@@ -257,21 +237,19 @@ namespace NineCubed.Memo
             if (menuFile_Open_EucJp        == sender) encoding = Encoding.GetEncoding(51932); //EUC-JP
 
             try {
-                //テキストファイルを開きます
-                var newFile = new TextFile();
-                if (encoding != null) newFile.TextEncoding = encoding;
-                var plugin = OpenFile(null, newFile);
-                if (plugin == null) return; //開けなかった場合
+                //ファイルを開くダイアログを表示します
+                var path = ShowOpenFileDialog();
+                if (path == null) return;
+                
+                //プラグイン生成パラメーターを設定します
+                var pluginCreateParam = new PluginCreateParam {
+                    ["path"]      = path,     //選択されたパス
+                    ["encoding"]  = encoding, //文字コード
+                    ["is_binary"] = false     //テキストモード
+                };
 
-                //BOMにより自動的に文字コードが変更された場合は、警告を表示します
-                var targetFile = (TextFile)((IFilePlugin)plugin).TargetFile;
-                if (encoding.CodePage != targetFile.TextEncoding.CodePage) {
-                    __.ShowWarnMsgBox("自動判別により文字コードを変更しました。");
-                }
-
-                //プラグイン生成イベントを発生させます
-                var param = new PluginCreatedEventParam { Plugin = plugin };
-                _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
+                //テキストエディタープラグインを生成します
+                var plugin = (IFilePlugin)_pluginManager.CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam);
 
             } catch (CancelException) {
                 //キャンセル時
@@ -391,31 +369,34 @@ namespace NineCubed.Memo
         {
             //パスが未設定の場合は、開くダイアログを表示します
             if (file.Path == null) {
-                openFileDialog.FileName = "";
-                var dialogResult = openFileDialog.ShowDialog();
-                if (dialogResult == DialogResult.OK) {
-                    //選択されたパスを取得します
-                    file.Path = openFileDialog.FileName;
-                } else {
-                    return null;
-                }
+                file.Path = ShowOpenFileDialog();
+                if (file.Path == null) return null;
             }
 
             //ファイルが存在しない場合は処理しない
             if (File.Exists(file.Path) == false) return null;
 
-            //プラグインを生成します
-            var plugin = (IFilePlugin)_pluginManager.CreatePluginInstance(pluginType, file.Path);
-            if (plugin == null) {
-                //プラグインが生成できなかった場合、他のアプリで開きます
-                Process.Start(file.Path);
+            //ファイル選択イベントを発生させます
+            var param = new FileSelectedEventParam { Path = file.Path };
+            _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name,  null, param);
+
+            return null;
+        }
+
+        /// <summary>
+        /// ファイルを開くダイアログを表示します
+        /// </summary>
+        /// <returns>選択されたファイルのパス。未選択の場合は null。</returns>
+        private string ShowOpenFileDialog()
+        {
+            openFileDialog.FileName = "";
+            var dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == DialogResult.OK) {
+                //選択されたパスを取得します
+                return openFileDialog.FileName;
+            } else {
                 return null;
             }
-
-            //ファイルを開きます
-            plugin.OpenFile(file);
-
-            return (IPlugin)plugin;
         }
 
         /// <summary>
@@ -489,12 +470,19 @@ namespace NineCubed.Memo
         private void menuFile_Open_Binary_Click(object sender, EventArgs e)
         {
             try {
-                //テキストエディターでバイナリ形式でファイルを開きます
-                var plugin = OpenFile(typeof(TextEditorPlugin), new BinaryFile());
+                //ファイルを開くダイアログを表示します
+                var path = ShowOpenFileDialog();
+                if (path == null) return;
 
-                //プラグイン生成イベントを発生させます
-                var param = new PluginCreatedEventParam { Plugin = plugin };
-                _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
+                //プラグイン生成パラメーターを設定します
+                var pluginCreateParam = new PluginCreateParam {
+                    ["path"]      = path, //選択されたパス
+                    ["encoding"]  = null, //文字コード
+                    ["is_binary"] = true  //テキストモード
+                };
+
+                //テキストエディタープラグインを生成します
+                var plugin = (IFilePlugin)_pluginManager.CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam);
 
             } catch (CancelException) {
                 //キャンセル時
@@ -517,10 +505,6 @@ namespace NineCubed.Memo
         {
             //プラグインを生成します
             var plugin = (IPlugin)_pluginManager.CreatePluginInstance(typeof(TestPlugin));
-
-            //プラグイン生成イベントを発生させます
-            var param = new PluginCreatedEventParam { Plugin = plugin };
-            _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, param);
         }
 
 

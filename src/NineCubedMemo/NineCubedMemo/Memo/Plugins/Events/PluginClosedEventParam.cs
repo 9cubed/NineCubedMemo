@@ -7,13 +7,6 @@ using System.Threading.Tasks;
 
 namespace NineCubed.Memo.Plugins.Events
 {
-    /*
-    public interface IPluginClosedEvent
-    {
-        void PluginEvent_PluginClosed(EventParam param, object sender);
-    }
-    */
-
     /// <summary>
     /// プラグイン終了時に発生するイベントのパラメーターです。
     /// 

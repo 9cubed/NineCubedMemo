@@ -83,6 +83,7 @@ namespace NineCubed.Common.Controls.FileTree
             Image imgRemovable) {
 
             this.ImageList = new ImageList();
+            this.ImageList.ColorDepth = ColorDepth.Depth16Bit; //色深度を設定します。デフォルト(8bit)の場合、オリジナルの色にならない場合があります。
             this.ImageList.ImageSize = new Size(width, height);
             this.ImageList.Images.Add(FileTreeView.FileImageKey.OPENED_FOLDER.ToString(), imgFolderOpened);
             this.ImageList.Images.Add(FileTreeView.FileImageKey.CLOSED_FOLDER.ToString(), imgFolderClosed);

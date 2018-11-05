@@ -61,13 +61,6 @@ namespace NineCubed.Memo.Plugins
         public IPlugin ActivePlugin { get; set; }
 
         /// <summary>
-        /// 拡張子に対応するプラグインの型
-        /// Key  :拡張子
-        /// Value:プラグインの型
-        /// </summary>
-        private Dictionary<string, Type> _pluginTypeDict;
-
-        /// <summary>
         /// アプリの Config
         /// </summary>
         public AppConfig Config { get; set; }
@@ -75,60 +68,40 @@ namespace NineCubed.Memo.Plugins
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public PluginManager() {
-            
-            //拡張子とプラグインの関連付けをします。TODO ファイルで定義するようにする
-            _pluginTypeDict = new Dictionary<string, Type>();
-            _pluginTypeDict[".txt"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".bat"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".log"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".csv"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".dat"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".htm"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".html"] = typeof(TextEditorPlugin);
-            _pluginTypeDict[".xml"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".js"]   = typeof(TextEditorPlugin);
-            _pluginTypeDict[".json"] = typeof(TextEditorPlugin);
-            _pluginTypeDict[".php"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".css"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".ini"]  = typeof(TextEditorPlugin);
-
+        public PluginManager()
+        {    
             //プラグインリストを初期化します
             _pluginList = new List<IPlugin>();
         }
 
         /// <summary>
-        /// 拡張子に対応するプラグインの型を返します
+        /// プラグインのインスタンスを生成します
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public Type GetPluginType(string path) {
-            //拡張子を取得します
-            var ext = Path.GetExtension(path).ToLower();
-
-            //拡張子に対応するプラグインがある場合は、プラグインを生成します
-            if (_pluginTypeDict.TryGetValue(ext, out Type pluginType)) {
-                return pluginType;
-            } else {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// パスに対応するプラグインのインスタンスを生成します
-        /// </summary>
-        /// <param name="path"></param>
         /// <returns>生成したプラグイン</returns>
-        public IPlugin CreatePluginInstance(Type pluginType, string path = null) {
-
-            //プラグインの型が未指定の場合は、拡張子に対応するプラグインの型を取得します
-            if (pluginType == null) {
-                pluginType = GetPluginType(path);
-                if (pluginType == null) return null; //生成失敗
-            }
-
+        public IPlugin CreatePluginInstance(Type pluginType, PluginCreateParam param = null, Control parentControl = null)
+        {
             //プラグインの型からインスタンス(オブジェクト)を生成します
             var plugin = (IPlugin)Activator.CreateInstance(pluginType);
+
+            //プラグインを初期化します
+            var result = plugin.Initialize(param);
+            if (result == false) return null;
+
+            //プラグインがコンポーネントを持つ場合は、プラグインのコンポーネントを配置します
+            if (plugin.GetComponent() != null) {
+                if (parentControl == null) {
+                    //割当先が未指定の場合
+                    //プラグイン生成イベントを発生させて、プラグインの割り当て先を探します
+                    var eventParam = new PluginCreatedEventParam { Plugin = plugin };
+                    _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, eventParam);
+                } else {
+                    //割当先が指定されている場合
+                    ((Control)plugin.GetComponent()).Parent = parentControl;
+                }
+            }
+
+            //プラグイン配置後の初期化を行います
+            plugin.InitializePlaced();
 
             //プラグインをリストに追加します
             _pluginList.Add(plugin);

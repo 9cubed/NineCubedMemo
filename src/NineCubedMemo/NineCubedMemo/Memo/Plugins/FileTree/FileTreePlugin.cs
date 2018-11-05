@@ -29,9 +29,21 @@ namespace NineCubed.Memo.Plugins.FileTree
 
         public FileTreePlugin() {
             InitializeComponent();
+        }
 
+        /******************************************************************************
+         * 
+         *  IPlugin
+         * 
+         ******************************************************************************/ 
+
+        //初期処理を行います
+        public bool Initialize(PluginCreateParam param)
+        {
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
+
+            this.Dock = DockStyle.Fill;
 
             //ファイルツリービューの設定
             {
@@ -56,19 +68,16 @@ namespace NineCubed.Memo.Plugins.FileTree
             var popupMenu = new ContextMenuStrip();
             {
                 var menu = new ToolStripMenuItem("テスト");
-                popupMenu.Items.Add(menu); 
+                popupMenu.Items.Add(menu);
                 menu.Click += (sender, e) => {
                     //クリックされた時の処理を書きます
                 };
             }
             this.ContextMenuStrip = popupMenu;
-        }
 
-        /******************************************************************************
-         * 
-         *  IPlugin
-         * 
-         ******************************************************************************/ 
+            return true;
+        }
+        public void      InitializePlaced() { }                         //プラグイン配置後の初期化処理を行います
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
         public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
         public string    Title            { get; set; }                 //プラグインのタイトル

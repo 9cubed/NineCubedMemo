@@ -46,10 +46,24 @@ namespace NineCubed.Memo.Plugins.TextEditor
             return _pluginManager.GetSearchData();
         }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public TextEditorPlugin()
         {
             InitializeComponent();
+        }
 
+        private void TextEditorPlugin_Load(object sender, EventArgs e) { }
+
+        /// <summary>
+        /// 初期処理を行います
+        /// 初期化に失敗した場合などは false を返すとプラグインが破棄されます
+        /// この段階ではまだ他のプラグインに配置されていないため、コンポーネントのサイズなどは取得できません
+        /// </summary>
+        /// <returns>false:初期化失敗。プラグインが破棄されます。</returns>
+        public bool Initialize(PluginCreateParam param)
+        {
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
 
@@ -78,11 +92,51 @@ namespace NineCubed.Memo.Plugins.TextEditor
 
             //ポップアップメニューを追加します
             AddPopupMenuItem();
+
+
+            /****************************************
+             * 
+             *  ファイル読み込み
+             * 
+             ****************************************/
+
+            //初期化パラメーターを取得します
+            var path      = param.ToString("path");
+            var encoding  = param.ToObject("encoding") as Encoding;
+            var is_binary = param.ToBool("is_binary");
+            
+            //ファイルオブジェクトを生成します
+            IFile textFile;
+            if (is_binary) {
+                textFile = new BinaryFile();
+            } else {
+                textFile = new TextFile();
+                ((TextFile)textFile).TextEncoding = encoding;
+            }
+            
+            //テキストファイルを読み込みます
+            textFile.Path = path;
+            this.LoadFile(textFile);
+
+            //BOMにより自動的に文字コードが変更された場合は、警告を表示します
+            if (this.TargetFile is TextFile targetFile) {
+                if (encoding != null) {
+                    //文字コードが指定されていた場合
+                    if (encoding.CodePage != targetFile.TextEncoding.CodePage) {
+                        __.ShowWarnMsgBox("自動判別により文字コードを変更しました。");
+                    }
+                }
+            }
+
+            return true;
         }
 
-        private void TextEditorPlugin_Load(object sender, EventArgs e)
-        {
-        }
+        /// <summary>
+        /// プラグイン配置後の初期化処理を行います
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public void InitializePlaced() { }
 
         //ポップアップメニューを追加します
         private void AddPopupMenuItem() {
@@ -676,7 +730,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public bool OpenFile(IFile file) {
+        public bool LoadFile(IFile file) {
 
             //ファイルの種類が指定されていない場合には、テキストファイルで再設定します
             if (file is AnyFile) {
@@ -685,7 +739,8 @@ namespace NineCubed.Memo.Plugins.TextEditor
 
             this.TargetFile = file;
             this.TargetFile.Load();
-            txtMain.Text = this.TargetFile.Text;
+            if (this.TargetFile is TextFile)   txtMain.Text = ((TextFile)  this.TargetFile).Text;
+            if (this.TargetFile is BinaryFile) txtMain.Text = ((BinaryFile)this.TargetFile).Text;
 
             //変更なしにします
             txtMain.Modified = false;
@@ -693,6 +748,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
             //フォームのタイトルを設定します
             SetTitle();
 
+            
             //メニューの設定
             if (this.TargetFile is TextFile textFile) {
                 //メニュー・文字コードのメニューに、チェックをつけます
@@ -701,6 +757,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
                 //メニュー・改行コードのメニューに、チェックをつけます
                 CheckedMenu_MenuFile_NewLine(((TextFile)this.TargetFile).NewLineCode);
             }
+            
 
             return true;
         }
@@ -716,7 +773,8 @@ namespace NineCubed.Memo.Plugins.TextEditor
             if (file != null) this.TargetFile = file;
 
             //ファイルを保存します
-            this.TargetFile.Text = txtMain.Text;
+            if (this.TargetFile is TextFile)   ((TextFile)  this.TargetFile).Text = txtMain.Text;
+            if (this.TargetFile is BinaryFile) ((BinaryFile)this.TargetFile).Text = txtMain.Text;
             this.TargetFile.Save();
 
             //読み込み専用を解除します

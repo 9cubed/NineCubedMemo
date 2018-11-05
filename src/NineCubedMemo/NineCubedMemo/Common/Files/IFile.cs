@@ -23,7 +23,7 @@ namespace NineCubed.Common.Files
         /// 
         /// 注意：ファイルに保存する時は、NewLineCodeプロパティ(改行コード)を使う
         /// </summary>
-        string Text { get; set; }
+        //string Text { get; set; }
 
         /// <summary>
         /// ファイルが読み取り専用かどうか

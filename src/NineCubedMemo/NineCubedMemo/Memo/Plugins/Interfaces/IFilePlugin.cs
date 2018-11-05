@@ -19,7 +19,7 @@ namespace NineCubed.Memo.Plugins.Interfaces
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        bool OpenFile(IFile file); 
+        bool LoadFile(IFile file); 
 
         /// <summary>
         /// ファイルを保存します。

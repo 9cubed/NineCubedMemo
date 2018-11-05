@@ -19,8 +19,15 @@ namespace NineCubed.Memo.Plugins.Test
             InitializeComponent();
         }
 
-        private void TestPlugin_Load(object sender, EventArgs e)
-        {
+        private void TestPlugin_Load(object sender, EventArgs e) { }
+
+        /// <summary>
+        /// プラグインマネージャー
+        /// </summary>
+        private PluginManager _pluginManager = null;
+
+        //初期処理を行います
+        public bool Initialize(PluginCreateParam param) {
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
 
@@ -29,16 +36,18 @@ namespace NineCubed.Memo.Plugins.Test
             _pluginManager.GetEventManager().AddEventHandler( PluginClosedEventParam.Name, this);
             _pluginManager.GetEventManager().AddEventHandler( TitleChangedEventParam.Name, this);
             _pluginManager.GetEventManager().AddEventHandler(  DirSelectedEventParam.Name, this);
+            _pluginManager.GetEventManager().AddEventHandler( FileSelectedEventParam.Name, this);
 
             //コントロールを配置します
             pnlTop.Dock = DockStyle.Top;
             txtLog.Dock = DockStyle.Fill;
+
+            return true;
         }
 
-        /// <summary>
-        /// プラグインマネージャー
-        /// </summary>
-        private PluginManager _pluginManager = null;
+        //プラグイン配置後の初期化処理を行います
+        public void InitializePlaced() { }
+
 
         /// <summary>
         /// プラグインのコンポーネントを返します
@@ -138,6 +147,17 @@ namespace NineCubed.Memo.Plugins.Test
         {
             //ログ出力
             AddLog(((DirSelectedEventParam)param).Path + " が選択されました。");
+        }
+
+        /// <summary>
+        /// ファイル選択イベント
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="sender"></param>
+        public void PluginEvent_FileSelected(EventParam param, object sender)
+        {
+            //ログ出力
+            AddLog(((FileSelectedEventParam)param).Path + " が選択されました。");
         }
 
         //テキストボックスにログを出力します

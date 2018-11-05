@@ -14,7 +14,28 @@ namespace NineCubed.Memo.Plugins.Tab
     {
         public TabPlugin() {
             InitializeComponent();
+        }
 
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // TabPlugin
+            // 
+            this.SelectedIndexChanged += new System.EventHandler(this.TabPlugin_SelectedIndexChanged);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabPlugin_MouseDown);
+            this.ResumeLayout(false);
+
+        }
+
+        /// <summary>
+        /// プラグインマネージャー
+        /// </summary>
+        private PluginManager _pluginManager = null;
+
+        //初期処理を行います
+        public bool Initialize(PluginCreateParam param)
+        {
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
 
@@ -41,24 +62,12 @@ namespace NineCubed.Memo.Plugins.Tab
             _pluginManager.GetEventManager().AddEventHandler(PluginCreatedEventParam.Name, this);
             _pluginManager.GetEventManager().AddEventHandler(PluginClosedEventParam.Name, this);
             _pluginManager.GetEventManager().AddEventHandler(TitleChangedEventParam.Name, this);
+
+            return true;
         }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // TabPlugin
-            // 
-            this.SelectedIndexChanged += new System.EventHandler(this.TabPlugin_SelectedIndexChanged);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabPlugin_MouseDown);
-            this.ResumeLayout(false);
-
-        }
-
-        /// <summary>
-        /// プラグインマネージャー
-        /// </summary>
-        private PluginManager _pluginManager = null;
+        //プラグイン配置後の初期化処理を行います
+        public void InitializePlaced() { }
 
         /// <summary>
         /// プラグインのコンポーネントを返します

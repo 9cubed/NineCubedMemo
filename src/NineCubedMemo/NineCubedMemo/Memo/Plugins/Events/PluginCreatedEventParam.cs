@@ -7,13 +7,6 @@ using System.Threading.Tasks;
 
 namespace NineCubed.Memo.Plugins.Events
 {
-    /*
-    public interface IPluginCreatedEvent
-    {
-        void PluginEvent_PluginCreated(EventParam param, object sender);
-    }
-    */
-
     public class PluginCreatedEventParam : EventParam
     {
         //イベント名。イベントの発生、イベントハンドラーの追加、イベントハンドラーのメソッド名として使用します

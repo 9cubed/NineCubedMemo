@@ -90,6 +90,42 @@ namespace NineCubed.Common.Utils
             return dirList;
         }
 
+        /// <summary>
+        /// 指定されたパス配下のファイル一覧を返します。
+        /// </summary>
+        /// <param name="path">パス</param>
+        /// <param name="subDir">true:サブディレクトリを検索対象にする</param>
+        /// <param name="searchPattern">ワイルドカード</param>
+        /// <returns>ファイル一覧(文字列)</returns>
+        public static IList<string> GetFileList(String path, bool subDir = false, string searchPattern = "*") {
+            if (string.IsNullOrEmpty(path)) throw new ArgumentException(); //パスが指定されていないためエラーとする
+
+            //パスにドライブだけ指定されている場合には、\マークをつけます
+            if (path.EndsWith(":")) path = path + Path.DirectorySeparatorChar; 
+
+            //サブディレクトリを含むかどうかの検索条件を設定します
+            var option = subDir ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+            //フォルダ一覧を取得します
+            var fileList = Directory.GetFiles(path, searchPattern, option).ToList();
+
+            return fileList;
+        }
+
+        /// <summary>
+        /// 指定されたパス配下のフォルダとファイルの一覧を返します。
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="subDir"></param>
+        /// <param name="searchPattern"></param>
+        /// <returns></returns>
+        public static IList<string> GetDirFileList(String path, bool subDir = false, string searchPattern = "*") {
+            var resultList = new List<string>();
+            resultList.AddRange(FileUtils.GetDirList (path, subDir, searchPattern));
+            resultList.AddRange(FileUtils.GetFileList(path, subDir, searchPattern));
+            return resultList;
+        }
+
         // パスを結合します。
         // Path.Combine() は以下の動作になるので使わない。
         // Path.Combine("c:", "test.txt")    -> c:test.txt  ドライブの前に \ がついてくれない。
@@ -111,6 +147,18 @@ namespace NineCubed.Common.Utils
 
             //パスを結合して返します
             return path1 + Path.DirectorySeparatorChar.ToString() + path2;
+        }
+
+        /// <summary>
+        /// 指定されたファイルがフォルダ出ない場合はファイルをそのまま返します。
+        /// フォルダの場合はnullを返します
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>true:フォルダ false:ファイル</returns>
+        public static bool IsFile(string path)
+        {
+            var file = new FileInfo(path);
+            return !( file.Attributes.HasFlag(FileAttributes.Directory) );
         }
 
     } //class
