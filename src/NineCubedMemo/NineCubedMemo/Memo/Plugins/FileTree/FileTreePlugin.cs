@@ -24,7 +24,6 @@ namespace NineCubed.Memo.Plugins.FileTree
             this.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.FileTreePlugin_AfterSelect);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FileTreePlugin_MouseDown);
             this.ResumeLayout(false);
-
         }
 
         public FileTreePlugin() {
@@ -43,12 +42,10 @@ namespace NineCubed.Memo.Plugins.FileTree
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
 
-            this.Dock = DockStyle.Fill;
-
             //ファイルツリービューの設定
             {
                 //ノード用の画像の読み込み
-                var imgDirPath = "resource/file";
+                var imgDirPath = FileUtils.AppendPath(param.DataPath, "img");
                 var imgOpenedFolder  = Image.FromFile(FileUtils.AppendPath(imgDirPath, "opened_folder.png"));
                 var imgClosedFolder  = Image.FromFile(FileUtils.AppendPath(imgDirPath, "closed_folder.png"));
                 var imgRoot          = Image.FromFile(FileUtils.AppendPath(imgDirPath, "root.png"));
@@ -67,18 +64,23 @@ namespace NineCubed.Memo.Plugins.FileTree
             //ポップアップメニューを設定します
             var popupMenu = new ContextMenuStrip();
             {
-                var menu = new ToolStripMenuItem("テスト");
+                var menu = new ToolStripMenuItem("最新の情報に更新");
                 popupMenu.Items.Add(menu);
                 menu.Click += (sender, e) => {
-                    //クリックされた時の処理を書きます
+                    this.Refresh(this.SelectedNode);
                 };
             }
             this.ContextMenuStrip = popupMenu;
 
             return true;
         }
-        public void      InitializePlaced() { }                         //プラグイン配置後の初期化処理を行います
+        //プラグイン配置後の初期化処理を行います
+        public void InitializePlaced() {
+            this.Dock = DockStyle.Fill;
+            this.BringToFront();
+        } 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
+        public string    PluginId         { get; set; }                 //プラグインID
         public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
         public string    Title            { get; set; }                 //プラグインのタイトル
         public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか

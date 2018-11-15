@@ -1,4 +1,6 @@
-﻿using NineCubed.Common.Files;
+﻿using NineCubed.Common.Collections;
+using NineCubed.Common.Files;
+using NineCubed.Common.Utils;
 using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Memo.Plugins.TextEditor;
@@ -8,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,58 +22,48 @@ namespace NineCubed.Memo.Plugins.PluginLoader
     public class PluginLoaderPlugin : IPlugin
     {
         /// <summary>
-        /// 拡張子に対応するプラグインの型
-        /// Key  :拡張子
-        /// Value:プラグインの型
+        /// 拡張子とプラグインのフルクラス名を関連付けるIniファイル
+        /// Key1 :IniFile.NO_SECTION
+        /// Key2 :拡張子
+        /// Value:プラグインのフルクラス名
         /// </summary>
-        private Dictionary<string, Type> _pluginTypeDict;
+        private readonly IniFile _pluginExtIni = new IniFile();
+
+        /// <summary>
+        /// 起動時に生成するプラグインリストを定義したIniファイル
+        /// Key1 : plugin_1 ～ plugin_n
+        /// Key2 : id    プラグインID。データフォルダ名になる。未指定の場合、自動的に付与される。
+        ///        class プラグインのフルクラス名
+        ///        param 生成時の引数
+        /// </summary>
+        private readonly IniFile _pluginListIni = new IniFile();
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public PluginLoaderPlugin()
-        {
-            //拡張子とプラグインの関連付けをします。TODO ファイルで定義するようにする
-            _pluginTypeDict = new Dictionary<string, Type>();
-            _pluginTypeDict[".txt"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".bat"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".log"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".csv"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".dat"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".htm"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".html"] = typeof(TextEditorPlugin);
-            _pluginTypeDict[".xml"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".js"]   = typeof(TextEditorPlugin);
-            _pluginTypeDict[".json"] = typeof(TextEditorPlugin);
-            _pluginTypeDict[".php"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".css"]  = typeof(TextEditorPlugin);
-            _pluginTypeDict[".ini"]  = typeof(TextEditorPlugin);
-
-
-            //プラグインマネージャーを保持します
-            _pluginManager = PluginManager.GetInstance();
-
-            //イベントハンドラーを登録します
-            _pluginManager.GetEventManager().AddEventHandler( FileSelectedEventParam.Name, this);
-        }
+        public PluginLoaderPlugin() { }
 
         /// <summary>
         /// 拡張子に対応するプラグインの型を返します
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">ファイルのパス</param>
         /// <returns></returns>
         public Type GetPluginType(string path) {
             //拡張子を取得します
             var ext = Path.GetExtension(path).ToLower();
 
-            //拡張子に対応するプラグインがある場合は、プラグインを生成します
-            if (_pluginTypeDict.TryGetValue(ext, out Type pluginType)) {
-                return pluginType;
-            } else {
-                return null;
+            //拡張子に対応するプラグインのフルクラス名を取得します
+            Type pluginType = null;
+            var pluginClassName = _pluginExtIni[IniFile.NO_SECTION, ext];
+            if (pluginClassName != null) {
+                //取得できた場合
+                //クラス名をキーより、プラグインの型を取得します
+                pluginType = _pluginManager.GetPluginType(pluginClassName);
             }
-        }
 
+            //拡張子に対応するプラグインがなかった場合
+            return pluginType;
+        }
 
         /******************************************************************************
          * 
@@ -78,20 +71,82 @@ namespace NineCubed.Memo.Plugins.PluginLoader
          * 
          ******************************************************************************/ 
         private PluginManager _pluginManager = null;       //プラグインマネージャー
+        public string    PluginId         { get; set; }    //プラグインID
         public Component GetComponent()   { return null; } //プラグインのコンポーネントを返します
         public string    Title            { get; set; }    //プラグインのタイトル
         public bool      CanClosePlugin() { return true; } //プラグインが終了できるかどうか
         public void      ClosePlugin()    { }              //プラグインの終了処理
         public void      SetFocus()       { }              //フォーカスを設定します
-        public bool      Initialize(PluginCreateParam param) => true; //初期処理を行います
         public void      InitializePlaced() { }            //プラグイン配置後の初期化処理を行います
+
+        //初期処理を行います
+        public bool Initialize(PluginCreateParam param)
+        {
+            //プラグインマネージャーを保持します
+            _pluginManager = PluginManager.GetInstance();
+
+            //イベントハンドラーを登録します
+            _pluginManager.GetEventManager().AddEventHandler( FileSelectedEventParam.Name, this);
+
+            //plugin_extension.ini を読み込みます
+            _pluginExtIni.Load( FileUtils.AppendPath(param.DataPath, "plugin_extension.ini") );
+
+            //plugin_list.ini を読み込みます
+            var pluginListIni = new IniFile();
+                pluginListIni.Load( FileUtils.AppendPath(param.DataPath, "plugin_list.ini") );
+
+            //plugin_list.ini で指定されているプラグインを全て生成します
+            CreatePlugin(pluginListIni);
+
+            return true;
+        }
+
+        //plugin_list.iniファイルに定義されているプラグインを全て生成します
+        private void CreatePlugin(IniFile pluginListIni)
+        {
+            int no = 1; //pluginセクションの連番
+            Map<string, string> subData;
+            //セクションが見つからなくなるまでループします
+            while ((subData = pluginListIni.GetSubData("plugin_" + no++)) != null) {
+                var pluginClassName = subData["class"];
+                var pluginId        = subData["id"];
+                var pluginParam     = subData["param"];
+
+                //iniファイルのチェック
+                if (string.IsNullOrEmpty(pluginClassName)) {
+                    throw new Exception("plugin_list.ini の [" + "plugin_" + no +"] に class が定義されていません。");
+                }
+
+                //プラグインの型を取得します
+                var pluginType = _pluginManager.GetPluginType(pluginClassName);
+                if (pluginType == null) {
+                    throw new Exception("plugin_list.ini の " + pluginClassName + " の型の取得に失敗しました。");
+                }
+
+                //プラグインの生成パラメーターを生成します
+                var param = new PluginCreateParam();
+                if (string.IsNullOrEmpty(pluginParam) == false) {
+                    //csv 形式の ini(キー = 値) を分解してパラメーターに設定します
+                    //(例)「param = orientation = horizontal, width = 320, height = 100」を解析して、param に設定する
+                    var list = pluginParam.Split(',');
+                    foreach (var item in list) {
+                        var (key, value) = StringUtils.GetKeyValue(item);
+                        param[key] = value;
+                    }
+                }
+
+                //プラグインを生成します
+                _pluginManager.CreatePluginInstance(pluginType, param, null, pluginId);
+            }
+        }
+
 
         /******************************************************************************
          * 
          *  プラグイン用イベントハンドラー
          * 
          ******************************************************************************/ 
-
+        
         /// <summary>
         /// ファイル選択イベント
         /// </summary>
@@ -102,7 +157,7 @@ namespace NineCubed.Memo.Plugins.PluginLoader
             //選択されたファイルのパスを取得します
             var path = ((FileSelectedEventParam)param).Path;
 
-            //プラグインの型が未指定の場合は、拡張子に対応するプラグインの型を取得します
+            //プラグインの型が未指定の場合は、拡張子に対応するプラグインのフルクラス名を取得します
             var pluginType = GetPluginType(path);
             if (pluginType == null) {
                 //プラグインの型が取得できない場合は、別のアプリで開きます
@@ -112,12 +167,10 @@ namespace NineCubed.Memo.Plugins.PluginLoader
 
             //プラグイン生成パラメーターを設定します
             var pluginCreateParam = new PluginCreateParam();
-            pluginCreateParam["path"] = path; //選択されたパス
+            pluginCreateParam.Path = path; //選択されたパス
 
             //プラグインを生成します
-            var plugin = (IFilePlugin)_pluginManager.CreatePluginInstance(pluginType, pluginCreateParam);
-            if (plugin == null) return;
-
+            var plugin = _pluginManager.CreatePluginInstance(pluginType, pluginCreateParam);
         }
 
     } //class

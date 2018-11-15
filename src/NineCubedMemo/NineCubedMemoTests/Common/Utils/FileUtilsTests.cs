@@ -25,7 +25,7 @@ namespace NineCubed.Common.Utils.Tests
                 string s2 = Encoding.GetEncoding(932).GetString(byteArray2);
                 Assert.AreEqual(s, s2);
             }
-            
+
             {
                 //サイズ指定読み込みテスト
                 byte[] byteArray2 = FileUtils.LoadFileToByteArray(path, 10);
@@ -39,6 +39,39 @@ namespace NineCubed.Common.Utils.Tests
             }
 
         }
+
+        [TestMethod()]
+        public void ContainsDirTest()
+        {
+            Assert.IsTrue(FileUtils.ContainsDir("c:/", "c:/test1"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/", "c:\\test1"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:\\", "c:/test1"));
+
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test"  , "c:/test"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test"  , "c:/test/"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test"  , "c:/test\\"));
+
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test/"  , "c:/test"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test/"  , "c:/test/"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test/"  , "c:/test\\"));
+
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test\\"  , "c:/test"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test\\"  , "c:/test/"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test\\"  , "c:/test\\"));
+
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test"  , "c:/test/test1"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test/" , "c:/test/test1"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test\\", "c:/test/test1"));
+
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test"  , "c:/test/test1/test2"));
+            Assert.IsTrue(FileUtils.ContainsDir("c:/test"  , "c:/test/test1/test2/test3"));
+
+            //False
+            Assert.IsFalse(FileUtils.ContainsDir("c:/test", "d:/test/test1/"));
+            Assert.IsFalse(FileUtils.ContainsDir("c:/test/test1", "c:/test/"));
+            Assert.IsFalse(FileUtils.ContainsDir("c:/test1/abc", "c:/test2/abc"));
+        }
+
 
     } //class
 }

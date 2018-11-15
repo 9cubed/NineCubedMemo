@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>NineCubed</RootNamespace>
     <AssemblyName>NineCubedMemo</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -26,6 +26,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -67,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Calculation\Calculator.cs" />
+    <Compile Include="Common\Collections\Map.cs" />
     <Compile Include="Common\Controls\FileList\FileListGrid.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -84,6 +86,7 @@
     <Compile Include="Common\Files\CsvFile.cs" />
     <Compile Include="Common\Files\AnyFile.cs" />
     <Compile Include="Common\Files\IFile.cs" />
+    <Compile Include="Common\Files\IniFile.cs" />
     <Compile Include="Common\Files\TextFile.cs" />
     <Compile Include="Common\Utils\BinaryUtils.cs" />
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
@@ -111,11 +114,11 @@
     <Compile Include="Memo\Interfaces\ISearchString.cs" />
     <Compile Include="Memo\Interfaces\SearchData.cs" />
     <Compile Include="Memo\KeyMacro.cs" />
-    <Compile Include="Memo\MainForm.cs">
+    <Compile Include="Memo\MainFormPlugin.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Memo\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Memo\MainFormPlugin.Designer.cs">
+      <DependentUpon>MainFormPlugin.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Utils\StringUtils.cs" />
     <Compile Include="Memo\Menus\HexToStrMenu.cs">
@@ -126,8 +129,12 @@
     </Compile>
     <Compile Include="Memo\Plugins\Interfaces\ISearchPlugin.cs" />
     <Compile Include="Memo\Plugins\PluginCreateParam.cs" />
+    <Compile Include="Memo\Plugins\PluginDefineData.cs" />
     <Compile Include="Memo\Plugins\PluginLoader\PluginLoaderPlugin.cs" />
     <Compile Include="Memo\Plugins\PluginManager.cs" />
+    <Compile Include="Memo\Plugins\Splitter\SplitContainerPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\Tab\TabPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -162,8 +169,8 @@
     <EmbeddedResource Include="Common\Controls\TextBoxEx.resx">
       <DependentUpon>TextBoxEx.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Memo\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="Memo\MainFormPlugin.resx">
+      <DependentUpon>MainFormPlugin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\FileList\FileListPlugin.resx">
       <DependentUpon>FileListPlugin.cs</DependentUpon>
@@ -193,6 +200,39 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\NineCubed.Memo.MainFormPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPlugin\NineCubed.Memo.Plugins.FileList.FileListPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\NineCubed.Memo.Plugins.FileTree.FileTreePlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_list.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_extension.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\NineCubed.Memo.Plugins.Tab.TabPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\NineCubed.Memo.Plugins.Test.TestPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\startup.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -221,6 +261,36 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\new.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\open.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\save.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPlugin\data\img\opened_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\cd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\closed_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\hdd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\opened_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\removable.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\root.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="resource\file\cd.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -249,6 +319,12 @@
     <Content Include="resource\toolbar\save.png" />
     <Content Include="メモ.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="plugins\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\data\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NineCubedMemo", "NineCubedM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NineCubedMemoTests", "NineCubedMemoTests\NineCubedMemoTests.csproj", "{225E4474-490C-4A4C-9BB5-D74B53CD578A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{724654BB-6929-4281-860A-9F6582B0C938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{225E4474-490C-4A4C-9BB5-D74B53CD578A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{225E4474-490C-4A4C-9BB5-D74B53CD578A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{225E4474-490C-4A4C-9BB5-D74B53CD578A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{724654BB-6929-4281-860A-9F6582B0C938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{724654BB-6929-4281-860A-9F6582B0C938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{724654BB-6929-4281-860A-9F6582B0C938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{724654BB-6929-4281-860A-9F6582B0C938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

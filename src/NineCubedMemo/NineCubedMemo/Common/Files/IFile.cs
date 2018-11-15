@@ -18,14 +18,6 @@ namespace NineCubed.Common.Files
         string Path { get; set; }
 
         /// <summary>
-        /// テキスト
-        /// 改行コードは \n に統一して保持する
-        /// 
-        /// 注意：ファイルに保存する時は、NewLineCodeプロパティ(改行コード)を使う
-        /// </summary>
-        //string Text { get; set; }
-
-        /// <summary>
         /// ファイルが読み取り専用かどうか
         /// true:読み取り専用
         /// </summary>

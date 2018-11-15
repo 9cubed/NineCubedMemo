@@ -49,19 +49,17 @@ namespace NineCubed.Memo.Plugins.FileList
 
             //コントロールの初期化をします
             this.Initialize();
-            this.Dock = DockStyle.Fill;
 
             //ファイルリストで表示するフォルダの画像を設定します
-            var imgDirPath = "resource/file";
-            this.SetImage(Image.FromFile(FileUtils.AppendPath(imgDirPath, "opened_folder.png")));
+            this.SetImage(Image.FromFile(FileUtils.AppendPath(param.DataPath, "img/opened_folder.png")));
 
             //ポップアップメニューを設定します
             var popupMenu = new ContextMenuStrip();
             {
-                var menu = new ToolStripMenuItem("テスト");
+                var menu = new ToolStripMenuItem("最新の情報に更新");
                 popupMenu.Items.Add(menu); 
                 menu.Click += (sender, e) => {
-                    //クリックされた時の処理を書きます
+                    ShowFileList();
                 };
             }
             this.ContextMenuStrip = popupMenu;
@@ -71,8 +69,13 @@ namespace NineCubed.Memo.Plugins.FileList
 
             return true;
         }
-        public void      InitializePlaced() { } //プラグイン配置後の初期化処理を行います
+        //プラグイン配置後の初期化処理を行います
+        public void InitializePlaced() {
+            this.Dock = DockStyle.Fill;
+            this.BringToFront();
+        } 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
+        public string    PluginId         { get; set; }                 //プラグインID
         public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
         public string    Title            { get; set; }                 //プラグインのタイトル
         public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか

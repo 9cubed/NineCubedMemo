@@ -11,6 +11,11 @@ namespace NineCubed.Memo.Plugins.Interfaces
     public interface IPlugin
     {
         /// <summary>
+        /// プラグインID
+        /// </summary>
+        string PluginId { get; set; }
+
+        /// <summary>
         /// プラグインのコンポーネントを返します
         /// </summary>
         /// <returns></returns>

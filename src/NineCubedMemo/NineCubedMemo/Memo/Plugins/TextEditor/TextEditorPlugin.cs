@@ -101,10 +101,10 @@ namespace NineCubed.Memo.Plugins.TextEditor
              ****************************************/
 
             //初期化パラメーターを取得します
-            var path      = param.ToString("path");
-            var encoding  = param.ToObject("encoding") as Encoding;
+            var path      = param.Path;
+            var encoding  = param["encoding"] as Encoding;
             var is_binary = param.ToBool("is_binary");
-            
+
             //ファイルオブジェクトを生成します
             IFile textFile;
             if (is_binary) {
@@ -388,7 +388,6 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// <param name="e"></param>
         private void TxtMain_DragDrop(object sender, DragEventArgs e)
         {
-
             //TODO _pluginManager に対して、プラグインの生成依頼を出す
             /*
 	        if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
@@ -406,7 +405,6 @@ namespace NineCubed.Memo.Plugins.TextEditor
 	        }
             */
         }
-
 
         /// <summary>
         /// テキストボックスのKeyDownイベント
@@ -563,15 +561,11 @@ namespace NineCubed.Memo.Plugins.TextEditor
          *  IPlugin
          * 
          ******************************************************************************/ 
-        public Component GetComponent() {
-            return this;
-        }
 
-        /// <summary>
-        /// プラグインのタイトルを返します
-        /// </summary>
-        /// <returns></returns>
-        public string Title { get; set; }
+        
+        public string    PluginId       { get; set; }    //プラグインID
+        public Component GetComponent() { return this; } //プラグインのコンポーネントを返します
+        public string    Title          { get; set; }    //プラグインのタイトルを返します
 
         /// <summary>
         /// プラグインが終了できるかどうか

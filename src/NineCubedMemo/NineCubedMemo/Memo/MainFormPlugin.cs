@@ -1,4 +1,5 @@
-﻿using NineCubed.Common.Controls.FileList;
+﻿using NineCubed.Common.Collections;
+using NineCubed.Common.Controls.FileList;
 using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Exceptions;
@@ -13,6 +14,7 @@ using NineCubed.Memo.Plugins.Tab;
 using NineCubed.Memo.Plugins.Test;
 using NineCubed.Memo.Plugins.TextEditor;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -22,13 +24,8 @@ using System.Windows.Forms;
 
 namespace NineCubed.Memo
 {
-    public partial class MainForm : Form, ISearchString
+    public partial class MainFormPlugin : Form, IPlugin, ISearchString
     {
-        /// <summary>
-        /// プラグイン管理クラス
-        /// </summary>
-        private PluginManager _pluginManager;
-
         /// <summary>
         /// Config
         /// </summary>
@@ -44,19 +41,9 @@ namespace NineCubed.Memo
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public MainForm()
+        public MainFormPlugin()
         {
             InitializeComponent();
-
-            //Configを読み込みます
-            _config = AppConfig.Load(this);
-
-            //ConfigをPluginManagerに設定します
-            _pluginManager = PluginManager.GetInstance();
-            _pluginManager.Config = _config;
-
-            //プラグインローダープラグインを生成します
-            _pluginManager.CreatePluginInstance(typeof(PluginLoaderPlugin));
         }
 
         /// <summary>
@@ -66,6 +53,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
+            /*
             //スプリッターの初期化
             splitVertical.Parent = this;
             splitVertical.Dock = DockStyle.Fill;
@@ -100,8 +88,9 @@ namespace NineCubed.Memo
             tabPlugin.Dock = DockStyle.None;
             tabPlugin.Dock = DockStyle.Fill;
             tabPlugin.BringToFront();
+            */
 
-
+            /*
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1) {
                 //コマンドライン引数がある場合
@@ -128,6 +117,33 @@ namespace NineCubed.Memo
             } else {
                 //コマンドライン引数がない場合(通常起動)
             }
+            */
+
+        }
+
+        /******************************************************************************
+         * 
+         *  IPlugin
+         * 
+         ******************************************************************************/
+        //初期処理を行います
+        public bool Initialize(PluginCreateParam param)
+        {
+            //プラグインマネージャーを保持します
+            _pluginManager = PluginManager.GetInstance();
+
+            //イベントハンドラーを登録します
+            _pluginManager.GetEventManager().AddEventHandler(PluginCreatedEventParam.Name, this);
+
+            //メインフォームとして設定します
+            _pluginManager.MainForm = this;
+
+            //Configを読み込みます
+            _config = AppConfig.Load(this);
+
+            //ConfigをPluginManagerに設定します
+            _pluginManager = PluginManager.GetInstance();
+            _pluginManager.Config = _config;
 
             //ダイアログの初期設定
             openFileDialog.Filter = 
@@ -135,7 +151,17 @@ namespace NineCubed.Memo
                 "すべてのファイル(*.*)|*.*";
             saveFileDialog.Filter = openFileDialog.Filter;
 
+            return true;
         }
+
+        public void      InitializePlaced() { } //プラグイン配置後の初期化処理を行います
+        private PluginManager _pluginManager = null;                    //プラグインマネージャー
+        public string    PluginId         { get; set; }                 //プラグインID
+        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string    Title            { get; set; }                 //プラグインのタイトル
+        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
+        public void      SetFocus()       {  }                          //フォーカスを設定します
 
         /// <summary>
         /// MainForm の FormClosing イベント
@@ -564,6 +590,39 @@ namespace NineCubed.Memo
             if (_pluginManager.ActivePlugin is ISearchPlugin plugin) {
                 plugin.ReplaceAll();
             }
+        }
+
+        /******************************************************************************
+         * 
+         *  プラグイン用イベントハンドラー
+         * 
+         ******************************************************************************/ 
+
+        //生成されたプラグインのコントロールを受け取ったかどうか
+        bool _isReceivedControl = false;
+
+        /// <summary>
+        /// プラグイン生成イベント
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="sender"></param>
+        public void PluginEvent_PluginCreated(EventParam param, object sender) {
+            //生成されたプラグインを取得します
+            var plugin = ((PluginCreatedEventParam)param).Plugin;
+
+            //プラグインのコントロールを受け取っていない場合は、受け取る
+            if (_isReceivedControl == false && plugin.GetComponent() != null) {
+                _isReceivedControl = true; //受取済みにします
+
+                //コントロールをフォームに配置します
+                var ctl = ((Control)plugin.GetComponent());
+                ctl.Parent = this;
+                ctl.Dock = DockStyle.Fill;
+                param.Cancel = true; //処理済みとしてイベントをキャンセルします
+                return;
+            }
+
+            //TODO ツールバーとメニューを受け取るようにする
         }
 
     } //class

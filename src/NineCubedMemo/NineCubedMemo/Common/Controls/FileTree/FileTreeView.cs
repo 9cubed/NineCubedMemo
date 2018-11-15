@@ -214,28 +214,34 @@ namespace NineCubed.Common.Controls.FileTree
                 //ダミーノードを削除します
                 expandNode.FirstNode.Remove();
 
-                //パスを取得します
-                var path = GetPath(expandNode);
-
-                //フォルダ一覧を取得します
-                IList<string> dirList = FileUtils.GetDirList(path);
-
-                //フォルダ一覧のフォルダを１つずつノードとして追加します
-                foreach (var dirPath in dirList) {
-                    //パスからファイル名を取得します
-                    var dirName = Path.GetFileName(dirPath);
-
-                    //フォルダノードを作成します
-                    var dirNode = new DirTreeNode(dirName, dirName);
-
-                    //フォルダノードを追加します
-                    expandNode.Nodes.Add(dirNode);
-
-                    //追加したノード配下にダミーノードを追加します
-                    AddDummyNode(dirNode, dirPath);
-                }
+                //ノード配下のノードを追加します
+                AddSubNodes(expandNode);
             }
+        }
 
+        //ノード配下のノードを追加します
+        private void AddSubNodes(TreeNode expandNode)
+        {
+            //パスを取得します
+            var path = GetPath(expandNode);
+
+            //フォルダ一覧を取得します
+            IList<string> dirList = FileUtils.GetDirList(path);
+
+            //フォルダ一覧のフォルダを１つずつノードとして追加します
+            foreach (var dirPath in dirList) {
+                //パスからファイル名を取得します
+                var dirName = Path.GetFileName(dirPath);
+
+                //フォルダノードを作成します
+                var dirNode = new DirTreeNode(dirName, dirName);
+
+                //フォルダノードを追加します
+                expandNode.Nodes.Add(dirNode);
+
+                //追加したノード配下にダミーノードを追加します
+                AddDummyNode(dirNode, dirPath);
+            }
         }
 
         /// <summary>
@@ -268,6 +274,17 @@ namespace NineCubed.Common.Controls.FileTree
             return path;
         }
 
+        //最新の情報に更新します
+        public void Refresh(TreeNode node)
+        {
+            if (node == null) return;
+
+            //ノード配下をクリアします
+            node.Nodes.Clear();
+
+            //ノード配下のノードを追加します
+            AddSubNodes(node);
+        }
 
     } //class
 }

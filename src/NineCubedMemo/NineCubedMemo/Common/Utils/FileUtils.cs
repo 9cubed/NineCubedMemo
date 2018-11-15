@@ -55,7 +55,7 @@ namespace NineCubed.Common.Utils
             return File.GetAttributes(path).HasFlag(FileAttributes.ReadOnly);
         }
 
-                /// <summary>
+        /// <summary>
         /// 指定したパス配下のフォルダの有無を返します。
         /// 
         /// パスにドライブを指定する場合は、c:\ のように、円マークを付けないと、
@@ -81,6 +81,9 @@ namespace NineCubed.Common.Utils
             //パスにドライブだけ指定されている場合には、\マークをつけます
             if (path.EndsWith(":")) path = path + Path.DirectorySeparatorChar; 
 
+            //パスが存在しない場合は処理を抜けます
+            if (Directory.Exists(path) == false) return new List<string>();
+
             //サブディレクトリを含むかどうかの検索条件を設定します
             var option = subDir ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
@@ -103,10 +106,13 @@ namespace NineCubed.Common.Utils
             //パスにドライブだけ指定されている場合には、\マークをつけます
             if (path.EndsWith(":")) path = path + Path.DirectorySeparatorChar; 
 
+            //パスが存在しない場合は処理を抜けます
+            if (Directory.Exists(path) == false) return new List<string>();
+
             //サブディレクトリを含むかどうかの検索条件を設定します
             var option = subDir ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
-            //フォルダ一覧を取得します
+            //ファイル一覧を取得します
             var fileList = Directory.GetFiles(path, searchPattern, option).ToList();
 
             return fileList;
@@ -159,6 +165,145 @@ namespace NineCubed.Common.Utils
         {
             var file = new FileInfo(path);
             return !( file.Attributes.HasFlag(FileAttributes.Directory) );
+        }
+
+        /// <summary>
+        /// ファイルコピーモード
+        /// 同じファイルがある場合の動作です。
+        /// </summary>
+        public enum FileCopyMode {
+            CopyAlways,   //常にコピー
+            CopyIfNewer,  //新しい時にコピー
+            DontCopy      //コピーしない
+        }
+
+        /// <summary>
+        /// フォルダをコピーします
+        /// 指定したフォルダ配下のフォルダとファイルを、指定したフォルダ配下へ全てコピーします
+        /// </summary>
+        /// <param name="fromDirPath">コピー元フォルダのパス</param>
+        /// <param name="toDirPath">コピー先フォルダのパス</param>
+        /// <param name="copyMode">コピーモード</param>
+        public static void CopyDir(string fromDirPath, string toDirPath, FileCopyMode copyMode) {
+            //コピー先がコピー元のフォルダ配下にある場合は、無限ループとなるためエラーとします(実際には無限ループになる前に、パスの文字列長のエラーが発生する)
+            if (ContainsDir(fromDirPath, toDirPath)) {
+                throw new IOException("CopyDir() コピー先がコピー元に含まれています");
+            }
+            
+            //フォルダを丸ごとコピーします
+            CopyDirSub(fromDirPath, toDirPath, copyMode);
+        }
+        private static void CopyDirSub(string fromDirPath, string toDirPath, FileCopyMode copyMode) {
+            
+            //コピー元のフォルダが存在しない場合は処理しない
+            if (Directory.Exists(fromDirPath) == false) return;
+
+            //フォルダ配下のファイルを全てコピーします
+            foreach (var fromPath in Directory.GetFiles(fromDirPath)) {
+                //コピー先のパス
+                var toPath = AppendPath(toDirPath, Path.GetFileName(fromPath));
+
+                //コピーモードに応じてファイルコピー可能かどうかをチェックします
+                if (CanFileCopy(fromPath, toPath, copyMode)) {
+                    //ファイルコピー可能な場合、ファイルコピーします
+                    File.Copy(fromPath, toPath, true);
+                }
+            }
+
+            //フォルダ配下のファイルを全てコピーします
+            foreach (var dir in Directory.GetDirectories(fromDirPath)) {
+
+                //フォルダ配下のフォルダのパスを作成します
+                var toChildDirPath = AppendPath(toDirPath, Path.GetFileName(dir));
+
+                //フォルダがない場合は、フォルダを作成します
+                if (Directory.Exists(toChildDirPath) == false) {
+                    Directory.CreateDirectory(toChildDirPath);
+                }
+
+                //フォルダ配下のフォルダとファイルを再起呼び出しでコピーします
+                CopyDirSub(dir, toChildDirPath, copyMode);
+            }
+        }
+
+        /// <summary>
+        /// ファイルコピー可能かどうかを返します
+        /// </summary>
+        /// <param name="fromPath">コピー元のパス</param>
+        /// <param name="toPath"  >コピー先のパス</param>
+        /// <param name="copyMode">コピーモード</param>
+        /// <returns></returns>
+        private static bool CanFileCopy(string fromPath, string toPath, FileCopyMode copyMode) {
+
+            switch (copyMode) {
+                case FileCopyMode.CopyAlways:
+                    return true; //コピー可
+
+                case FileCopyMode.DontCopy:
+                    //コピー先に同じファイルがあるか？
+                    if (File.Exists(toPath)) {
+                        //ある場合
+                        return false; //コピー不可
+                    } else {
+                        //ない場合
+                        return true;  //コピー可
+                    }
+                
+                case FileCopyMode.CopyIfNewer:
+                    //コピー先に同じファイルがない場合はコピー可
+                    if (File.Exists(toPath) == false) return true; //コピー可
+
+                    //更新日付を比較して、コピー元の方が新しい場合はコピー可とします
+                    var fromDateTime = File.GetLastWriteTime(fromPath);
+                    var   toDateTime = File.GetLastWriteTime(  toPath);
+                    if (fromDateTime > toDateTime) {
+                        //コピー元が新しい場合
+                        return true;  //コピー可
+                    } else {
+                        return false; //コピー不可
+                    }
+
+                default:
+                    //コーディングミス:コピーモードを増やして、case の追加漏れがあった場合に来ます
+                    throw new Exception(); 
+            }
+        }
+        
+        /// <summary>
+        /// 親フォルダに指定した子フォルダが含まれているかどうかを返します。
+        /// </summary>
+        /// <param name="parentDirPath"></param>
+        /// <param name="childDirPath"></param>
+        /// <returns></returns>
+        public static bool ContainsDir(string parentDirPath, string childDirPath)
+        {
+            //パスを絶対パスに統一します(セパレーターは￥に統一されます)
+            parentDirPath = (new DirectoryInfo(parentDirPath)).FullName;
+             childDirPath = (new DirectoryInfo( childDirPath)).FullName;
+
+            //末尾にセパレーターを付けて統一します
+            var separator = Path.DirectorySeparatorChar.ToString();
+            if (parentDirPath.EndsWith(separator) == false) parentDirPath = parentDirPath + separator;
+            if ( childDirPath.EndsWith(separator) == false)  childDirPath =  childDirPath + separator;
+
+            //子フォルダのパスに親フォルダのパスが含まれるか確認します
+            return childDirPath.IndexOf(parentDirPath) >= 0;
+        }
+        
+        /// <summary>
+        /// フォルダを削除します
+        /// </summary>
+        /// <param name="path"></param>
+        public static void DeleteDir(String path) {
+            try {
+                Directory.Delete(path, true);
+            } catch (IOException) {
+                //エクスプローラーを開いていると、ファイルは削除されても例外が発生する場合がある
+                //なおかつ指定したフォルダだけ残る場合があるので、もう一度削除する
+                try {
+                    Directory.Delete(path);
+                } catch (IOException) { }
+            }
         }
 
     } //class

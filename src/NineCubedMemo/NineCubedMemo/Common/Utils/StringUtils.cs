@@ -184,6 +184,22 @@ namespace NineCubed.Common.Utils
             return target.Substring(0, target.Length - length);
         }
 
+        //「キー = 値」の文字列をキーと値に分解して返します
+        public static (string Key, string Value) GetKeyValue(string line)
+        {
+            var index = line.IndexOf('=');
+            if (index >= 0) {
+                //値に「=」が含まれる可能性があるため、split() は未使用
+                var key   = line.Substring(0, index).Trim();
+                var value = line.Substring(index + 1).Trim();
+                if (key.Equals("")) return (null, null); //キーが空の場合は null 扱いにする
+
+                return (Key : key, Value : value);
+            }
+
+            return (null, null);
+        }
+
 
     } //class
 }

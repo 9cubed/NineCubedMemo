@@ -1,4 +1,5 @@
 ﻿using NineCubed.Memo;
+using NineCubed.Memo.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,14 @@ namespace NineCubedMemo
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            //Application.Run(new MainFormPlugin());
+            
+            var pluginManager = PluginManager.GetInstance();
+                pluginManager.Startup();
+
+            if (pluginManager.MainForm != null) {
+                Application.Run(pluginManager.MainForm);
+            }
         }
     }
 }

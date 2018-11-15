@@ -1,6 +1,6 @@
 ﻿namespace NineCubed.Memo
 {
-    partial class MainForm
+    partial class MainFormPlugin
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFormPlugin));
             this.menuBar = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFile_Open = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,15 +72,8 @@
             this.toolFile_Save = new System.Windows.Forms.ToolStripButton();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.splitHorizon = new System.Windows.Forms.SplitContainer();
-            this.splitVertical = new System.Windows.Forms.SplitContainer();
-            this.fileTreeView1 = new NineCubed.Common.Controls.FileTree.FileTreeView();
             this.menuBar.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitHorizon)).BeginInit();
-            this.splitHorizon.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitVertical)).BeginInit();
-            this.splitVertical.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuBar
@@ -136,42 +129,42 @@
             // menuFile_Open_ShiftJIS
             // 
             this.menuFile_Open_ShiftJIS.Name = "menuFile_Open_ShiftJIS";
-            this.menuFile_Open_ShiftJIS.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open_ShiftJIS.Size = new System.Drawing.Size(164, 22);
             this.menuFile_Open_ShiftJIS.Text = "Shift JIS";
             this.menuFile_Open_ShiftJIS.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
             // menuFile_Open_UTF8
             // 
             this.menuFile_Open_UTF8.Name = "menuFile_Open_UTF8";
-            this.menuFile_Open_UTF8.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open_UTF8.Size = new System.Drawing.Size(164, 22);
             this.menuFile_Open_UTF8.Text = "UTF-8";
             this.menuFile_Open_UTF8.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
             // menuFile_Open_UTF8_BOM
             // 
             this.menuFile_Open_UTF8_BOM.Name = "menuFile_Open_UTF8_BOM";
-            this.menuFile_Open_UTF8_BOM.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open_UTF8_BOM.Size = new System.Drawing.Size(164, 22);
             this.menuFile_Open_UTF8_BOM.Text = "UTF-8 BOM";
             this.menuFile_Open_UTF8_BOM.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
             // menuFile_Open_UTF16_LE_BOM
             // 
             this.menuFile_Open_UTF16_LE_BOM.Name = "menuFile_Open_UTF16_LE_BOM";
-            this.menuFile_Open_UTF16_LE_BOM.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open_UTF16_LE_BOM.Size = new System.Drawing.Size(164, 22);
             this.menuFile_Open_UTF16_LE_BOM.Text = "UTF-16 BOM (LE)";
             this.menuFile_Open_UTF16_LE_BOM.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
             // menuFile_Open_UTF16_BE_BOM
             // 
             this.menuFile_Open_UTF16_BE_BOM.Name = "menuFile_Open_UTF16_BE_BOM";
-            this.menuFile_Open_UTF16_BE_BOM.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open_UTF16_BE_BOM.Size = new System.Drawing.Size(164, 22);
             this.menuFile_Open_UTF16_BE_BOM.Text = "UTF-16 BOM (BE)";
             this.menuFile_Open_UTF16_BE_BOM.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
             // menuFile_Open_EucJp
             // 
             this.menuFile_Open_EucJp.Name = "menuFile_Open_EucJp";
-            this.menuFile_Open_EucJp.Size = new System.Drawing.Size(180, 22);
+            this.menuFile_Open_EucJp.Size = new System.Drawing.Size(164, 22);
             this.menuFile_Open_EucJp.Text = "EUC-JP";
             this.menuFile_Open_EucJp.Click += new System.EventHandler(this.menuFile_Open_Encoding_Sub_Click);
             // 
@@ -436,55 +429,16 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
-            // splitHorizon
-            // 
-            this.splitHorizon.BackColor = System.Drawing.SystemColors.Control;
-            this.splitHorizon.Location = new System.Drawing.Point(53, 74);
-            this.splitHorizon.Name = "splitHorizon";
-            this.splitHorizon.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.splitHorizon.Size = new System.Drawing.Size(142, 239);
-            this.splitHorizon.SplitterDistance = 94;
-            this.splitHorizon.TabIndex = 4;
-            // 
-            // splitVertical
-            // 
-            this.splitVertical.BackColor = System.Drawing.SystemColors.Control;
-            this.splitVertical.Location = new System.Drawing.Point(236, 175);
-            this.splitVertical.Name = "splitVertical";
-            // 
-            // splitVertical.Panel1
-            // 
-            this.splitVertical.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            // 
-            // splitVertical.Panel2
-            // 
-            this.splitVertical.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.splitVertical.Size = new System.Drawing.Size(263, 138);
-            this.splitVertical.SplitterDistance = 107;
-            this.splitVertical.TabIndex = 5;
-            // 
-            // fileTreeView1
-            // 
-            this.fileTreeView1.DriveNodeVisible = true;
-            this.fileTreeView1.Location = new System.Drawing.Point(618, 101);
-            this.fileTreeView1.Name = "fileTreeView1";
-            this.fileTreeView1.Size = new System.Drawing.Size(179, 181);
-            this.fileTreeView1.SpecialFolderNodeVisible = true;
-            this.fileTreeView1.TabIndex = 3;
-            // 
-            // MainForm
+            // MainFormPlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(869, 344);
-            this.Controls.Add(this.splitVertical);
-            this.Controls.Add(this.splitHorizon);
-            this.Controls.Add(this.fileTreeView1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuBar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuBar;
-            this.Name = "MainForm";
+            this.Name = "MainFormPlugin";
             this.Text = "メモ帳";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
@@ -493,10 +447,6 @@
             this.menuBar.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitHorizon)).EndInit();
-            this.splitHorizon.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitVertical)).EndInit();
-            this.splitVertical.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -546,8 +496,5 @@
         private System.Windows.Forms.ToolStripMenuItem menuSearch_ReplaceAll;
         private System.Windows.Forms.ToolStripMenuItem menuDebug;
         private System.Windows.Forms.ToolStripMenuItem menuDebug_createTestPlugin;
-        private Common.Controls.FileTree.FileTreeView fileTreeView1;
-        private System.Windows.Forms.SplitContainer splitHorizon;
-        private System.Windows.Forms.SplitContainer splitVertical;
     }
 }

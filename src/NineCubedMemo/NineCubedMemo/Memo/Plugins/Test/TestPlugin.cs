@@ -38,16 +38,21 @@ namespace NineCubed.Memo.Plugins.Test
             _pluginManager.GetEventManager().AddEventHandler(  DirSelectedEventParam.Name, this);
             _pluginManager.GetEventManager().AddEventHandler( FileSelectedEventParam.Name, this);
 
-            //コントロールを配置します
-            pnlTop.Dock = DockStyle.Top;
-            txtLog.Dock = DockStyle.Fill;
-
             return true;
         }
 
         //プラグイン配置後の初期化処理を行います
-        public void InitializePlaced() { }
+        public void InitializePlaced()
+        {
+            //コントロールを配置します
+            pnlTop.Dock = DockStyle.Top;
+            txtLog.Dock = DockStyle.Fill;
+        }
 
+        /// <summary>
+        /// プラグインID
+        /// </summary>
+        public string PluginId { get; set; } 
 
         /// <summary>
         /// プラグインのコンポーネントを返します

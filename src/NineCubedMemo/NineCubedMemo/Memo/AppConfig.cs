@@ -19,7 +19,7 @@ namespace NineCubed.Memo
         /// <summary>
         /// メインフォーム
         /// </summary>
-        MainForm _mainForm = null;
+        MainFormPlugin _mainForm = null;
 
         public void Save() {
             //ウィンドウが最小化、最大化されている場合は、標準に戻します
@@ -42,7 +42,7 @@ namespace NineCubed.Memo
         /// Configを読み込みます
         /// </summary>
         /// <returns></returns>
-        public static AppConfig Load(MainForm mainForm) {
+        public static AppConfig Load(MainFormPlugin mainForm) {
             AppConfig config = null;
 
             if (File.Exists(_path)) {

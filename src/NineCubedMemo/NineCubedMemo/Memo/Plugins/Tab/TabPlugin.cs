@@ -28,11 +28,6 @@ namespace NineCubed.Memo.Plugins.Tab
 
         }
 
-        /// <summary>
-        /// プラグインマネージャー
-        /// </summary>
-        private PluginManager _pluginManager = null;
-
         //初期処理を行います
         public bool Initialize(PluginCreateParam param)
         {
@@ -66,40 +61,23 @@ namespace NineCubed.Memo.Plugins.Tab
             return true;
         }
 
-        //プラグイン配置後の初期化処理を行います
-        public void InitializePlaced() { }
-
-        /// <summary>
-        /// プラグインのコンポーネントを返します
-        /// </summary>
-        /// <returns></returns>
-        public Component GetComponent() { return this; }
-
-        /// <summary>
-        /// プラグインのタイトル
-        /// </summary>
-        public string Title { get; set; }
-
-        /// <summary>
-        /// プラグインが終了できるかどうか
-        /// </summary>
-        /// <returns>true:終了できる  false:終了できない</returns>
-        public bool CanClosePlugin() { return true; }
-
-        /// <summary>
-        /// プラグインの終了処理
-        /// </summary>
-        public void ClosePlugin() {
-            //コントロールを削除します
-            this.Parent = null;
-            this.Dispose();
-        }
+        public void InitializePlaced() { } //プラグイン配置後の初期化処理を行います
+        private PluginManager _pluginManager = null;                    //プラグインマネージャー
+        public string    PluginId         { get; set; }                 //プラグインID
+        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string    Title            { get; set; }                 //プラグインのタイトル
+        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
 
         /// <summary>
         /// フォーカスを設定します
         /// </summary>
         public void SetFocus() {
-            //TODO 現在のタブに対して、SetFocus() を実行します
+            if (this.SelectedTab != null) {
+                //タブに割り当てられているプラグインを取得して、フォーカスを設定します
+                var plugin = _pluginManager.GetPlugin( this.SelectedTab.Controls[0] );
+                plugin.SetFocus();
+            }
         }
 
         /// <summary>
