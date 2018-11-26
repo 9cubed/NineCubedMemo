@@ -1,4 +1,6 @@
-﻿using NineCubed.Memo.Plugins.Events;
+﻿using NineCubed.Common.Files;
+using NineCubed.Common.Utils;
+using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,11 @@ namespace NineCubed.Memo.Plugins.Splitter
     /// </summary>
     public class SplitContainerPlugin : SplitContainer, IPlugin
     {
+        /// <summary>
+        /// プロパティファイル
+        /// </summary>
+        private IniFile _property = new IniFile();
+
         /******************************************************************************
          * 
          *  IPlugin
@@ -30,15 +37,19 @@ namespace NineCubed.Memo.Plugins.Splitter
             //イベントハンドラーを登録します
             _pluginManager.GetEventManager().AddEventHandler(PluginCreatedEventParam.Name, this);
 
+            //プロパティファイルを読み込みます
+            _property.Load(param.PropertyPath);
+
             if (param["orientation"] != null) {
                 if (param["orientation"].Equals("horizontal")) this.Orientation = Orientation.Horizontal;
                 if (param["orientation"].Equals("vertical"))   this.Orientation = Orientation.Vertical;
             }
 
-            this.FixedPanel = FixedPanel.Panel1; //スプリッターを移動した際に、左のパネルをリサイズしないようにする
-            this.SplitterWidth = 6;
-            this.SplitterDistance = 180; //スプリッターの位置
-            this.BackColor        = Color.LightGray; //スプリッターのバーの色
+            //スプリッターを移動した際に、左のパネルをリサイズしないようにする
+            this.FixedPanel = FixedPanel.Panel1; 
+
+            this.SplitterWidth = 6; //スプリットのバーの幅
+            this.BackColor        = Color.LightGray; //スプリットのバーの色
             this.Panel1.BackColor = SystemColors.Control;
             this.Panel2.BackColor = SystemColors.Control;
             return true;
@@ -48,14 +59,32 @@ namespace NineCubed.Memo.Plugins.Splitter
         public void InitializePlaced() {
             this.Dock = DockStyle.Fill;
             this.BringToFront();
+
+            //スプリッターの位置
+            this.SplitterDistance = StringUtils.ToInt(_property[IniFile.NO_SECTION, "distance"], 150); 
         }
+
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
         public string    PluginId         { get; set; }                 //プラグインID
         public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
         public string    Title            { get; set; }                 //プラグインのタイトル
         public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
         public void      SetFocus()       {  }                          //フォーカスを設定します
+
+        /// <summary>
+        /// プラグインの終了処理
+        /// </summary>
+        public void ClosePlugin()
+        {
+            //スプリッターの位置
+            _property[IniFile.NO_SECTION, "distance"] = this.SplitterDistance.ToString();
+            
+            //プロパティファイルを保存します
+            _property.Save();
+
+            Parent = null;
+            Dispose();
+        } 
 
         /******************************************************************************
          * 

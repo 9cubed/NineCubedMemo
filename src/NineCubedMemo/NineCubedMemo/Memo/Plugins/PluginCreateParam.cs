@@ -1,4 +1,5 @@
 ﻿using NineCubed.Common.Collections;
+using NineCubed.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +15,27 @@ namespace NineCubed.Memo.Plugins
     {
         //よく使うものだけ定義しておきます
 
+        /// <summary>
+        /// プラグインで開くファイルのパス
+        /// </summary>
         public string Path {
             get { return (string)this["path"]; }
             set {                this["path"] = value; }
         }
 
+        /// <summary>
+        /// データフォルダのパス
+        /// </summary>
         public string DataPath {
             get { return (string)this["data_path"]; }
             set {                this["data_path"] = value; }
+        }
+
+        /// <summary>
+        /// データフォルダ配下のプロパティファイルのパス
+        /// </summary>
+        public string PropertyPath {
+            get { return FileUtils.AppendPath(DataPath, "property.ini"); }
         }
 
         //値を取得します

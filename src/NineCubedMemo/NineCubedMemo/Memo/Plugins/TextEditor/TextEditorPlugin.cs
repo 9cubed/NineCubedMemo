@@ -30,6 +30,11 @@ namespace NineCubed.Memo.Plugins.TextEditor
         private PluginManager _pluginManager = null;
 
         /// <summary>
+        /// プロパティファイル
+        /// </summary>
+        private IniFile _property = new IniFile();
+
+        /// <summary>
         /// テキストファイルデータ
         /// </summary>
         public IFile TargetFile { get; set; }
@@ -67,10 +72,13 @@ namespace NineCubed.Memo.Plugins.TextEditor
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
 
+            //プロパティファイルを読み込みます
+            _property.Load(param.PropertyPath);
+
             //テキストボックスを初期化します
             txtMain.Initialize(
-                _pluginManager.Config.memo_font_name, 
-                _pluginManager.Config.memo_font_size);
+                                    _property["font", "name"],
+                StringUtils.ToFloat(_property["font", "size"]));
 
             //テキストボックスのドラッグ＆ドロップ対応
             txtMain.AllowDrop = true; //D&Dを許可します

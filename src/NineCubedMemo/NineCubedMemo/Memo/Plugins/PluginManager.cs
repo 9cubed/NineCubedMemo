@@ -81,11 +81,6 @@ namespace NineCubed.Memo.Plugins
         public Form MainForm { get; set; }
 
         /// <summary>
-        /// アプリの Config
-        /// </summary>
-        public AppConfig Config { get; set; }
-
-        /// <summary>
         /// コンストラクタ
         /// </summary>
         public PluginManager()
@@ -178,6 +173,7 @@ namespace NineCubed.Memo.Plugins
             //プラグインの割り当て
             //プラグインがコンポーネントを持つ場合は、プラグインのコンポーネントを配置します
             if (plugin.GetComponent() != null) {
+
                 if (parentControl == null) {
                     //割当先が未指定の場合
                     //コントロールがフォーム以外か？
@@ -189,7 +185,9 @@ namespace NineCubed.Memo.Plugins
                     }
                 } else {
                     //割当先が指定されている場合
-                    ((Control)plugin.GetComponent()).Parent = parentControl;
+                    if (plugin.GetComponent() is Control control) {
+                        control.Parent = parentControl;
+                    }
                 }
             }
 

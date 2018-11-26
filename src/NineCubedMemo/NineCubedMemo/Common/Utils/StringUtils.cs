@@ -189,7 +189,7 @@ namespace NineCubed.Common.Utils
         {
             var index = line.IndexOf('=');
             if (index >= 0) {
-                //値に「=」が含まれる可能性があるため、split() は未使用
+                //値に「=」を含む可能性があるため、split() は使用しない
                 var key   = line.Substring(0, index).Trim();
                 var value = line.Substring(index + 1).Trim();
                 if (key.Equals("")) return (null, null); //キーが空の場合は null 扱いにする
@@ -200,6 +200,33 @@ namespace NineCubed.Common.Utils
             return (null, null);
         }
 
+        /// <summary>
+        /// 先頭の文字を大文字にして、後ろは小文字にします
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string FirstCharToUpper(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+
+            var firstChar = s[0].ToString().ToUpper();
+            if (s.Length == 1) {
+                return firstChar;
+            } else {
+                return firstChar + s.Substring(1).ToLower();
+            }
+        }
+
+        /// <summary>
+        /// 文字列を数値にして返します。
+        /// 変換できない場合はデフォルト値を返します
+        /// </summary>
+        /// <param name="s">文字列</param>
+        /// <param name="defaultValue">デフォルト値</param>
+        /// <returns>数値</returns>
+        public static int ToInt  (string s, int defaultValue = 0) => int.TryParse(s, out int result) ? result : defaultValue;
+        public static int ToFloat(string s, int defaultValue = 0) => int.TryParse(s, out int result) ? result : defaultValue;
+        
 
     } //class
 }

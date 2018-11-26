@@ -92,6 +92,9 @@
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="Memo\AppConfig.cs" />
+    <Compile Include="Memo\Plugins\EmptyPanel\PanelPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\EventManager.cs" />
     <Compile Include="Memo\Plugins\Events\FileSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\DirSelectedEventParam.cs" />
@@ -128,6 +131,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Memo\Plugins\Interfaces\ISearchPlugin.cs" />
+    <Compile Include="Memo\Plugins\PathField\PathFieldPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\PathField\PathFieldPlugin.Designer.cs">
+      <DependentUpon>PathFieldPlugin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Memo\Plugins\PluginCreateParam.cs" />
     <Compile Include="Memo\Plugins\PluginDefineData.cs" />
     <Compile Include="Memo\Plugins\PluginLoader\PluginLoaderPlugin.cs" />
@@ -178,6 +187,9 @@
     <EmbeddedResource Include="Memo\Plugins\FileTree\FileTreePlugin.resx">
       <DependentUpon>FileTreePlugin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\PathField\PathFieldPlugin.resx">
+      <DependentUpon>PathFieldPlugin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\Tab\TabPlugin.resx">
       <DependentUpon>TabPlugin.cs</DependentUpon>
     </EmbeddedResource>
@@ -200,13 +212,20 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\property.ini" />
     <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\NineCubed.Memo.MainFormPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPlugin\NineCubed.Memo.Plugins.FileList.FileListPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\NineCubed.Memo.Plugins.FileTree.FileTreePlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\NineCubed.Memo.Plugins.PathField.PathFieldPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_list.ini">
@@ -218,6 +237,7 @@
     <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_extension.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\data\property.ini" />
     <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -225,6 +245,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\NineCubed.Memo.Plugins.Test.TestPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\data\property.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin.ini">
@@ -261,6 +284,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <Content Include="Memo\Plugins\PathField\resource\MoveToParentDir.png" />
     <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\new.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -321,10 +345,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="plugins\data\" />
-    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\data\" />
-    <Folder Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

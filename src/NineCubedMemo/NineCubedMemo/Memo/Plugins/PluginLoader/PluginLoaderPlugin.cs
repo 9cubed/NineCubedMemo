@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace NineCubed.Memo.Plugins.PluginLoader
 {
@@ -36,7 +37,7 @@ namespace NineCubed.Memo.Plugins.PluginLoader
         ///        class プラグインのフルクラス名
         ///        param 生成時の引数
         /// </summary>
-        private readonly IniFile _pluginListIni = new IniFile();
+        ///private readonly IniFile _pluginListIni = new IniFile();
 
         /// <summary>
         /// コンストラクタ
@@ -111,7 +112,9 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                 var pluginClassName = subData["class"];
                 var pluginId        = subData["id"];
                 var pluginParam     = subData["param"];
-
+                var pluginParentId  = subData["parent_id"]; //割当先の親プラグイン
+                var pluginDock      = subData["dock"];      //割当先の DockStyle
+                
                 //iniファイルのチェック
                 if (string.IsNullOrEmpty(pluginClassName)) {
                     throw new Exception("plugin_list.ini の [" + "plugin_" + no +"] に class が定義されていません。");
@@ -135,8 +138,29 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                     }
                 }
 
+                //割当先が指定されている場合は、割当先のプラグインのコントロールを取得します
+                Control parentControl = null;
+                if (pluginParentId != null) {
+                    //親プラグインIDをキーにして、親プラグインを取得します
+                    var parentPlugin = _pluginManager.GetPlugin(pluginParentId);
+                    if (parentPlugin != null) {
+                        parentControl = parentPlugin.GetComponent() as Control;
+                    }
+                }
+                
                 //プラグインを生成します
-                _pluginManager.CreatePluginInstance(pluginType, param, null, pluginId);
+                var plugin = _pluginManager.CreatePluginInstance(pluginType, param, parentControl, pluginId);
+
+                //Dockが指定されている場合は、Dockを設定します
+                if (pluginDock != null) {
+                    if (plugin.GetComponent() is Control control) {
+                        //文字列を DockStyle の Enum に変換して Dock に設定します
+                        if (Enum.TryParse(pluginDock, true, out DockStyle dock)) {
+                            control.Dock = dock;
+                            //control.BringToFront();
+                        }
+                    }
+                }
             }
         }
 

@@ -27,9 +27,9 @@ namespace NineCubed.Memo
     public partial class MainFormPlugin : Form, IPlugin, ISearchString
     {
         /// <summary>
-        /// Config
+        /// プロパティファイル
         /// </summary>
-        private AppConfig _config;
+        private IniFile _property = new IniFile();
 
         /// <summary>
         /// 検索条件
@@ -138,12 +138,11 @@ namespace NineCubed.Memo
             //メインフォームとして設定します
             _pluginManager.MainForm = this;
 
-            //Configを読み込みます
-            _config = AppConfig.Load(this);
+            //プロパティファイルを読み込みます
+            LoadProperty(param.PropertyPath);
 
             //ConfigをPluginManagerに設定します
             _pluginManager = PluginManager.GetInstance();
-            _pluginManager.Config = _config;
 
             //ダイアログの初期設定
             openFileDialog.Filter = 
@@ -196,19 +195,68 @@ namespace NineCubed.Memo
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             try {
+                //プロパティを保存します
+                SaveProperty();
+
                 //全てのプラグインを終了します
                 _pluginManager.CloseAllPlugins();
 
                 //デバッグ用チェック処理
                 _pluginManager.CheckPluginLeak();
                 _pluginManager.GetEventManager().CheckEventLeak();
-
-                //Configを保存します
-                _config.Save();
+                
             } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
             }
         }
+
+        /// <summary>
+        /// プロパティファイルを読み込みます
+        /// </summary>
+        private void LoadProperty(string path)
+        {
+            //プロパティファイルを読み込みます
+            _property.Load(path);
+
+            if (_property["size", "width"] == null || _property["size", "height"] == null) {
+                //幅と高さが指定されていない場合
+                //フォームを中央に表示します
+                var screenBounds = Screen.PrimaryScreen.Bounds;
+                this.Width  = (int)(screenBounds.Width  * 0.6);
+                this.Height = (int)(screenBounds.Height * 0.6);
+                this.StartPosition = FormStartPosition.CenterScreen;
+            } else {
+                //幅と高さが指定されている場合
+                this.StartPosition = FormStartPosition.Manual;
+                this.Left   = StringUtils.ToInt(_property["location", "left"]  , 0);
+                this.Top    = StringUtils.ToInt(_property["location", "top"]   , 0);
+                this.Width  = StringUtils.ToInt(_property["size"    , "width"] , 600);
+                this.Height = StringUtils.ToInt(_property["size"    , "height"], 400);
+            }
+        }
+
+        /// <summary>
+        /// プロパティファイルに保存します
+        /// </summary>
+        private void SaveProperty()
+        {
+            //ウィンドウが最小化、最大化されている場合は、標準に戻します
+            //(Configに保存する際のサイズがわからないため)
+            if (this.WindowState != FormWindowState.Normal) {
+                this.WindowState  = FormWindowState.Normal;
+            }
+
+            //Configに現在の状態を設定します
+            _property["location", "left"]   = this.Left  .ToString();
+            _property["location", "top"]    = this.Top   .ToString();
+            _property["size"    , "width"]  = this.Width .ToString();
+            _property["size"    , "height"] = this.Height.ToString();
+
+            //プロパティを保存します
+            _property.Save();
+        }
+
+
 
         /// <summary>
         /// メニュー・ヘルプ・バージョン情報 の Clickイベント

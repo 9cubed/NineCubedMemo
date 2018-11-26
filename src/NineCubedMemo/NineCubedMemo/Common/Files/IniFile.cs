@@ -100,14 +100,19 @@ namespace NineCubed.Common.Files
         public bool IsReadOnly { get; set; }
 
         /// <summary>
+        /// 文字コード
+        /// </summary>
+        private Encoding encoding = new UTF8Encoding(false);
+
+        /// <summary>
         /// iniファイルを出力します
         /// <param name="path">パス</param>
         /// </summary>
         public void Save(string path = null)
         {
-            if (path == null) path = this.Path;
+            if (path != null) this.Path = path;
 
-            using (var writer = new StreamWriter(path, false, Encoding.GetEncoding(932))) {
+            using (var writer = new StreamWriter(this.Path, false, encoding)) {
                 //セクション名が未指定の Map を先にファイル出力します
                 WriteKeyValue(writer, _data[""]);
 
@@ -144,10 +149,12 @@ namespace NineCubed.Common.Files
         /// <param name="path">パス</param>
         public void Load(string path = null)
         {
-            if (path == null) path = this.Path;
+            if (path != null) this.Path = path; //パスが指定されている場合は、パスを保持します
+            if (File.Exists(this.Path) == false) return; //ファイルか存在しない場合
+
             string section = ""; //セクション名
 
-            using(var reader = new StreamReader(path, Encoding.GetEncoding(932))) {
+            using(var reader = new StreamReader(this.Path, encoding)) {
                 while (reader.EndOfStream == false) {
                     //ファイルから1行読み込みます
                     var line = reader.ReadLine().Trim();
