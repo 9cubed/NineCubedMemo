@@ -43,6 +43,12 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                 var iniFileName = pluginClassName + ".ini";
                 var iniPath = FileUtils.AppendPath(dirPath, iniFileName);
 
+                //ファイルチェック
+                if (File.Exists(iniPath) == false) {
+                    //TODO
+                    throw new Exception(iniPath + "が見つかりません。");
+                }
+
                 //iniファイルを読み込みます
                 var iniFile = new IniFile();
                 iniFile.Load(iniPath);
