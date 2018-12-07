@@ -306,5 +306,60 @@ namespace NineCubed.Common.Utils
             }
         }
 
+        /// <summary>
+        /// フォルダを作成します。
+        /// </summary>
+        /// <param name="path">フォルダを作成するフォルダのパス</param>
+        /// <returns>作成したフォルダのパス</returns>
+        public static string CreateNewDir(string path) {
+            string dirPath = path + "/新しいフォルダ";
+
+            if (Directory.Exists(dirPath) == false) {
+                //同じフォルダがない場合
+                Directory.CreateDirectory(dirPath);
+                return dirPath;
+            }
+
+            for (int i = 2; i <= 9999; i++) {
+                dirPath = path + "/新しいフォルダ(" + i.ToString() + ")";
+
+                if (Directory.Exists(dirPath) == false) {
+                    //同じフォルダがない場合
+                    Directory.CreateDirectory(dirPath);
+                    return dirPath;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// テキストファイルを作成します。
+        /// </summary>
+        /// <param name="path">テキストファイルを作成するフォルダのパス</param>
+        /// <returns>作成したファイルのパス</returns>
+        public static string CreateNewTextFile(string path) {
+            string filePath = path + "/新しいファイル.txt";
+
+            if (File.Exists(filePath) == false) {
+                //同じフォルダがない場合
+                File.Create(filePath).Close();
+                return filePath;
+            }
+
+            for (int i = 2; i <= 9999; i++) {
+                filePath = path + "/新しいファイル(" + i.ToString() + ").txt";
+
+                if (File.Exists(filePath) == false) {
+                    //同じファイルがない場合
+                    File.Create(filePath).Close();
+                    return filePath;
+                }
+            }
+
+            return null;
+        }
+
+
     } //class
 }

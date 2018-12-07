@@ -157,7 +157,6 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                         //文字列を DockStyle の Enum に変換して Dock に設定します
                         if (Enum.TryParse(pluginDock, true, out DockStyle dock)) {
                             control.Dock = dock;
-                            //control.BringToFront();
                         }
                     }
                 }

@@ -55,7 +55,7 @@ namespace NineCubed.Common.Controls.FileList
             this.AllowUserToDeleteRows = false; //削除禁止
             this.AllowUserToResizeRows = false; //リサイズ禁止
             this.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.ReadOnly = true; //読み取り専用
+            //this.ReadOnly = true; //読み取り専用 -> 各列オブジェクトで指定するようにした
             this.RowTemplate.Height = 23;
             this.SelectionMode = DataGridViewSelectionMode.FullRowSelect;  //行選択
             this.RowHeadersVisible = false; //行ヘッダの列を非表示にする
@@ -124,22 +124,28 @@ namespace NineCubed.Common.Controls.FileList
 
             //ファイル一覧をループして、行を追加します
             foreach (var path in pathList) {
-
-                //ファイル情報を取得します
-                var fileInfo = new FileInfo(path);
-
                 //行データの生成
                 var rowData = new object[this.ColumnCount];
 
-                //行データの設定
-                int i = 0;
-                foreach (IFileListColumn column in this.Columns) {
-                    rowData[i] = column.ToString(fileInfo);
-                    i++;
-                }
-
                 //行を追加します
-                this.Rows.Add(rowData);
+                var rowIndex = this.Rows.Add(rowData);
+
+                //行データを設定します
+                SetRowData(rowIndex, path);
+            }
+        }
+
+        //行データを設定します
+        public void SetRowData(int rowIndex, string path)
+        {
+            //ファイル情報を取得します
+            var fileInfo = new FileInfo(path);
+
+            //行データの設定
+            int colIndex = 0;
+            foreach (IFileListColumn column in this.Columns) {
+                this[colIndex, rowIndex].Value = column.ToString(fileInfo);
+                colIndex++;
             }
         }
 
@@ -246,6 +252,15 @@ namespace NineCubed.Common.Controls.FileList
         /// <param name="value2"></param>
         /// <returns></returns>
         int SortCompare(string value1, string value2);
+
+        /// <summary>
+        /// 編集で値が変更された場合に呼ばれます
+        /// ファイル名カラムの場合は、ファイル名の変更などを行います
+        /// </summary>
+        /// <param name="orgFile"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
+        FileInfo ValueChanged(FileInfo orgFile, string newValue);
     }
 
 
@@ -273,11 +288,14 @@ namespace NineCubed.Common.Controls.FileList
         /// フォルダの場合はnullを返します
         /// </summary>
         /// <param name="file"></param>
-        /// <returns>true:フォルダ false:ファイル</returns>
+        /// <returns></returns>
         public FileInfo IsFile(FileInfo file) => file.Attributes.HasFlag(FileAttributes.Directory) ? null : file;
 
         //値の比較をします。ソートモードが Programmatic の場合のみ使用します
         public virtual int SortCompare(string value1, string value2) => (value1 ?? "").CompareTo(value2 ?? "");
+
+        //編集で値が変更された場合に呼ばれます
+        public virtual FileInfo ValueChanged(FileInfo orgFile, string newValue) => orgFile;
     }
 
 
@@ -289,6 +307,7 @@ namespace NineCubed.Common.Controls.FileList
     {
         public FileKindColumn() : base()
         {
+            this.ReadOnly = true;
             this.HeaderText = "";
             this.Width = 22;
         }
@@ -310,6 +329,7 @@ namespace NineCubed.Common.Controls.FileList
     {
         public PathColumn() : base()
         {
+            this.ReadOnly = true;
             this.HeaderText = "パス";
         }
 
@@ -327,13 +347,41 @@ namespace NineCubed.Common.Controls.FileList
     {
         public FileNameColumn() : base()
         {
+            this.ReadOnly = false;
             this.HeaderText = "ファイル名";
         }
 
         //表示する値を返します
         override
         public string ToString(FileInfo file) => file.Name;
-    }
+
+        //編集で値が変更された場合に呼ばれます
+        override
+        public FileInfo ValueChanged(FileInfo orgFile, string newValue)
+        {
+            var oldPath = orgFile.FullName;
+            var newPath = FileUtils.AppendPath(orgFile.DirectoryName, newValue);
+
+            //ファイル名の変更がない場合は処理を抜けます
+            if (orgFile.Name.Equals(newValue)) return orgFile;
+
+            try {
+                if (FileUtils.IsFile(oldPath)) {
+                    //ファイルの場合
+                    File.Move(oldPath, newPath);
+                } else {
+                    //フォルダの場合
+                    Directory.Move(oldPath, newPath);
+                }
+            } catch (Exception ex) {
+                __.ShowErrorMsgBox(ex.Message);
+                return orgFile;
+            }
+
+            return new FileInfo(newPath);
+        }
+
+    } //class
 
 
 
@@ -344,12 +392,48 @@ namespace NineCubed.Common.Controls.FileList
     {
         public FileExtensionColumn() : base()
         {
+            this.ReadOnly = false;
             this.HeaderText = "拡張子";
         }
 
         //表示する値を返します
         override
         public string ToString(FileInfo file) => IsFile(file)?.Extension;
+
+        //編集で値が変更された場合に呼ばれます
+        override
+        public FileInfo ValueChanged(FileInfo orgFile, string newValue)
+        {
+            //フォルダの場合は処理しない
+            if (FileUtils.IsFile(orgFile.FullName) == false) return orgFile; 
+
+            //新旧の拡張子を取得します
+            var oldExt = Path.GetExtension(orgFile.FullName).Replace(".", "");
+            var newExt = newValue.Replace(".", ""); //入力値の先頭に「.」がある場合は削除する
+
+            //変更がない場合は処理を抜けます
+            if (oldExt.Equals(newExt)) return orgFile; 
+
+            var oldDirPath  = orgFile.DirectoryName;                          //フルパス
+            var oldFileName = Path.GetFileNameWithoutExtension(orgFile.Name); //拡張子を除いたファイル名
+            var newPath     = FileUtils.AppendPath(oldDirPath, oldFileName + "." + newExt);
+
+            try {
+                if (FileUtils.IsFile(orgFile.FullName)) {
+                    //ファイルの場合
+                    File.Move(orgFile.FullName, newPath);
+                } else {
+                    //フォルダの場合
+                    Directory.Move(orgFile.FullName, newPath);
+                }
+            } catch (Exception ex) {
+                __.ShowErrorMsgBox(ex.Message);
+                return orgFile;
+            }
+
+            return new FileInfo(newPath);
+
+        }
     }
 
 
@@ -361,6 +445,7 @@ namespace NineCubed.Common.Controls.FileList
     {
         public FileSizeColumn() : base()
         {
+            this.ReadOnly = true;
             this.HeaderText = "サイズ";
             this.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             this.SortMode = DataGridViewColumnSortMode.Automatic; //ヘッダークリック時にソート(プログラム)するようにする
@@ -368,13 +453,24 @@ namespace NineCubed.Common.Controls.FileList
 
         //表示する値を返します
         override
-        public string ToString(FileInfo file) => IsFile(file)?.Length.ToString();
+        public string ToString(FileInfo file) {
+            if (IsFile(file) != null) {
+                return StringUtils.GetStringByteSize(file.Length);
+            } else {
+                return "";
+            }
+        }
 
         override
         public int SortCompare(string sValue1, string sValue2)
         {
-            long.TryParse(sValue1?.ToString(), out long iValue1);
-            long.TryParse(sValue2?.ToString(), out long iValue2);
+            var iValue1 = StringUtils.GetLongByteSize(sValue1?.ToString());
+            var iValue2 = StringUtils.GetLongByteSize(sValue2?.ToString());
+
+            //文字列が空の場合(フォルダの場合)は、-1 として扱う
+            if (string.IsNullOrEmpty(sValue1)) iValue1 = -1;
+            if (string.IsNullOrEmpty(sValue2)) iValue2 = -1;
+
             return iValue1 > iValue2 ? 1 : -1;
         }
     }
@@ -388,6 +484,7 @@ namespace NineCubed.Common.Controls.FileList
     {
         public FileUpdateDateColumn() : base()
         {
+            this.ReadOnly = false;
             this.HeaderText = "更新日時";
         }
 
@@ -396,7 +493,28 @@ namespace NineCubed.Common.Controls.FileList
         public string ToString(FileInfo file) {
             return 
                 file.LastWriteTime.ToShortDateString() + " " + 
-                file.LastWriteTime.ToShortTimeString();
+                file.LastWriteTime.ToString("HH:mm");
+        }
+
+        //編集で値が変更された場合に呼ばれます
+        override
+        public FileInfo ValueChanged(FileInfo orgFile, string newValue)
+        {
+            if (DateTime.TryParse(newValue, out DateTime dt)) {
+                try {
+                    //更新日時を変更します
+                    if (FileUtils.IsFile(orgFile.FullName)) {
+                        File.SetLastWriteTime(orgFile.FullName, dt);
+                    } else {
+                        Directory.SetLastWriteTime(orgFile.FullName, dt);
+                    }
+                } catch (Exception ex) {
+                    __.ShowErrorMsgBox(ex.Message);
+                    return orgFile;
+                }
+            }
+            
+            return orgFile;
         }
     }
 

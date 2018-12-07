@@ -9,6 +9,8 @@ using System.Windows.Forms;
 
 namespace NineCubed.Memo
 {
+    //TODO 削除
+    /*
     public class AppConfig
     {
         /// <summary>
@@ -86,4 +88,5 @@ namespace NineCubed.Memo
         public float  memo_font_size = 12;
 
     } //class
+    */
 }

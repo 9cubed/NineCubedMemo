@@ -335,7 +335,7 @@
             // menuMacro_StartRec
             // 
             this.menuMacro_StartRec.Name = "menuMacro_StartRec";
-            this.menuMacro_StartRec.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.menuMacro_StartRec.ShortcutKeys = System.Windows.Forms.Keys.F9;
             this.menuMacro_StartRec.Size = new System.Drawing.Size(222, 22);
             this.menuMacro_StartRec.Text = "キー操作の記録開始・終了";
             this.menuMacro_StartRec.Click += new System.EventHandler(this.menuMacro_StartRec_Click);
@@ -343,7 +343,7 @@
             // menuMacro_Play
             // 
             this.menuMacro_Play.Name = "menuMacro_Play";
-            this.menuMacro_Play.ShortcutKeys = System.Windows.Forms.Keys.F2;
+            this.menuMacro_Play.ShortcutKeys = System.Windows.Forms.Keys.F10;
             this.menuMacro_Play.Size = new System.Drawing.Size(222, 22);
             this.menuMacro_Play.Text = "キー操作の再生";
             this.menuMacro_Play.Click += new System.EventHandler(this.menuMacro_Play_Click);
@@ -373,7 +373,7 @@
             // menuHelp_version
             // 
             this.menuHelp_version.Name = "menuHelp_version";
-            this.menuHelp_version.Size = new System.Drawing.Size(142, 22);
+            this.menuHelp_version.Size = new System.Drawing.Size(180, 22);
             this.menuHelp_version.Text = "バージョン情報";
             this.menuHelp_version.Click += new System.EventHandler(this.menuHelp_version_Click);
             // 

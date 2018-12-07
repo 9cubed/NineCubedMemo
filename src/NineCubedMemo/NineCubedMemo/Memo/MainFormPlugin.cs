@@ -552,7 +552,7 @@ namespace NineCubed.Memo
                 var pluginCreateParam = new PluginCreateParam {
                     ["path"]      = path, //選択されたパス
                     ["encoding"]  = null, //文字コード
-                    ["is_binary"] = true  //テキストモード
+                    ["is_binary"] = true  //バイナリーモード
                 };
 
                 //テキストエディタープラグインを生成します

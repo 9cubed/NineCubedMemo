@@ -226,7 +226,49 @@ namespace NineCubed.Common.Utils
         /// <returns>数値</returns>
         public static int ToInt  (string s, int defaultValue = 0) => int.TryParse(s, out int result) ? result : defaultValue;
         public static int ToFloat(string s, int defaultValue = 0) => int.TryParse(s, out int result) ? result : defaultValue;
+
+        /// <summary>
+        /// サイズの単位の変換用
+        /// </summary>
+        const long KILO = 1024;
+        const long MEGA = KILO * 1024;
+        const long GIGA = MEGA * 1024;
+        const long TERA = GIGA * 1024;
+
+        /// <summary>
+        /// 単位付きのサイズを返します。
+        /// </summary>
+        /// <param name="size">サイズ</param>
+        /// <returns>単位付きのサイズ</returns>
+        public static String GetStringByteSize(long size)
+        {
+            if (size >= TERA) return ((double)size / TERA).ToString("f1") + " TB";
+            if (size >= GIGA) return ((double)size / GIGA).ToString("f1") + " GB";
+            if (size >= MEGA) return ((double)size / MEGA).ToString("f1") + " MB";
+            if (size >= KILO) return ((double)size / KILO).ToString("f1") + " KB";
+            
+            return (size == 0) ? "0 KB" : "1 KB";
+        }
         
+        /// <summary>
+        /// 単位付きのサイズから単位なしの数値に変換して返します
+        /// </summary>
+        /// <param name="stringSize"></param>
+        /// <returns></returns>
+        public static long GetLongByteSize(string stringSize)
+        {
+            //単位を取得します
+            var unit = StringUtils.Right(stringSize, 2);
+            double.TryParse(StringUtils.RemoveRight(stringSize, 2).TrimEnd(), out double size);
+
+            if (unit.Equals("TB")) return (long)(size * TERA);
+            if (unit.Equals("GB")) return (long)(size * GIGA);
+            if (unit.Equals("MB")) return (long)(size * MEGA);
+            if (unit.Equals("KB")) return (long)(size * KILO);
+
+            return (long)size;
+        }
+
 
     } //class
 }

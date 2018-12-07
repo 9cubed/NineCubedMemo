@@ -105,6 +105,21 @@
     <Compile Include="Memo\Plugins\FileList\FileListPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\FileList\Menus\CreateDirMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\FileList\Menus\CreateFileMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\FileList\Menus\OpenFileBinaryMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\FileList\Menus\OpenFileEncodingMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\FileList\Menus\OpenFileMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\FileTree\FileTreePlugin.cs">
       <SubType>Component</SubType>
     </Compile>
