@@ -1,6 +1,6 @@
-﻿namespace NineCubed.Memo
+﻿namespace NineCubed.Memo.Plugins.SearchForm
 {
-    partial class SearchForm
+    partial class SearchInputForm
     {
         /// <summary>
         /// Required designer variable.
@@ -104,7 +104,7 @@
             this.chkCase.Name = "chkCase";
             this.chkCase.Size = new System.Drawing.Size(154, 16);
             this.chkCase.TabIndex = 6;
-            this.chkCase.Text = "大文字・小文字を区別する";
+            this.chkCase.Text = "大文字・小文字を無視する";
             this.chkCase.UseVisualStyleBackColor = true;
             this.chkCase.CheckedChanged += new System.EventHandler(this.chkCase_CheckedChanged);
             // 
@@ -149,7 +149,7 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // SearchForm
+            // SearchInputForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -168,8 +168,10 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.Name = "SearchForm";
+            this.Name = "SearchInputForm";
             this.Text = "検索・置換";
+            this.TopMost = true;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SearchInputForm_FormClosed);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchForm_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();

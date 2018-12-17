@@ -82,6 +82,12 @@
     <Compile Include="Common\Controls\TextBoxEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Common\Controls\ThreePaneContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Common\Controls\ThreePaneContainer.Designer.cs">
+      <DependentUpon>ThreePaneContainer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Files\BinaryFile.cs" />
     <Compile Include="Common\Files\CsvFile.cs" />
     <Compile Include="Common\Files\AnyFile.cs" />
@@ -91,7 +97,17 @@
     <Compile Include="Common\Utils\BinaryUtils.cs" />
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
+    <Compile Include="frmTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTest.Designer.cs">
+      <DependentUpon>frmTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Memo\AppConfig.cs" />
+    <Compile Include="Memo\Plugins\Dialogs\OpenDialog\IOpenDialog.cs" />
+    <Compile Include="Memo\Plugins\Dialogs\OpenDialog\OpenDialogPlugin.cs" />
+    <Compile Include="Memo\Plugins\Dialogs\SaveDialog\ISaveDialog.cs" />
+    <Compile Include="Memo\Plugins\Dialogs\SaveDialog\SaveDialogPlugin.cs" />
     <Compile Include="Memo\Plugins\EmptyPanel\PanelPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -129,8 +145,44 @@
     <Compile Include="Memo\Plugins\Interfaces\INewLinePlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IPlugin.cs" />
     <Compile Include="Memo\Exceptions\CancelException.cs" />
-    <Compile Include="Memo\Interfaces\ISearchString.cs" />
-    <Compile Include="Memo\Interfaces\SearchData.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IRefreshPlugin.cs" />
+    <Compile Include="Memo\Plugins\Menus\DebugMenu\DebugMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\DisplayMenu\DisplayMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\EditMenu\EditMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\FileMenu\FileMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\FileMenu\OpenFileInBinaryMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\FileMenu\OpenFileMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\FileMenu\OpenFileWithEncordingMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\FileMenu\SaveFileMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\HelpMenu\HelpMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\MacroMenu\MacroMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\MainMenu\MainMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\SearchMenu\SearchMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\SearchForm\SearchData.cs" />
     <Compile Include="Memo\KeyMacro.cs" />
     <Compile Include="Memo\MainFormPlugin.cs">
       <SubType>Form</SubType>
@@ -156,6 +208,8 @@
     <Compile Include="Memo\Plugins\PluginDefineData.cs" />
     <Compile Include="Memo\Plugins\PluginLoader\PluginLoaderPlugin.cs" />
     <Compile Include="Memo\Plugins\PluginManager.cs" />
+    <Compile Include="Memo\Plugins\SearchForm\ISearchForm.cs" />
+    <Compile Include="Memo\Plugins\SearchForm\SearchFormPlugin.cs" />
     <Compile Include="Memo\Plugins\Splitter\SplitContainerPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -174,11 +228,23 @@
     <Compile Include="Memo\Plugins\TextEditor\TextEditorPlugin.Designer.cs">
       <DependentUpon>TextEditorPlugin.cs</DependentUpon>
     </Compile>
-    <Compile Include="Memo\SearchForm.cs">
+    <Compile Include="Memo\Plugins\SearchForm\SearchInputForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Memo\SearchForm.Designer.cs">
-      <DependentUpon>SearchForm.cs</DependentUpon>
+    <Compile Include="Memo\Plugins\SearchForm\SearchInputForm.Designer.cs">
+      <DependentUpon>SearchInputForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Memo\Plugins\TextEditor\TitleListbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Tools\FileTool\OpenFileToolPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Tools\FileTool\SaveFileToolPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Tools\MainToolPlugin.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -192,6 +258,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Controls\TextBoxEx.resx">
       <DependentUpon>TextBoxEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Controls\ThreePaneContainer.resx">
+      <DependentUpon>ThreePaneContainer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTest.resx">
+      <DependentUpon>frmTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\MainFormPlugin.resx">
       <DependentUpon>MainFormPlugin.cs</DependentUpon>
@@ -214,8 +286,11 @@
     <EmbeddedResource Include="Memo\Plugins\TextEditor\TextEditorPlugin.resx">
       <DependentUpon>TextEditorPlugin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Memo\SearchForm.resx">
-      <DependentUpon>SearchForm.cs</DependentUpon>
+    <EmbeddedResource Include="Memo\Plugins\SearchForm\SearchInputForm.resx">
+      <DependentUpon>SearchInputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\TextEditor\TitleListbox.resx">
+      <DependentUpon>TitleListbox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -233,6 +308,12 @@
     <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\NineCubed.Memo.MainFormPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.OpenDialog.OpenDialogPlugin\NineCubed.Memo.Plugins.Dialogs.OpenDialog.OpenDialogPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.SaveDialog.SaveDialogPlugin\NineCubed.Memo.Plugins.Dialogs.SaveDialog.SaveDialogPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -240,6 +321,30 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\NineCubed.Memo.Plugins.FileTree.FileTreePlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DisplayMenu.DisplayMenuPlugin\NineCubed.Memo.Plugins.Menus.DisplayMenu.DisplayMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.EditMenu.EditMenuPlugin\NineCubed.Memo.Plugins.Menus.EditMenu.EditMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.FileMenu.FileMenuPlugin\NineCubed.Memo.Plugins.Menus.FileMenu.FileMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.HelpMenu.HelpMenuPlugin\NineCubed.Memo.Plugins.Menus.HelpMenu.HelpMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.MacroMenu.MacroMenuPlugin\NineCubed.Memo.Plugins.Menus.MacroMenu.MacroMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.MainMenu.MainMenuPlugin\NineCubed.Memo.Plugins.Menus.MainMenu.MainMenuPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.SearchMenu.SearchMenuPlugin\NineCubed.Memo.Plugins.Menus.SearchMenu.SearchMenuPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\NineCubed.Memo.Plugins.PathField.PathFieldPlugin.ini">
@@ -270,6 +375,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.MainToolPlugin\NineCubed.Memo.Plugins.Tools.MainToolPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\startup.ini">
@@ -334,6 +448,15 @@
     <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\root.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin\data\img\opened_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\data\img\save.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="resource\file\cd.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -363,9 +486,11 @@
     <Content Include="メモ.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Memo\Interfaces\" />
     <Folder Include="plugins\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\data\" />
   </ItemGroup>

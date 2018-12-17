@@ -1,4 +1,5 @@
 ﻿using NineCubed.Common.Files;
+using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,31 @@ namespace NineCubed.Memo.Plugins.EmptyPanel
         public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
         public void      SetFocus()       {  }                          //フォーカスを設定します
 
+        /******************************************************************************
+         * 
+         *  プラグイン用イベントハンドラー
+         * 
+         ******************************************************************************/ 
 
+        /// <summary>
+        /// プラグイン生成イベント
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="sender"></param>
+        public void PluginEvent_PluginCreated(EventParam param, object sender) {
+
+            //生成されたプラグインを取得します
+            var plugin = ((PluginCreatedEventParam)param).Plugin;
+
+            //生成されたプラグインのコントロールをタブに設定します
+            var cotrol = ((Control)plugin.GetComponent());
+            cotrol.Parent = this;
+            cotrol.Dock = DockStyle.Fill;
+            cotrol.BringToFront();
+
+            //プラグインにフォーカスを設定します
+            plugin.SetFocus();
+        }
 
 
     } //class

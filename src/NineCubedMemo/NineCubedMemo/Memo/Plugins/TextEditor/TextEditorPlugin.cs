@@ -16,13 +16,13 @@ using NineCubed.Memo.Menus;
 using NineCubed.Common.Calculation;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Common.Files;
-using NineCubed.Memo.Interfaces;
 using NineCubed.Common.Controls;
 using NineCubed.Memo.Plugins.Events;
+using NineCubed.Memo.Plugins.SearchForm;
 
 namespace NineCubed.Memo.Plugins.TextEditor
 {
-    public partial class TextEditorPlugin : UserControl, IPlugin, IFilePlugin, IEditPlugin, ISearchPlugin, INewLinePlugin, IKeyMacroPlugin
+    public partial class TextEditorPlugin : UserControl, IPlugin, IFilePlugin, IEditPlugin, ISearchPlugin, INewLinePlugin, IKeyMacroPlugin, IRefreshPlugin
     {
         /// <summary>
         /// プラグインマネージャー
@@ -48,7 +48,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// 検索条件
         /// </summary>
         public SearchData GetSearchData() {
-            return _pluginManager.GetSearchData();
+            return (SearchData)_pluginManager.CommonData[CommonDataKeys.SearchData];
         }
 
         /// <summary>
@@ -78,16 +78,14 @@ namespace NineCubed.Memo.Plugins.TextEditor
             //テキストボックスを初期化します
             txtMain.Initialize(
                                     _property["font", "name"],
-                StringUtils.ToFloat(_property["font", "size"]));
+                StringUtils.ToFloat(_property["font", "size"])
+            );
 
             //テキストボックスのドラッグ＆ドロップ対応
             txtMain.AllowDrop = true; //D&Dを許可します
             txtMain.DragEnter += TxtMain_DragEnter;
             txtMain.DragDrop  += TxtMain_DragDrop;
             //(設定したのを忘れなければデザイン時にプロパティで設定しても問題ありません)
-
-            //隙間がなくなるようにテキストボックスを配置します
-            txtMain.Dock = DockStyle.Fill;
 
             //テキストボックスのテキストを初期化します
             txtMain.Clear(); //Modified は false になる
@@ -101,6 +99,28 @@ namespace NineCubed.Memo.Plugins.TextEditor
             //ポップアップメニューを追加します
             AddPopupMenuItem();
 
+            //参照用テキストボックスを初期化します
+            txtSplit.Initialize(txtMain.Font.Name, txtMain.Font.Size);
+            txtSplit.ReadOnly = true; //読込専用
+            txtSplit.BackColor = Color.FromArgb(0xf0, 0xf0, 0xf0);
+
+            //見出しリストを初期化します
+            titleListbox.TargetTextbox = txtMain;
+            titleListbox.TitleCharList = 
+                new [] {
+                    _property["title_list", "level_1"],
+                    _property["title_list", "level_2"],
+                    _property["title_list", "level_3"],
+                }.ToList<string>();
+
+            //3ペイン用のスプリットコンテナーにコントロールを配置します
+            splitContainer.SetControl(titleListbox, txtSplit, txtMain);
+            splitContainer.PanelLeftVisible = false;
+            splitContainer.PanelTopVisible  = false;
+            splitContainer.Dock = DockStyle.Fill;
+            titleListbox.Dock   = DockStyle.Fill;
+            txtSplit.Dock       = DockStyle.Fill;
+            txtMain.Dock        = DockStyle.Fill;
 
             /****************************************
              * 
@@ -144,7 +164,11 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public void InitializePlaced() { }
+        public void InitializePlaced() {
+            //スプリットバーの位置を設定します
+            splitContainer.HorizontalDistance = _property.ToInt("three_pane", "horizontal_distance", 150);
+            splitContainer.VerticalDistance   = _property.ToInt("three_pane",   "vertical_distance", 150);
+        }
 
         //ポップアップメニューを追加します
         private void AddPopupMenuItem() {
@@ -361,6 +385,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
             return fileName;
         }
 
+
         /******************************************************************************
          * 
          *  テキストボックス
@@ -484,10 +509,9 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtMain_Enter(object sender, EventArgs e)
-        {
-            _pluginManager.ActivePlugin = this;
-        }
+        private void txtMain_Enter     (object sender, EventArgs e) { _pluginManager.ActivePlugin = this; }
+        private void txtSplit_Enter    (object sender, EventArgs e) { _pluginManager.ActivePlugin = this; }
+        private void titleListbox_Enter(object sender, EventArgs e) { _pluginManager.ActivePlugin = this; }
 
         /******************************************************************************
          * 
@@ -562,7 +586,57 @@ namespace NineCubed.Memo.Plugins.TextEditor
             CheckedMenu_MenuFile_NewLine(newLineCode);
         }
 
+        /// <summary>
+        /// 上下分割メニューのクリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void popupMenuForTextbox_Split_Click(object sender, EventArgs e)
+        {
+            if (splitContainer.PanelTopVisible) {
+                //上下分割している場合、上下分割を解除します
+                splitContainer.PanelTopVisible = false;
 
+                //上下分割メニューのチェックをはずします
+                popupMenuForTextbox_Split.Checked = false;
+               
+            } else {
+                //上下分割していない場合、上下分割します
+                splitContainer.PanelTopVisible = true;
+
+                //メインのテキストを、参照用テキストにコピーします
+                txtSplit.Text = txtMain.Text;
+
+                //上下分割メニューのチェックをつけます
+                popupMenuForTextbox_Split.Checked = true;
+            }
+        }
+
+        /// <summary>
+        /// 見出しリストメニューのクリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void popupMenuForTextbox_TitleList_Click(object sender, EventArgs e)
+        {
+            if (splitContainer.PanelLeftVisible) {
+                //見出しリストを表示している場合、見出しリストを非表示にします
+                splitContainer.PanelLeftVisible = false;
+
+                //見出しリストメニューのチェックをはずします
+                popupMenuForTextbox_TitleList.Checked = false;
+               
+            } else {
+                //見出しリストが非表示の場合、見出しリストを表示します
+                splitContainer.PanelLeftVisible = true;
+
+                //見出しリストを更新します
+                titleListbox.SetTitleList();
+
+                //見出しリストメニューのチェックをつけます
+                popupMenuForTextbox_TitleList.Checked = true;
+            }
+        }
 
         /******************************************************************************
          * 
@@ -600,9 +674,18 @@ namespace NineCubed.Memo.Plugins.TextEditor
         /// プラグインの終了処理
         /// </summary>
         public void ClosePlugin() {
+
+            //スプリットバーの位置を取得します
+            _property["three_pane", "horizontal_distance"] = splitContainer.HorizontalDistance.ToString();
+            _property["three_pane",   "vertical_distance"] = splitContainer.VerticalDistance.ToString();
+
+            //プロパティを保存します
+            _property.Save();
+
             //コントロールを削除します
             this.Parent = null;
             this.Dispose();
+
         }
 
         /// <summary>
@@ -620,12 +703,32 @@ namespace NineCubed.Memo.Plugins.TextEditor
          *  IEditPlugin
          * 
          ******************************************************************************/ 
-        public void Cut()    { txtMain.Cut(); }
-        public void Copy()   { txtMain.Copy(); }
-        public void Paste()  { txtMain.Paste(); }
-        public void Delete() { txtMain.Delete(); }
-        public void Undo()   { txtMain.Undo(); }
-        public void Redo()   { txtMain.Redo(); }
+        public void Cut() {
+            txtMain.Cut();
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("^{X}"); //キー操作の記録
+            //メニューのショートカットキーにキーイベントを奪われるため、
+            //キー操作の記録しています
+        }
+        public void Copy() {
+            txtMain.Copy();
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("^{C}"); //キー操作の記録
+        }
+        public void Paste(){
+            txtMain.Paste();
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("^{V}"); //キー操作の記録
+        }
+        public void Delete() {
+            txtMain.Delete();
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("{DEL}"); //キー操作の記録
+        }
+        public void Undo() {
+            txtMain.Undo();
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("^{Z}"); //キー操作の記録
+        }
+        public void Redo(){
+            txtMain.Redo();
+            if (_keyMacro.IsRecording) _keyMacro.AddKey("^{Y}"); //キー操作の記録
+        }
         
         /******************************************************************************
          * 
@@ -852,6 +955,23 @@ namespace NineCubed.Memo.Plugins.TextEditor
             _keyMacro.KeyList = txtMain.SelectedText.Split('\n').ToList();
         }
 
+        /******************************************************************************
+         * 
+         *  IRefreshPlugin
+         * 
+         ******************************************************************************/ 
+
+        /// <summary>
+        /// 最新の情報に更新します
+        /// </summary>
+        public void RefreshData()
+        {
+            //見出しリストを更新します
+            titleListbox.SetTitleList();
+
+            //メインのテキストを、参照用テキストにコピーします
+            txtSplit.Text = txtMain.Text;
+        }
 
     } //class
 }

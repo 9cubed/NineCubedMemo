@@ -55,7 +55,14 @@ namespace NineCubed.Memo.Plugins.PathField
         public string    Title            { get; set; }                 //プラグインのタイトル
         public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
         public void      ClosePlugin()    { Parent = null; Dispose();}  //プラグインの終了処理
-        public void      SetFocus()       {  }                          //フォーカスを設定します
+
+        //フォーカスを設定します
+        public void SetFocus() {
+            txtPath.Focus();
+
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
+        }                          
 
         private void txtPath_KeyDown(object sender, KeyEventArgs e)
         {
@@ -95,7 +102,10 @@ namespace NineCubed.Memo.Plugins.PathField
             var parentDirPath = Directory.GetParent(path)?.FullName;
             if (string.IsNullOrEmpty(parentDirPath) == false) {
 
-                //バス欄のパスを設定します
+                //末尾がコロン(:)の場合は、セパレーターを付けます
+                if (parentDirPath.EndsWith(":")) parentDirPath = parentDirPath + Path.DirectorySeparatorChar;
+
+                //パス欄のパスを設定します
                 txtPath.Text = parentDirPath;
 
                 //フォルダの場合、フォルダ選択イベントを発生させます
@@ -103,6 +113,17 @@ namespace NineCubed.Memo.Plugins.PathField
                 _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
             }
         }
+
+        /// <summary>
+        /// アクティブになった時に発生するイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtPath_Enter(object sender, EventArgs e)
+        {
+            _pluginManager.ActivePlugin = this;
+        }
+
 
         /******************************************************************************
          * 
@@ -117,9 +138,13 @@ namespace NineCubed.Memo.Plugins.PathField
 
             //パス欄に選択されたフォルダをパスを設定します
             var path = (param as DirSelectedEventParam).Path;
+
+            //末尾がコロン(:)の場合は、セパレーターを付けます
+            if (path.EndsWith(":")) path = path + Path.DirectorySeparatorChar;
+
             txtPath.Text = path;
         }
-        
+
     } //class
         
 }

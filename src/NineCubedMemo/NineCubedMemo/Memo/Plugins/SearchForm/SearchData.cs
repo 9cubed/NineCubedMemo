@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NineCubed.Memo.Interfaces
+namespace NineCubed.Memo.Plugins.SearchForm
 {
     public class SearchData
     {

@@ -92,10 +92,8 @@ namespace NineCubed.Memo.Plugins.Test
         /// フォーカスを設定します
         /// </summary>
         public void SetFocus() {
-            //アクティブプラグインにします
-            _pluginManager.ActivePlugin = this;
+            txtLog.Focus();
         }
-
 
         /******************************************************************************
          * 
@@ -170,6 +168,22 @@ namespace NineCubed.Memo.Plugins.Test
             txtLog.Text += log + "\n";
         }
 
+        /******************************************************************************
+         * 
+         *  イベント
+         * 
+         ******************************************************************************/ 
+
+        /// <summary>
+        /// テキストがアクティブになった時のイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtLog_Enter(object sender, EventArgs e)
+        {
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
+        }
 
     } //class
 }

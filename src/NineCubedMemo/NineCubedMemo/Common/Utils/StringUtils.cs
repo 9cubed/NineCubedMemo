@@ -29,6 +29,15 @@ namespace NineCubed.Common.Utils
         }
 
         /// <summary>
+        /// 文字を指定した数だけ繰り返し結合した文字列を返します。
+        /// 
+        /// 作った理由 : new string(char, int) で生成できるのをいつも忘れてしまうので。
+        /// </summary>
+        /// <param name="c">繰り返す文字</param>
+        /// <param name="count">繰り返す回数</param>
+        public static string RepeatChar(char c, int count) => new string(c, count);
+
+        /// <summary>
         /// 文字列中に特定の文字があるかどうかを返します
         /// </summary>
         /// <param name="target"></param>

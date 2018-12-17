@@ -123,7 +123,7 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                 //プラグインの型を取得します
                 var pluginType = _pluginManager.GetPluginType(pluginClassName);
                 if (pluginType == null) {
-                    throw new Exception("plugin_list.ini の " + pluginClassName + " の型の取得に失敗しました。");
+                    throw new Exception("plugin_list.ini の " + pluginClassName + " の型の取得に失敗しました。\ndefine配下のプラグイン定義ファイル(フルクラス名.ini)のプロパティが、「コピーする」になっていることを確認してください。");
                 }
 
                 //プラグインの生成パラメーターを生成します
@@ -138,18 +138,15 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                     }
                 }
 
-                //割当先が指定されている場合は、割当先のプラグインのコントロールを取得します
-                Control parentControl = null;
+                //割当先が指定されている場合は、割当先のプラグインを取得します
+                IPlugin parentPlugin = null;
                 if (pluginParentId != null) {
                     //親プラグインIDをキーにして、親プラグインを取得します
-                    var parentPlugin = _pluginManager.GetPlugin(pluginParentId);
-                    if (parentPlugin != null) {
-                        parentControl = parentPlugin.GetComponent() as Control;
-                    }
+                    parentPlugin = _pluginManager.GetPlugin(pluginParentId);
                 }
                 
                 //プラグインを生成します
-                var plugin = _pluginManager.CreatePluginInstance(pluginType, param, parentControl, pluginId);
+                var plugin = _pluginManager.CreatePluginInstance(pluginType, param, parentPlugin, pluginId);
 
                 //Dockが指定されている場合は、Dockを設定します
                 if (pluginDock != null) {

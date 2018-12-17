@@ -71,12 +71,16 @@ namespace NineCubed.Common.Utils.Tests
                 //
                 //半角 -> 全角 -> 半角
                 char c = (char)0;
-                for (int i = 0; i <= char.MaxValue; i++) {
+                for (int i = 0; i <= char.MaxValue; i++)
+                {
                     c = (char)i;
                     string hankaku = c.ToString();
                     string zenkaku = StringUtils.HankakuToZenkaku(hankaku);
-                    if (hankaku.Equals(zenkaku)) {
-                    } else {
+                    if (hankaku.Equals(zenkaku))
+                    {
+                    }
+                    else
+                    {
                         string hankaku2 = StringUtils.ZenkakuToHankaku(zenkaku);
                         Assert.AreEqual(hankaku, hankaku2);
                     }
@@ -84,5 +88,13 @@ namespace NineCubed.Common.Utils.Tests
             }
         }
 
+        [TestMethod()]
+        public void RepeatCharTest()
+        {
+            Assert.AreEqual(StringUtils.RepeatChar('a', 1), "a");
+            Assert.AreEqual(StringUtils.RepeatChar('a', 5), "aaaaa");
+            Assert.AreEqual(StringUtils.RepeatChar('a', 0), "");
+            Assert.AreEqual(StringUtils.RepeatChar('a', -1), "");
+        }
     } //class
 }

@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace NineCubed.Memo.Plugins.FileTree
 {
-    public class FileTreePlugin : FileTreeView, IPlugin
+    public class FileTreePlugin : FileTreeView, IPlugin, IRefreshPlugin
     {
         private void InitializeComponent()
         {
@@ -22,8 +22,10 @@ namespace NineCubed.Memo.Plugins.FileTree
             // FileTreePlugin
             // 
             this.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.FileTreePlugin_AfterSelect);
+            this.Enter += new System.EventHandler(this.FileTreePlugin_Enter);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FileTreePlugin_MouseDown);
             this.ResumeLayout(false);
+
         }
 
         public FileTreePlugin() {
@@ -85,7 +87,29 @@ namespace NineCubed.Memo.Plugins.FileTree
         public string    Title            { get; set; }                 //プラグインのタイトル
         public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
         public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
-        public void      SetFocus()       { this.SetFocus(); }          //フォーカスを設定します
+
+        //フォーカスを設定します
+        public void SetFocus() {
+            this.Focus();
+
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
+        }
+
+        /******************************************************************************
+         * 
+         *  IRefreshPlugin
+         * 
+         ******************************************************************************/ 
+
+        /// <summary>
+        /// 最新の情報に更新します
+        /// </summary>
+        public void RefreshData()
+        {
+            //TODO
+            MessageBox.Show("まだ作ってないのです。");
+        }
 
         /******************************************************************************
          * 
@@ -122,6 +146,16 @@ namespace NineCubed.Memo.Plugins.FileTree
 
             //ノードを選択状態にします
             this.SelectedNode = node;
+        }
+
+        /// <summary>
+        /// アクティブになった時に発生するイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileTreePlugin_Enter(object sender, EventArgs e)
+        {
+            _pluginManager.ActivePlugin = this;
         }
 
 

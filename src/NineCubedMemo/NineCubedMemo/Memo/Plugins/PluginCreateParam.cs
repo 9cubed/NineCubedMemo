@@ -37,14 +37,6 @@ namespace NineCubed.Memo.Plugins
         public string PropertyPath {
             get { return FileUtils.AppendPath(DataPath, "property.ini"); }
         }
-
-        //値を取得します
-        private T ToValue<T>(string key) => this.TryGetValue(key, out object value) ? (T)value : default(T);
-        public object ToObject(string key) => ToValue<object>(key);
-        public string ToString(string key) => ToValue<string>(key);
-        public int    ToInt   (string key) => ToValue<int>   (key);
-        public long   ToLong  (string key) => ToValue<long>  (key);
-        public bool   ToBool  (string key) => ToValue<bool>  (key);
-
+        
     } //class
 }

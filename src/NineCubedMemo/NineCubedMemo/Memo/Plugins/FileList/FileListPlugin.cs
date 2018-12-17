@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ using System.Windows.Forms;
 
 namespace NineCubed.Memo.Plugins.FileList
 {
-    public class FileListPlugin : FileListGrid, IPlugin
+    public class FileListPlugin : FileListGrid, IPlugin, IEditPlugin, IRefreshPlugin
     {
 
         public FileListPlugin() {
@@ -32,9 +33,11 @@ namespace NineCubed.Memo.Plugins.FileList
             this.RowTemplate.Height = 21;
             this.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.FileListPlugin_CellDoubleClick);
             this.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.FileListPlugin_CellEndEdit);
+            this.Enter += new System.EventHandler(this.FileListPlugin_Enter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FileListPlugin_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         //ポップアップメニューを設定します
@@ -85,6 +88,11 @@ namespace NineCubed.Memo.Plugins.FileList
             }
         }
 
+        //日時をファイル名にしたファイル名を返します
+        private string GetTimeFileName() {
+            return DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+        }
+
         /******************************************************************************
          * 
          *  IPlugin
@@ -124,7 +132,73 @@ namespace NineCubed.Memo.Plugins.FileList
         public string    Title            { get; set; }                 //プラグインのタイトル
         public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
         public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
-        public void      SetFocus()       { this.SetFocus(); }          //フォーカスを設定します
+
+        //フォーカスを設定します
+        public void SetFocus() {
+            this.Focus();
+
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
+        }
+
+        /******************************************************************************
+         * 
+         *  IEditPlugin
+         * 
+         ******************************************************************************/ 
+        public void Cut()    {  }
+        public void Copy()   {  }
+        public void Paste()
+        {
+            if (Clipboard.ContainsImage()) {
+                //クリップボードに画像形式のデータが入っている場合
+                var img = Clipboard.GetImage();
+                string path = FileUtils.AppendPath(CurrentPath, GetTimeFileName() + ".png");
+
+                //画像ファイルを出力します
+                img.Save(path, ImageFormat.Png);
+
+                //ファイル一覧を更新します
+                ShowFileList();
+
+                __.ShowInfoMsgBox("画像を保存しました。\n" + path);
+                return;
+            }
+
+            if (Clipboard.ContainsText()) {
+                //クリップボードにテキスト形式のデータが入っている場合
+                var text = Clipboard.GetText();
+                string path = FileUtils.AppendPath(CurrentPath, GetTimeFileName() + ".txt");
+                
+                //テキストファイルを出力します
+                using(var writer = new StreamWriter(path, false, Encoding.GetEncoding(932))) {
+                    writer.Write(text);
+                }
+
+                //ファイル一覧を更新します
+                ShowFileList();
+                __.ShowInfoMsgBox("テキストを保存しました。\n" + path);
+                return;
+            }
+        }
+        public void Delete() {  }
+        public void Undo()   {  }
+        public void Redo()   {  }
+
+        /******************************************************************************
+         * 
+         *  IRefreshPlugin
+         * 
+         ******************************************************************************/ 
+
+        /// <summary>
+        /// 最新の情報に更新します
+        /// </summary>
+        public void RefreshData()
+        {
+            //ファイルリストを更新します
+            this.ShowFileList();
+        }
 
         /******************************************************************************
          * 
@@ -197,6 +271,17 @@ namespace NineCubed.Memo.Plugins.FileList
 
             //行の更新します
             this.SetRowData(e.RowIndex, newFile.FullName);
+        }
+
+        /// <summary>
+        /// アクティブになった時に発生するイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileListPlugin_Enter(object sender, EventArgs e)
+        {
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
         }
 
         /******************************************************************************

@@ -177,5 +177,12 @@ namespace NineCubed.Common.Files
             }
         }
 
+        //値を取得します
+        public string ToString(string section, string key, string defaultValue = null)  => this[section, key]?.ToString();
+        public int    ToInt   (string section, string key, int    defaultValue = 0)     =>    int.TryParse(this[section, key]?.ToString(), out int    value) ? value : 0;
+        public long   ToLong  (string section, string key, long   defaultValue = 0)     =>   long.TryParse(this[section, key]?.ToString(), out long   value) ? value : 0;
+        public double ToDouble(string section, string key, double defaultValue = 0)     => double.TryParse(this[section, key]?.ToString(), out double value) ? value : 0;
+        public bool   ToBool  (string section, string key, bool   defaultValue = false) =>   bool.TryParse(this[section, key]?.ToString(), out bool   value) ? value : false;
+
     } //class
 }

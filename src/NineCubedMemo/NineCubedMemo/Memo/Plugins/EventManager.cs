@@ -22,14 +22,15 @@ namespace NineCubed.Memo.Plugins
         //値  :イベントハンドラーリストの Dict (イベントを受け取るオブジェクトリストのマップ)
         //用途:イベント発生依頼があった場合、イベント名をキーにしてイベントハンドラーリストを取得して、
         //     各イベントハンドラーのイベントメソッドを呼ぶ際に使用します。
-        private Dictionary<String, IList<object>> _eventDict = new Dictionary<String, IList<object>>();
+        private Dictionary<String, IList<IPlugin>> _eventDict = new Dictionary<String, IList<IPlugin>>();
 
         //イベント名をキーにして、イベントハンドラーリストを取得します
         //リストがまだない場合には、リストを生成して返します
-        private IList<object> GetEventHandlerList(string eventName) {
-            if (_eventDict.TryGetValue(eventName, out IList<object> list) == false) {
+        private IList<IPlugin> GetEventHandlerList(string eventName) {
+
+            if (_eventDict.TryGetValue(eventName, out IList<IPlugin> list) == false) {
                 //リストが生成されていない場合は、リストを生成して Dictionary に追加します
-                list = new List<object>();
+                list = new List<IPlugin>();
                 _eventDict.Add(eventName, list);
             }
 
@@ -41,7 +42,7 @@ namespace NineCubed.Memo.Plugins
         /// </summary>
         /// <param name="eventName"></param>
         /// <param name="eventHandler"></param>
-        public void AddEventHandler(string eventName, object eventHandler) {
+        public void AddEventHandler(string eventName, IPlugin eventHandler) {
             //イベント名をキーにして、イベントハンドラーリストを取得します
             var list = GetEventHandlerList(eventName);
 
@@ -54,7 +55,7 @@ namespace NineCubed.Memo.Plugins
         /// </summary>
         /// <param name="eventName"></param>
         /// <param name="eventHandler"></param>
-        public void RemoveEventHandler(string eventName, object eventHandler) {
+        public void RemoveEventHandler(string eventName, IPlugin eventHandler) {
             //イベント名をキーにして、イベントハンドラーリストを取得します
             var list = GetEventHandlerList(eventName);
 
@@ -66,7 +67,7 @@ namespace NineCubed.Memo.Plugins
         /// 指定したイベントハンドラーを全てのイベントハンドラーリストから削除します。
         /// </summary>
         /// <param name="plugin"></param>
-        public void RemoveEventHandler(object eventHandler) {
+        public void RemoveEventHandler(IPlugin eventHandler) {
             foreach (var item in _eventDict) {
                 //イベントハンドラーを削除します
                 var list = item.Value;
@@ -83,10 +84,17 @@ namespace NineCubed.Memo.Plugins
         /// <param name="eventName">イベント名</param>
         /// <param name="sender">イベント発生元オブジェクト</param>
         /// <param name="param">イベントパラメーター</param>
-        public void RaiseEvent(string eventName, object sender, EventParam param) {
+        public void RaiseEvent(string eventName, object sender, EventParam param, IPlugin plugin = null) {
+
+            //イベントを発生させるプラグインが指定されている場合は、
+            //イベントハンドラーリストを使わずに、すぐにイベントメソッドを実行します
+            if (plugin != null) {
+                InvokeEventMethod(eventName, sender, param, plugin);
+                return;
+            }
 
             //イベント名をキーにして、イベントハンドラーリストを取得します
-            if (_eventDict.TryGetValue(eventName, out IList<object> tmpEventHandlerList)) {
+            if (_eventDict.TryGetValue(eventName, out IList<IPlugin> tmpEventHandlerList)) {
 
                 //イベント処理中にイベントハンドラーリストに追加されるとエラーになるため、
                 //リストのコピーを作ります。イベント処理のループはこれを使います。
@@ -96,25 +104,38 @@ namespace NineCubed.Memo.Plugins
                     //イベントの発生元と受け取り先が同じ場合は処理しない
                     if (sender == eventHandler) continue;
 
-                    //イベントの受け取り先のメソッド情報を取得しすま
-                    var methodInfo = eventHandler.GetType().GetMethod(eventName);
-                    if (methodInfo == null) {
-                        //エラー。メソッドが定義されていません
-                        throw new MissingMethodException(eventHandler.GetType().FullName, eventName); 
-                    }
-
-                    try {
-                        //イベントのメソッドを実行します
-                        object[] parameters = { param, sender }; //メソッドの第1引数、第2引数として渡される
-                        methodInfo.Invoke(eventHandler, parameters);
-                    } catch (Exception ex) {
-                        Console.WriteLine("イベントメソッド実行時にエラーが発生しました。" + eventName);
-                        throw ex;
-                    }
+                    //イベントメソッドを実行します
+                    InvokeEventMethod(eventName, sender, param, eventHandler);
 
                     //イベントのキャンセル指示が出た場合は処理を抜けます
                     if (param.Cancel) return;
                 }
+            }
+        }
+
+        /// <summary>
+        /// イベント用のメソッドを実行します。
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="sender"></param>
+        /// <param name="param"></param>
+        /// <param name="eventHandler"></param>
+        private void InvokeEventMethod(string eventName, object sender, EventParam param, IPlugin eventHandler)
+        {
+            //イベントの受け取り先のメソッド情報を取得します
+            var methodInfo = eventHandler.GetType().GetMethod(eventName);
+            if (methodInfo == null) {
+                //エラー。メソッドが定義されていません
+                throw new MissingMethodException(eventHandler.GetType().FullName, eventName); 
+            }
+
+            try {
+                //イベントのメソッドを実行します
+                object[] parameters = { param, sender }; //メソッドの第1引数、第2引数として渡される
+                methodInfo.Invoke(eventHandler, parameters);
+            } catch (Exception ex) {
+                Console.WriteLine("イベントメソッド実行時にエラーが発生しました。" + eventName);
+                throw ex;
             }
         }
 

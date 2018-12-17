@@ -1,4 +1,7 @@
-﻿using NineCubed.Memo.Interfaces;
+﻿using NineCubed.Common.Files;
+using NineCubed.Common.Utils;
+using NineCubed.Memo.Plugins;
+using NineCubed.Memo.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,49 +12,57 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace NineCubed.Memo
+namespace NineCubed.Memo.Plugins.SearchForm
 {
-    public partial class SearchForm : Form
+    public partial class SearchInputForm : Form
     {
-        /// <summary>
-        /// 検索ターゲット
-        /// </summary>
-        ISearchString _target = null;
-
-        /// <summary>
-        /// フォーム。シングルトン。
-        /// </summary>
-        static SearchForm _form = null;
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="target"></param>
-        private SearchForm(ISearchString target)
+        public SearchInputForm()
         {
             InitializeComponent();
-
-            _target = target;
         }
 
+        //プラグインマネージャー
+        private PluginManager _pluginManager = null;
+
+        // プロパティファイル
+        private IniFile _property;
+
+        /******************************************************************************
+         * 
+         *  イベント
+         * 
+         ******************************************************************************/
+        
         /// <summary>
         /// フォームを表示します
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="searchData"></param>
-        public static void ShowForm(ISearchString target, SearchData searchData) {
-            if (_form == null || _form.IsDisposed) {
-                _form = new SearchForm(target);
-            }
+        public void ShowForm(PluginManager pluginManager, IniFile property) {
+            _pluginManager = pluginManager;
+            _property = property;
 
             //入力欄に検索条件を反映します
-            _form.txtSearch.Text  = searchData.SearchString;
-            _form.txtReplace.Text = searchData.ReplaceString;
-            _form.chkCase.Checked = !searchData.IgnoreCase;
+            var searchData = GetSearchData();
+            txtSearch.Text  = searchData.SearchString;
+            txtReplace.Text = searchData.ReplaceString;
+            chkCase.Checked = searchData.IgnoreCase;
 
-            _form.Show();
-            _form.Activate(); //フォームをアクティブにします
+            //フォームを表示します
+            this.Show();
+            this.Activate();
         }
+
+        /// <summary>
+        /// 検索データを返します
+        /// </summary>
+        /// <returns></returns>
+        private SearchData GetSearchData()
+        {
+            return ((SearchData)_pluginManager.CommonData[CommonDataKeys.SearchData]);
+        }
+
 
         /// <summary>
         /// 後方検索ボタン の click イベント
@@ -60,7 +71,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnSearchBackward_Click(object sender, EventArgs e)
         {
-            _target.SearchBackward();
+            if (_pluginManager.ActivePlugin is ISearchPlugin plugin) {
+                plugin.SearchBackward();
+            }
         }
 
         /// <summary>
@@ -70,7 +83,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnSearchForward_Click(object sender, EventArgs e)
         {
-            _target.SearchForward();
+            if (_pluginManager.ActivePlugin is ISearchPlugin plugin) {
+                plugin.SearchForward();
+            }
         }
 
         /// <summary>
@@ -80,7 +95,10 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnReplaceBackward_Click(object sender, EventArgs e)
         {
-            _target.ReplaceBackward();
+            if (_pluginManager.ActivePlugin is ISearchPlugin plugin) {
+                plugin.ReplaceBackward();
+            }
+            
         }
 
         /// <summary>
@@ -90,7 +108,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnReplaceForward_Click(object sender, EventArgs e)
         {
-            _target.ReplaceForward();
+            if (_pluginManager.ActivePlugin is ISearchPlugin plugin) {
+                plugin.ReplaceForward();
+            }
         }
 
         /// <summary>
@@ -100,7 +120,9 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void btnReplaceAll_Click(object sender, EventArgs e)
         {
-            _target.ReplaceAll();
+            if (_pluginManager.ActivePlugin is ISearchPlugin plugin) {
+                plugin.ReplaceAll();
+            }
         }
 
         /// <summary>
@@ -159,7 +181,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            _target.GetSearchData().SearchString = txtSearch.Text;
+            GetSearchData().SearchString = txtSearch.Text;
         }
 
         /// <summary>
@@ -169,7 +191,7 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void txtReplace_TextChanged(object sender, EventArgs e)
         {
-            _target.GetSearchData().ReplaceString = txtReplace.Text;
+            GetSearchData().ReplaceString = txtReplace.Text;
         }
 
         /// <summary>
@@ -179,8 +201,24 @@ namespace NineCubed.Memo
         /// <param name="e"></param>
         private void chkCase_CheckedChanged(object sender, EventArgs e)
         {
-            _target.GetSearchData().IgnoreCase = !chkCase.Checked;
+            GetSearchData().IgnoreCase = chkCase.Checked;
         }
 
+        /// <summary>
+        /// フォーム終了イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SearchInputForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //ウィンドウが最小化、最大化されている場合は、標準に戻します
+            if (this.WindowState != FormWindowState.Normal) {
+                this.WindowState  = FormWindowState.Normal;
+            }
+
+            //フォームの位置を保存します
+            _property["location", "left"] = this.Left  .ToString();
+            _property["location", "top"]  = this.Top   .ToString();
+        }
     } //class
 }

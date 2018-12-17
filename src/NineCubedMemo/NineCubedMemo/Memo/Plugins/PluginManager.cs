@@ -1,7 +1,6 @@
 ﻿using NineCubed.Common.Collections;
 using NineCubed.Common.Files;
 using NineCubed.Common.Utils;
-using NineCubed.Memo.Interfaces;
 using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Memo.Plugins.PluginLoader;
@@ -132,10 +131,10 @@ namespace NineCubed.Memo.Plugins
         /// </summary>
         /// <param name="pluginType">プラグインのクラスの型</param>
         /// <param name="param">プラグイン生成用パラメーター</param>
-        /// <param name="parentControl">プラグインのコントロールを割り当てるコントロール</param>
+        /// <param name="parentPlugin">プラグインのコントロールを割り当てるプラグイン</param>
         /// <param name="pluginId">プラグインID。未指定の場合は自動で採番されます。</param>
         /// <returns>生成したプラグイン</returns>
-        public IPlugin CreatePluginInstance(Type pluginType, PluginCreateParam param = null, Control parentControl = null, string pluginId = null)
+        public IPlugin CreatePluginInstance(Type pluginType, PluginCreateParam param = null, IPlugin parentPlugin = null, string pluginId = null)
         {
             //プラグインの型からインスタンス(オブジェクト)を生成します
             var plugin = (IPlugin)Activator.CreateInstance(pluginType);
@@ -174,7 +173,7 @@ namespace NineCubed.Memo.Plugins
             //プラグインがコンポーネントを持つ場合は、プラグインのコンポーネントを配置します
             if (plugin.GetComponent() != null) {
 
-                if (parentControl == null) {
+                if (parentPlugin == null) {
                     //割当先が未指定の場合
                     //コントロールがフォーム以外か？
                     if ((plugin.GetComponent() is Form) == false) {
@@ -186,7 +185,9 @@ namespace NineCubed.Memo.Plugins
                 } else {
                     //割当先が指定されている場合
                     if (plugin.GetComponent() is Control control) {
-                        control.Parent = parentControl;
+                        //指定されたプラグインに対してだけ、プラグイン生成イベントを発生させます
+                        var eventParam = new PluginCreatedEventParam { Plugin = plugin };
+                        _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, eventParam, parentPlugin);
                     }
                 }
             }
@@ -359,14 +360,25 @@ namespace NineCubed.Memo.Plugins
             return true;
         }
 
-
-        //TODO 
-        //検索条件。全プラグインで共通
-        private SearchData _searchData = new SearchData();
-        public SearchData GetSearchData() {
-            return _searchData;
-        }
-
+        /// <summary>
+        /// 共通データ
+        /// 
+        /// プラグイン間でデータの受け渡しをするための、
+        /// 全プラグインでアクセス可能なデータです。
+        /// 
+        /// </summary>
+        public Map<object, object> CommonData { get; } = new Map<object, object>();
 
     } //class
+
+    /// <summary>
+    /// 共通データ用のキー
+    /// よく使うものだけ
+    /// </summary>
+    public enum CommonDataKeys {
+
+                    //CommonData の値
+        SearchData  //NineCubed.Memo.Interfaces.SearchData
+    }
+
 }

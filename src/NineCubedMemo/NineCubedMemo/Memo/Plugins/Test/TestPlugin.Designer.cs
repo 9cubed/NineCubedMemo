@@ -52,6 +52,7 @@
             this.txtLog.Size = new System.Drawing.Size(364, 197);
             this.txtLog.TabIndex = 1;
             this.txtLog.Text = "";
+            this.txtLog.Enter += new System.EventHandler(this.txtLog_Enter);
             // 
             // pnlTop
             // 

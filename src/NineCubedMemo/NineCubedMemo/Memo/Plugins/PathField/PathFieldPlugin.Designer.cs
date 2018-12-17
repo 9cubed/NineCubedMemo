@@ -41,6 +41,7 @@
             this.txtPath.Name = "txtPath";
             this.txtPath.Size = new System.Drawing.Size(322, 22);
             this.txtPath.TabIndex = 0;
+            this.txtPath.Enter += new System.EventHandler(this.txtPath_Enter);
             this.txtPath.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPath_KeyDown);
             // 
             // btnMoveToParentDir
