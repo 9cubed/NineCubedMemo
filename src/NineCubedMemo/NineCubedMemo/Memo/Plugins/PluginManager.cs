@@ -165,7 +165,7 @@ namespace NineCubed.Memo.Plugins
                 var result = plugin.Initialize(param);
                 if (result == false) return null;
             } catch (Exception ex) {
-                MessageBox.Show(ex.Message); //TODO ただのログ出力にする
+                MessageBox.Show(ex.Message + "\n" + plugin.GetType().FullName); //TODO ただのログ出力にする
                 return null;
             }
 

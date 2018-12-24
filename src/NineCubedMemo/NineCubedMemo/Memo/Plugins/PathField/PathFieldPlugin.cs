@@ -109,7 +109,7 @@ namespace NineCubed.Memo.Plugins.PathField
                 txtPath.Text = parentDirPath;
 
                 //フォルダの場合、フォルダ選択イベントを発生させます
-                var param = new DirSelectedEventParam { Path = path };
+                var param = new DirSelectedEventParam { Path = parentDirPath };
                 _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
             }
         }

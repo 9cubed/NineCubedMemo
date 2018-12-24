@@ -134,8 +134,7 @@ namespace NineCubed.Memo.Plugins
                 object[] parameters = { param, sender }; //メソッドの第1引数、第2引数として渡される
                 methodInfo.Invoke(eventHandler, parameters);
             } catch (Exception ex) {
-                Console.WriteLine("イベントメソッド実行時にエラーが発生しました。" + eventName);
-                throw ex;
+                throw new Exception("イベントメソッド実行時にエラーが発生しました。" + eventName, ex);
             }
         }
 

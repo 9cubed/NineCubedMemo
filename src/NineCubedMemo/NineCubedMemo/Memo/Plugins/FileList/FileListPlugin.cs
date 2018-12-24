@@ -33,6 +33,7 @@ namespace NineCubed.Memo.Plugins.FileList
             this.RowTemplate.Height = 21;
             this.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.FileListPlugin_CellDoubleClick);
             this.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.FileListPlugin_CellEndEdit);
+            this.SelectionChanged += new System.EventHandler(this.FileListPlugin_SelectionChanged);
             this.Enter += new System.EventHandler(this.FileListPlugin_Enter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FileListPlugin_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
@@ -88,9 +89,56 @@ namespace NineCubed.Memo.Plugins.FileList
             }
         }
 
+        /// <summary>
+        /// ファイルリストで選択中のフォルダまたはファイルの、選択中イベントを発生させます
+        /// 
+        /// </summary>
+        public void RaiseSelectingEvent(string path)
+        {
+            if (FileUtils.IsFile(path)) {
+                //ファイルの場合、ファイル選択イベントを発生させます
+                var param = new FileSelectingEventParam { Path = path };
+                _pluginManager.GetEventManager().RaiseEvent(FileSelectingEventParam.Name,  null, param);
+            } else {
+                //フォルダの場合、フォルダ選択イベントを発生させます
+                var param = new DirSelectingEventParam { Path = path };
+                _pluginManager.GetEventManager().RaiseEvent(DirSelectingEventParam.Name,  null, param);
+            }
+        }
+
         //日時をファイル名にしたファイル名を返します
         private string GetTimeFileName() {
             return DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+        }
+
+        /// <summary>
+        /// 同じ階層の隣のフォルダへ移動します
+        /// </summary>
+        /// <param name="isMovePrevious">true:1つ前のフォルダへ移動 false:1つ後ろのフォルダへ移動</param>
+        private void MoveDir(bool isMovePrevious)
+        {
+            //親フォルダのパスを取得します
+            var parentDirPath = Path.GetDirectoryName(this.CurrentPath);
+            if (parentDirPath == null) return;
+
+            //フォルダ一覧を取得します
+            var dirList = FileUtils.GetDirList(parentDirPath);
+            
+            //フォルダ一覧の中の、現在の位置を取得します
+            int index = dirList.IndexOf(this.CurrentPath);
+
+            //位置を移動します
+            //インデックスの範囲を超えた場合は、処理を抜けます
+            if (isMovePrevious) {
+                index--;
+                if (index < 0) return;
+            } else {
+                index++;
+                if (index > dirList.Count - 1) return;
+            }
+
+            //フォルダ選択イベントを発生させます
+            RaiseSelectedEvent(dirList[index]);
         }
 
         /******************************************************************************
@@ -223,6 +271,30 @@ namespace NineCubed.Memo.Plugins.FileList
         }
 
         /// <summary>
+        /// グリッドの選択変更イベント
+        /// カーソルが移動した時に発生します。
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        int _oldCol = -1;int _oldRow = -1;
+        private void FileListPlugin_SelectionChanged(object sender, EventArgs e)
+        {
+            if (this.CurrentCell.RowIndex == -1) return; //ヘッダーダブルクリックは無視する
+
+            //ダブルクリックされた行のパスを取得します
+            var path = this[0, this.CurrentCell.RowIndex].Value?.ToString();
+
+            //パスが未設定の場合は処理を抜けます
+            if (string.IsNullOrEmpty(path)) return;
+
+            //フォルダまたはファイル選択中イベントを発生させます
+            RaiseSelectingEvent(path);
+
+            _oldCol = CurrentCell.ColumnIndex;
+            _oldRow = CurrentCell.RowIndex;
+        }
+
+        /// <summary>
         /// グリッドのキーダウンイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -236,6 +308,9 @@ namespace NineCubed.Memo.Plugins.FileList
 
                 //フォルダまたはファイル選択イベントを発生させます
                 RaiseSelectedEvent(path);
+
+                //キー操作を処理済みにします
+                e.Handled = true;
                 return;
             }
 
@@ -247,11 +322,28 @@ namespace NineCubed.Memo.Plugins.FileList
                     //フォルダまたはファイル選択イベントを発生させます
                     RaiseSelectedEvent(dir.Parent.FullName);
                 }
+
+                //キー操作を処理済みにします
+                e.Handled = true;
                 return;
             }
 
-            if (e.KeyCode == Keys.F2) {
-                
+            //ATL + 上キー の場合は、同じ階層の次のフォルダのフォルダ選択イベントを発生させます
+            if (e.Alt && e.KeyCode == Keys.Up) {
+                //同じ階層の前のフォルダへ移動します
+                MoveDir(true);
+
+                //キー操作を処理済みにします
+                e.Handled = true;
+            }
+
+            //ALT + 下キー の場合は、同じ階層の次のフォルダのフォルダ選択イベントを発生させます
+            if (e.Alt && e.KeyCode == Keys.Down) {
+                //同じ階層の次のフォルダへ移動します
+                MoveDir(false);
+
+                //キー操作を処理済みにします
+                e.Handled = true;
             }
         }
 

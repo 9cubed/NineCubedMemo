@@ -60,6 +60,5 @@ namespace NineCubed.Memo.Plugins.EmptyPanel
             plugin.SetFocus();
         }
 
-
     } //class
 }

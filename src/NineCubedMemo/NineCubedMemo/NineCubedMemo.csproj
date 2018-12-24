@@ -112,9 +112,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Memo\Plugins\EventManager.cs" />
+    <Compile Include="Memo\Plugins\Events\DirSelectingEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\FileSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\DirSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\EventParam.cs" />
+    <Compile Include="Memo\Plugins\Events\FileSelectingEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginClosedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginCreatedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\TitleChangedEventParam.cs" />
@@ -139,6 +141,13 @@
     <Compile Include="Memo\Plugins\FileTree\FileTreePlugin.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\ImageViewer\ImageViewerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\ImageViewer\ImageViewerControl.Designer.cs">
+      <DependentUpon>ImageViewerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Memo\Plugins\ImageViewer\ImageViewerPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IEditPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IFilePlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IKeyMacroPlugin.cs" />
@@ -274,6 +283,9 @@
     <EmbeddedResource Include="Memo\Plugins\FileTree\FileTreePlugin.resx">
       <DependentUpon>FileTreePlugin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\ImageViewer\ImageViewerControl.resx">
+      <DependentUpon>ImageViewerControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\PathField\PathFieldPlugin.resx">
       <DependentUpon>PathFieldPlugin.cs</DependentUpon>
     </EmbeddedResource>
@@ -321,6 +333,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\NineCubed.Memo.Plugins.FileTree.FileTreePlugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.ImageViewer.ImageViewerPlugin\NineCubed.Memo.Plugins.ImageViewer.ImageViewerPlugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin.ini">
