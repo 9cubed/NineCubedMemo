@@ -1,4 +1,6 @@
-﻿using NineCubed.Common.Utils;
+﻿using NineCubed.Common.Controls.FileList;
+using NineCubed.Common.Utils;
+using NineCubed.Memo.Plugins.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
 {
     public class OpenFileMenu : ToolStripMenuItem
     {
-        public OpenFileMenu(FileListPlugin fileList)
+        public OpenFileMenu(FileListGrid fileList)
         {
             this.Text = "開く";
 
@@ -22,8 +24,26 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
                 var path = fileList[0, fileList.CurrentCell.RowIndex].Value.ToString();
 
                 //フォルダまたはファイル選択イベントを発生させます
-                fileList.RaiseSelectedEvent(path);
+                RaiseSelectedEvent(path);
             };
+        }
+
+        /// <summary>
+        /// ファイルリストで選択されたフォルダまたはファイルの選択イベントを発生させます
+        /// </summary>
+        public void RaiseSelectedEvent(string path)
+        {
+            var pluginManager = PluginManager.GetInstance();
+
+            if (FileUtils.IsFile(path)) {
+                //ファイルの場合、ファイル選択イベントを発生させます
+                var param = new FileSelectedEventParam { Path = path };
+                pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name, this, param);
+            } else {
+                //フォルダの場合、フォルダ選択イベントを発生させます
+                var param = new DirSelectedEventParam { Path = path };
+                pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
+            }
         }
 
     } //class

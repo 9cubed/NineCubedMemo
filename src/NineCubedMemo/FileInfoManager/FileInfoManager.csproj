@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6170F4EA-BBE0-4E2A-8701-9D8A9F3C5D52}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FileInfoManager</RootNamespace>
+    <AssemblyName>FileInfoManager</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>sqlite\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DB\FileDataDao.cs" />
+    <Compile Include="DB\FileData.cs" />
+    <Compile Include="DB\FileDB.cs" />
+    <Compile Include="DB\TagDataDao.cs" />
+    <Compile Include="DB\TagData.cs" />
+    <Compile Include="Events\FileInfoSelectingEventParam.cs" />
+    <Compile Include="FileInfoEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileInfoEditorControl.Designer.cs">
+      <DependentUpon>FileInfoEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileInfoEditorPlugin.cs" />
+    <Compile Include="FileInfoManagerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileInfoManagerControl.Designer.cs">
+      <DependentUpon>FileInfoManagerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileInfoManagerPlugin.cs" />
+    <Compile Include="FileMemoColumnPlugin.cs" />
+    <Compile Include="FileMemoColumn.cs" />
+    <Compile Include="FileValueColumn.cs" />
+    <Compile Include="FileValueColumnPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NineCubedMemo\NineCubedMemo.csproj">
+      <Project>{622f6809-98a5-474f-bd4c-dc1101bd1990}</Project>
+      <Name>NineCubedMemo</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="plugins\define\FileInfoManager.FileInfoManagerPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\FileInfoManager.FileMemoColumnPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\FileInfoManager.FileInfoEditorPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\FileInfoManager.FileValueColumnPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_list.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FileInfoEditorControl.resx">
+      <DependentUpon>FileInfoEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileInfoManagerControl.resx">
+      <DependentUpon>FileInfoManagerControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rem dllをプラグインフォルダへ移動します
+move $(TargetPath) $(TargetDir)plugins\define\FileInfoManager.FileInfoManagerPlugin\
+
+rem メインプロジェクトにプラグインフォルダを作成します
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileInfoManagerPlugin
+
+rem プラグインフォルダをメインプロジェクトのプラグインフォルダへコピーします
+copy $(TargetDir)plugins\define\FileInfoManager.FileInfoManagerPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileInfoManagerPlugin\
+
+echo ■FileInfoManagerプロジェクト コピー完了
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

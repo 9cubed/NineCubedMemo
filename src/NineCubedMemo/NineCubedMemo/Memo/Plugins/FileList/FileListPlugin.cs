@@ -1,4 +1,5 @@
 ﻿using NineCubed.Common.Controls.FileList;
+using NineCubed.Common.Controls.FileList.Columns;
 using NineCubed.Common.Utils;
 using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.FileList.Menus;
@@ -6,6 +7,7 @@ using NineCubed.Memo.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -18,7 +20,6 @@ namespace NineCubed.Memo.Plugins.FileList
 {
     public class FileListPlugin : FileListGrid, IPlugin, IEditPlugin, IRefreshPlugin
     {
-
         public FileListPlugin() {
             InitializeComponent();
         }
@@ -27,6 +28,7 @@ namespace NineCubed.Memo.Plugins.FileList
         {
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             this.SuspendLayout();
+
             // 
             // FileListPlugin
             // 
@@ -38,7 +40,6 @@ namespace NineCubed.Memo.Plugins.FileList
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FileListPlugin_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         //ポップアップメニューを設定します
@@ -71,6 +72,33 @@ namespace NineCubed.Memo.Plugins.FileList
 
             //開く（バイナリ形式）
             this.ContextMenuStrip.Items.Add( new OpenFileBinaryMenu(this) ); //開く（バイナリ形式）
+
+            //ネイティブな方法で開く
+            {
+                var menu = new ToolStripMenuItem("ネイティブな方法で開く");
+                menu.Click += (sender, e) => {
+                    //選択されているセルがある行のパスを取得します
+                    var path = GetSelectedPath();
+                    if (path == null) return;
+
+                    //ネイティブな方法でファイルを開きます
+                    Process.Start(path);
+                };
+                this.ContextMenuStrip.Items.Add(menu);
+            }
+
+            //現在のフォルダを開く
+            {
+                var menu = new ToolStripMenuItem("現在のフォルダを開く");
+                menu.Click += (sender, e) => {
+                    //選択されているセルがある行のパスを取得します
+                    if (string.IsNullOrEmpty(this.CurrentPath)) return;
+
+                    //ネイティブな方法でフォルダを開きます
+                    Process.Start(this.CurrentPath);
+                };
+                this.ContextMenuStrip.Items.Add(menu);
+            }
         }
 
         /// <summary>
@@ -81,11 +109,11 @@ namespace NineCubed.Memo.Plugins.FileList
             if (FileUtils.IsFile(path)) {
                 //ファイルの場合、ファイル選択イベントを発生させます
                 var param = new FileSelectedEventParam { Path = path };
-                _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name,  null, param);
+                _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name, this, param);
             } else {
                 //フォルダの場合、フォルダ選択イベントを発生させます
                 var param = new DirSelectedEventParam { Path = path };
-                _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name,  null, param);
+                _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
             }
         }
 
@@ -98,11 +126,11 @@ namespace NineCubed.Memo.Plugins.FileList
             if (FileUtils.IsFile(path)) {
                 //ファイルの場合、ファイル選択イベントを発生させます
                 var param = new FileSelectingEventParam { Path = path };
-                _pluginManager.GetEventManager().RaiseEvent(FileSelectingEventParam.Name,  null, param);
+                _pluginManager.GetEventManager().RaiseEvent(FileSelectingEventParam.Name, this, param);
             } else {
                 //フォルダの場合、フォルダ選択イベントを発生させます
                 var param = new DirSelectingEventParam { Path = path };
-                _pluginManager.GetEventManager().RaiseEvent(DirSelectingEventParam.Name,  null, param);
+                _pluginManager.GetEventManager().RaiseEvent(DirSelectingEventParam.Name, this, param);
             }
         }
 
@@ -141,6 +169,18 @@ namespace NineCubed.Memo.Plugins.FileList
             RaiseSelectedEvent(dirList[index]);
         }
 
+        /// <summary>
+        /// 現在選択されている行のパスを返します
+        /// </summary>
+        /// <returns></returns>
+        private string GetSelectedPath() {
+            if (this.CurrentRow == null)   return null;
+            if (this.CurrentRow.Index < 0) return null;
+
+            //現在のセルがある行のパスを取得します。
+            return this[0, this.CurrentRow.Index].Value?.ToString();
+        }
+
         /******************************************************************************
          * 
          *  IPlugin
@@ -155,14 +195,25 @@ namespace NineCubed.Memo.Plugins.FileList
             //コントロールの初期化をします
             this.Initialize();
 
-            this.SelectionMode = DataGridViewSelectionMode.CellSelect; //セル選択モード
-            this.EditMode      = DataGridViewEditMode.EditOnF2; //F2が押された場合、編集モードにします
+            this.SelectionMode = DataGridViewSelectionMode.CellSelect;      //セル選択モード
+            this.EditMode      = DataGridViewEditMode.EditProgrammatically; //シングルクリックで編集中にならないようにした
 
             //ファイルリストで表示するフォルダの画像を設定します
             this.SetImage(Image.FromFile(FileUtils.AppendPath(param.DataPath, "img/opened_folder.png")));
 
             //ポップアップメニューを設定します
             SetPopupMenuItem();
+
+            //カラムの設定(FileListPluginExクラスでは、動的にカラムを設定するようになっています)
+            this.Columns.Add(new PathColumn          ()); //パスカラム(非表示)
+            //this.Columns.Add(new FileKindColumn      ());
+            this.Columns.Add(new FileNameColumn      ());
+            this.Columns.Add(new FileExtensionColumn ());
+            this.Columns.Add(new FileSizeColumn      ());
+            this.Columns.Add(new FileUpdateDateColumn());
+
+            //各カラムに FileListGrid 本体を設定します
+            foreach (var colums in this.Columns) ((IFileListColumn)colums).FileList = this;
 
             //イベントハンドラーを登録します
             _pluginManager.GetEventManager().AddEventHandler(DirSelectedEventParam.Name, this);
@@ -174,12 +225,13 @@ namespace NineCubed.Memo.Plugins.FileList
             this.Dock = DockStyle.Fill;
             this.BringToFront();
         }
-        private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
+        private PluginManager _pluginManager = null;                     //プラグインマネージャー
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get { return "ファイル一覧";} set{} } //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
 
         //フォーカスを設定します
         public void SetFocus() {
@@ -276,22 +328,17 @@ namespace NineCubed.Memo.Plugins.FileList
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        int _oldCol = -1;int _oldRow = -1;
         private void FileListPlugin_SelectionChanged(object sender, EventArgs e)
         {
-            if (this.CurrentCell.RowIndex == -1) return; //ヘッダーダブルクリックは無視する
+            if (this.CurrentCell          == null) return; //カレントセルが未設定の場合は処理しない
+            if (this.CurrentCell.RowIndex == -1)   return; //ヘッダーダブルクリックは無視する
 
             //ダブルクリックされた行のパスを取得します
-            var path = this[0, this.CurrentCell.RowIndex].Value?.ToString();
-
-            //パスが未設定の場合は処理を抜けます
-            if (string.IsNullOrEmpty(path)) return;
+            var path = GetSelectedPath();
+            if (path == null) return;
 
             //フォルダまたはファイル選択中イベントを発生させます
             RaiseSelectingEvent(path);
-
-            _oldCol = CurrentCell.ColumnIndex;
-            _oldRow = CurrentCell.RowIndex;
         }
 
         /// <summary>
@@ -301,10 +348,26 @@ namespace NineCubed.Memo.Plugins.FileList
         /// <param name="e"></param>
         private void FileListPlugin_KeyDown(object sender, KeyEventArgs e)
         {
+            //CTRL + エンターキーの場合は、ネイティブな方法でファイルを開きます
+            if (e.Control && e.KeyCode == Keys.Enter) {
+                //選択されているセルがある行のパスを取得します
+                var path = GetSelectedPath();
+                if (path == null) return;
+                if (File.Exists(path) == false) return;
+
+                //ネイティブな方法でファイルを開きます
+                Process.Start(path);
+
+                //キー操作を処理済みにします
+                e.Handled = true;
+                return;
+            }
+
+            //エンターキーが押された場合は、フォルダorファイル選択イベントを発生させます
             if (e.KeyCode == Keys.Enter) {
-                //エンターキーが押された場合
-                //ダブルクリックされた行のパスを取得します。
-                var path = this[0, this.CurrentRow.Index].Value.ToString();
+                //選択されているセルがある行のパスを取得します
+                var path = GetSelectedPath();
+                if (path == null) return;
 
                 //フォルダまたはファイル選択イベントを発生させます
                 RaiseSelectedEvent(path);
@@ -314,7 +377,21 @@ namespace NineCubed.Memo.Plugins.FileList
                 return;
             }
 
-            //ATL + 左キー の場合は、上の階層のフォルダ選択イベントを発生させます
+            //F2が押された場合は、編集中にします
+            if (e.KeyCode == Keys.F2) {
+                //選択されているセルがある行のパスを取得します
+                var path = GetSelectedPath();
+                if (path == null) return;
+
+                //編集中にします
+                this.BeginEdit(false);
+
+                //キー操作を処理済みにします
+                e.Handled = true;
+                return;
+            }
+
+            //ALT + 左キー の場合は、上の階層のフォルダ選択イベントを発生させます
             if (e.Alt && e.KeyCode == Keys.Left) {
                 if (string.IsNullOrEmpty(this.CurrentPath)) return;
                 var dir = new DirectoryInfo(this.CurrentPath);
@@ -328,13 +405,14 @@ namespace NineCubed.Memo.Plugins.FileList
                 return;
             }
 
-            //ATL + 上キー の場合は、同じ階層の次のフォルダのフォルダ選択イベントを発生させます
+            //ALT + 上キー の場合は、同じ階層の次のフォルダのフォルダ選択イベントを発生させます
             if (e.Alt && e.KeyCode == Keys.Up) {
                 //同じ階層の前のフォルダへ移動します
                 MoveDir(true);
 
                 //キー操作を処理済みにします
                 e.Handled = true;
+                return;
             }
 
             //ALT + 下キー の場合は、同じ階層の次のフォルダのフォルダ選択イベントを発生させます
@@ -344,6 +422,12 @@ namespace NineCubed.Memo.Plugins.FileList
 
                 //キー操作を処理済みにします
                 e.Handled = true;
+                return;
+            }
+
+            //Ctrl + V の場合は、貼り付けをします
+            if (e.Control && e.KeyCode == Keys.V) {
+                Paste();
             }
         }
 

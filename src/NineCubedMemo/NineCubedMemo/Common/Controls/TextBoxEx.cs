@@ -269,6 +269,8 @@ namespace NineCubed.Common.Controls
             if (this.SelectedText.Length == 0) {
 
                 if (e.Shift) {
+                    if (this.SelectionStart == 0) return; //テキストの先頭の場合は処理しない
+
                     //カーソルの前にタブがあれば、そのタブを削除する
                     if (this.Text.Substring(this.SelectionStart - 1, 1).Equals("\t") || 
                         this.Text.Substring(this.SelectionStart - 1, 1).Equals(" ")) {

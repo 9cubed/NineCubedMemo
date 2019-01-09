@@ -31,12 +31,13 @@ namespace NineCubed.Memo.Plugins.Tools
         public void InitializePlaced() {}
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
-        public void      SetFocus()       {  }                          //フォーカスを設定します
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
+        public void       SetFocus()       {  }                          //フォーカスを設定します
 
         /******************************************************************************
          * 
@@ -58,7 +59,7 @@ namespace NineCubed.Memo.Plugins.Tools
             //ボタンをツールバーに追加します。
             if (plugin.GetComponent() is ToolStripButton tool) {
                 this.Items.Add(tool);
-                param.Cancel = true;
+                param.Handled = true;
             }
         }
 

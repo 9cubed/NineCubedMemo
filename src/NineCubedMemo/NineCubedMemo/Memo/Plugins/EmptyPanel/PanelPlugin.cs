@@ -27,12 +27,13 @@ namespace NineCubed.Memo.Plugins.EmptyPanel
         public void InitializePlaced() {}
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
-        public void      SetFocus()       {  }                          //フォーカスを設定します
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
+        public void       SetFocus()       {  }                          //フォーカスを設定します
 
         /******************************************************************************
          * 
@@ -51,10 +52,10 @@ namespace NineCubed.Memo.Plugins.EmptyPanel
             var plugin = ((PluginCreatedEventParam)param).Plugin;
 
             //生成されたプラグインのコントロールをタブに設定します
-            var cotrol = ((Control)plugin.GetComponent());
-            cotrol.Parent = this;
-            cotrol.Dock = DockStyle.Fill;
-            cotrol.BringToFront();
+            var control = ((Control)plugin.GetComponent());
+            control.Parent = this;
+            control.Dock = DockStyle.Fill;
+            control.BringToFront();
 
             //プラグインにフォーカスを設定します
             plugin.SetFocus();

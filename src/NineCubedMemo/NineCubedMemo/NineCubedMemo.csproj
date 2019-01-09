@@ -69,9 +69,20 @@
   <ItemGroup>
     <Compile Include="Common\Calculation\Calculator.cs" />
     <Compile Include="Common\Collections\Map.cs" />
+    <Compile Include="Common\Controls\FileList\AFileListColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileAccessDateColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileExtensionColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileKindColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileNameColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileSizeColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileCreateDateColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\FileUpdateDateColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\PathColumn.cs" />
     <Compile Include="Common\Controls\FileList\FileListGrid.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Common\Controls\FileList\IFileListColumn.cs" />
+    <Compile Include="Common\Controls\FileList\Columns\ImageSizeColumn.cs" />
     <Compile Include="Common\Controls\FileTree\DirTreeNode.cs" />
     <Compile Include="Common\Controls\FileTree\DriveTreeNode.cs" />
     <Compile Include="Common\Controls\FileTree\DummyTreeNode.cs" />
@@ -96,6 +107,9 @@
     <Compile Include="Common\Files\TextFile.cs" />
     <Compile Include="Common\Utils\BinaryUtils.cs" />
     <Compile Include="Common\Utils\DateTimeUtils.cs" />
+    <Compile Include="Common\Utils\ImageUtils.cs" />
+    <Compile Include="Common\Utils\ListUtils.cs" />
+    <Compile Include="Common\Utils\MsgBoxUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
     <Compile Include="frmTest.cs">
       <SubType>Form</SubType>
@@ -118,8 +132,23 @@
     <Compile Include="Memo\Plugins\Events\EventParam.cs" />
     <Compile Include="Memo\Plugins\Events\FileSelectingEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginClosedEventParam.cs" />
+    <Compile Include="Memo\Plugins\Events\AllPluginCreatedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\PluginCreatedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\TitleChangedEventParam.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileExtensionColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileAccessDateColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileCreateDateColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\ImageSizeColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileUpdateDateColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileSizeColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileNameColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\Columns\FileKindColumnPlugin.cs" />
+    <Compile Include="Memo\Plugins\FileList\FileListPluginEx.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\FileList\FileListPluginEx.Designer.cs">
+      <DependentUpon>FileListPluginEx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Memo\Plugins\FileList\FileListPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -277,6 +306,9 @@
     <EmbeddedResource Include="Memo\MainFormPlugin.resx">
       <DependentUpon>MainFormPlugin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\FileList\FileListPluginEx.resx">
+      <DependentUpon>FileListPluginEx.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\FileList\FileListPlugin.resx">
       <DependentUpon>FileListPlugin.cs</DependentUpon>
     </EmbeddedResource>
@@ -317,58 +349,85 @@
     <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\property.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\NineCubed.Memo.MainFormPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.OpenDialog.OpenDialogPlugin\NineCubed.Memo.Plugins.Dialogs.OpenDialog.OpenDialogPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.OpenDialog.OpenDialogPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.SaveDialog.SaveDialogPlugin\NineCubed.Memo.Plugins.Dialogs.SaveDialog.SaveDialogPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.SaveDialog.SaveDialogPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPlugin\NineCubed.Memo.Plugins.FileList.FileListPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileSizeColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\NineCubed.Memo.Plugins.FileTree.FileTreePlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileCreateDateColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.ImageViewer.ImageViewerPlugin\NineCubed.Memo.Plugins.ImageViewer.ImageViewerPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileAccessDateColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.ImageSizeColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DisplayMenu.DisplayMenuPlugin\NineCubed.Memo.Plugins.Menus.DisplayMenu.DisplayMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileUpdateDateColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.EditMenu.EditMenuPlugin\NineCubed.Memo.Plugins.Menus.EditMenu.EditMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileNameColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.FileMenu.FileMenuPlugin\NineCubed.Memo.Plugins.Menus.FileMenu.FileMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileKindColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.HelpMenu.HelpMenuPlugin\NineCubed.Memo.Plugins.Menus.HelpMenu.HelpMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileExtensionColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.MacroMenu.MacroMenuPlugin\NineCubed.Memo.Plugins.Menus.MacroMenu.MacroMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPluginEx\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.MainMenu.MainMenuPlugin\NineCubed.Memo.Plugins.Menus.MainMenu.MainMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.SearchMenu.SearchMenuPlugin\NineCubed.Memo.Plugins.Menus.SearchMenu.SearchMenuPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\NineCubed.Memo.Plugins.PathField.PathFieldPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.ImageViewer.ImageViewerPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DisplayMenu.DisplayMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.EditMenu.EditMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.FileMenu.FileMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.HelpMenu.HelpMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.MacroMenu.MacroMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.MainMenu.MainMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.SearchMenu.SearchMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_list.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_extension.ini">
@@ -377,28 +436,28 @@
     <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\data\property.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\NineCubed.Memo.Plugins.Tab.TabPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\NineCubed.Memo.Plugins.Test.TestPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\data\property.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.MainToolPlugin\NineCubed.Memo.Plugins.Tools.MainToolPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.MainToolPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\startup.ini">
@@ -442,6 +501,9 @@
     <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\save.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPluginEx\data\img\opened_folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPlugin\data\img\opened_folder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -463,33 +525,24 @@
     <Content Include="plugins\define\NineCubed.Memo.Plugins.FileTree.FileTreePlugin\data\img\root.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="plugins\define\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin.ini">
+    <None Include="plugins\define\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\data\img\move_to_parent_dir.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin\data\img\opened_folder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\data\img\save.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="resource\file\cd.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resource\file\closed_folder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resource\file\opened_folder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resource\file\hdd.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resource\file\removable.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resource\file\root.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="resource\file\cd.png" />
+    <Content Include="resource\file\closed_folder.png" />
+    <Content Include="resource\file\opened_folder.png" />
+    <Content Include="resource\file\hdd.png" />
+    <Content Include="resource\file\removable.png" />
+    <Content Include="resource\file\root.png" />
     <Content Include="resource\icon\icon.ico" />
     <Content Include="resource\icon\icon16.png" />
     <Content Include="resource\icon\icon24.png" />
@@ -504,7 +557,14 @@
     <Folder Include="Memo\Interfaces\" />
     <Folder Include="plugins\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\data\" />
-    <Folder Include="plugins\define\NineCubed.Memo.Plugins.PathField.PathFieldPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileAccessDateColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileCreateDateColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileExtensionColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileKindColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileNameColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileSizeColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileUpdateDateColumnPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.ImageSizeColumnPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\data\" />

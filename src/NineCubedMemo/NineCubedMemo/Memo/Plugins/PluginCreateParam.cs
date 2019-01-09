@@ -25,6 +25,7 @@ namespace NineCubed.Memo.Plugins
 
         /// <summary>
         /// データフォルダのパス
+        /// plugins/data/{プラグインID}/
         /// </summary>
         public string DataPath {
             get { return (string)this["data_path"]; }

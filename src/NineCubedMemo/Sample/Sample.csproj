@@ -51,5 +51,29 @@
       <Name>NineCubedMemo</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_extension.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_list.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\Sample.SamplePlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rem dllをプラグインフォルダへ移動します
+move $(TargetPath) $(TargetDir)plugins\define\Sample.SamplePlugin\
+
+rem メインプロジェクトにプラグインフォルダを作成します
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\Sample.SamplePlugin
+
+rem プラグインフォルダをメインプロジェクトのプラグインフォルダへコピーします
+copy $(TargetDir)plugins\define\Sample.SamplePlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\Sample.SamplePlugin\
+
+echo ■Sampleプロジェクト コピー完了
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

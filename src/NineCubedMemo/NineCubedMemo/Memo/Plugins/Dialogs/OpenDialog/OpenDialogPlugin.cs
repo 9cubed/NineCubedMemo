@@ -23,13 +23,14 @@ namespace NineCubed.Memo.Plugins.Dialogs.OpenDialog
         }
         
         private PluginManager _pluginManager = null;            //プラグインマネージャー
-        public void      InitializePlaced() {}                  //プラグイン配置後の初期化処理を行います
-        public string    PluginId           { get; set; }       //プラグインID
-        public Component GetComponent()     { return _dialog; } //プラグインのコンポーネントを返します
-        public string    Title              { get; set; }       //プラグインのタイトル
-        public bool      CanClosePlugin()   { return true; }    //プラグインが終了できるかどうか
-        public void      ClosePlugin()      {  }                //プラグインの終了処理
-        public void      SetFocus()         {  }                //フォーカスを設定します
+        public void       InitializePlaced() {}                  //プラグイン配置後の初期化処理を行います
+        public string     PluginId           { get; set; }       //プラグインID
+        public IPlugin    ParentPlugin       { get; set; }       //親プラグイン
+        public IComponent GetComponent()     { return _dialog; } //プラグインのコンポーネントを返します
+        public string     Title              { get; set; }       //プラグインのタイトル
+        public bool       CanClosePlugin()   { return true; }    //プラグインが終了できるかどうか
+        public void       ClosePlugin()      {  }                //プラグインの終了処理
+        public void       SetFocus()         {  }                //フォーカスを設定します
 
         /// <summary>
         /// 開くダイアログを表示します

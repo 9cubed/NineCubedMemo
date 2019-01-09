@@ -90,6 +90,11 @@ namespace NineCubed.Memo.Plugins
             //イベントマネージャーを生成します
             _eventManager = new EventManager();
 
+            //プラグイン共通データフォルダが存在しない場合は、フォルダを作成します
+            //フォルダ : plugins/data/common/
+            var dataPath = GetCommonDataPath();
+            FileUtils.CreateDir(dataPath);
+
             //プラグイン定義データを読み込みます
             _pluginDefineData = new PluginDefineData();
             _pluginDefineData.Load();
@@ -123,21 +128,35 @@ namespace NineCubed.Memo.Plugins
 
             //プラグインを生成します
             var param = new PluginCreateParam();
-            var plugin = CreatePluginInstance(pluginLoaderType, param, null, "plugin_loader");
+            var plugin = CreatePluginInstance(pluginLoaderType, param, this, null, "plugin_loader");
         }
 
         /// <summary>
         /// プラグインのインスタンスを生成します
+        /// 
+        /// 指定したプラグインIDと同じプラグインが既にある場合は、そのプラグインを返します。
         /// </summary>
         /// <param name="pluginType">プラグインのクラスの型</param>
         /// <param name="param">プラグイン生成用パラメーター</param>
+        /// <param name="sender">実行元オブジェクト</param>
         /// <param name="parentPlugin">プラグインのコントロールを割り当てるプラグイン</param>
         /// <param name="pluginId">プラグインID。未指定の場合は自動で採番されます。</param>
         /// <returns>生成したプラグイン</returns>
-        public IPlugin CreatePluginInstance(Type pluginType, PluginCreateParam param = null, IPlugin parentPlugin = null, string pluginId = null)
+        public IPlugin CreatePluginInstance(Type pluginType, PluginCreateParam param, Object sender, IPlugin parentPlugin = null, string pluginId = null)
         {
+            //プラグインID「common」は、プラグイン共通のファイル置き場のため、使用禁止です。
+            if ("common".Equals(pluginId)) throw new Exception("common は予約語のため、プラグインID で使用できません。");
+
+            IPlugin plugin;
+
+            //既に同じプラグインIDのプラグインがある場合は、そのプラグインを返します
+            if (pluginId != null) {
+                plugin = GetPlugin(pluginId);
+                if (plugin != null) return plugin;
+            }
+
             //プラグインの型からインスタンス(オブジェクト)を生成します
-            var plugin = (IPlugin)Activator.CreateInstance(pluginType);
+            plugin = (IPlugin)Activator.CreateInstance(pluginType);
 
             //プラグインIDを未指定の場合は生成して設定します
             if (pluginId == null) pluginId = GetPluginId();
@@ -180,14 +199,20 @@ namespace NineCubed.Memo.Plugins
                         //フォーム以外の場合
                         //プラグイン生成イベントを発生させて、プラグインの割り当て先を探します
                         var eventParam = new PluginCreatedEventParam { Plugin = plugin };
-                        _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, eventParam);
+                        var eventHandledPlugin = _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, sender, eventParam);
+
+                        //親プラグインを設定します
+                        if (eventHandledPlugin != null) plugin.ParentPlugin = eventHandledPlugin;
                     }
                 } else {
                     //割当先が指定されている場合
-                    if (plugin.GetComponent() is Control control) {
+                    if (plugin.GetComponent() is IComponent component) {
                         //指定されたプラグインに対してだけ、プラグイン生成イベントを発生させます
                         var eventParam = new PluginCreatedEventParam { Plugin = plugin };
-                        _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, null, eventParam, parentPlugin);
+                        var eventHandledPlugin = _pluginManager.GetEventManager().RaiseEvent(PluginCreatedEventParam.Name, sender, eventParam, parentPlugin);
+
+                        //親プラグインを設定します
+                        if (eventHandledPlugin != null) plugin.ParentPlugin = eventHandledPlugin;
                     }
                 }
             }
@@ -210,7 +235,7 @@ namespace NineCubed.Memo.Plugins
 
                 //プラグイン終了イベントを発生させます
                 var param = new PluginClosedEventParam { Plugin = plugin };
-                _pluginManager.GetEventManager().RaiseEvent(PluginClosedEventParam.Name, null, param);
+                _pluginManager.GetEventManager().RaiseEvent(PluginClosedEventParam.Name, this, param);
 
                 //終了したプラグインがアクティブプラグインの場合は、アクティブプラグインを未設定にします
                 if (this.ActivePlugin == plugin) this.ActivePlugin = null;
@@ -323,8 +348,14 @@ namespace NineCubed.Memo.Plugins
         /// <returns></returns>
         public string GetDataPath(string pluginId)
         {
-            return FileUtils.AppendPath(__.GetAppDirPath(), "plugins/data/" + pluginId);
+            return FileUtils.AppendPath(__.GetAppDirPath(), "plugins/data/" + pluginId + "/");
         }
+
+        /// <summary>
+        /// プラグイン用共通データフォルダのパスを返します
+        /// </summary>
+        /// <returns></returns>
+        public string GetCommonDataPath() => GetDataPath("common");
 
         /// <summary>
         /// プラグインIDを採番して返します
@@ -346,6 +377,24 @@ namespace NineCubed.Memo.Plugins
             }
             return null;
         }
+
+        /// <summary>
+        /// 子プラグインをリストで返します
+        /// </summary>
+        /// <returns></returns>
+        public IList<IPlugin> GetChildPluginList(IPlugin parentPlugin)
+        {
+            var list = new List<IPlugin>();
+
+            //全プラグインの親を取得して、親が引数のプラグインの場合は、リストに追加します
+            foreach (var plugin in _pluginList) {
+                if (parentPlugin == plugin.ParentPlugin) {
+                    list.Add(plugin);
+                }
+            }
+            return list;
+        }
+
 
         /// <summary>
         /// GUIDの形式チェックを行います

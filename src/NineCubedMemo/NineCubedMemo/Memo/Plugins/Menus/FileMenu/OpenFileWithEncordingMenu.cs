@@ -74,7 +74,7 @@ namespace NineCubed.Memo.Plugins.Menus.FileMenu
                 };
 
                 //テキストエディタープラグインを生成します
-                var plugin = (IFilePlugin)_pluginManager.CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam);
+                var plugin = (IFilePlugin)_pluginManager.CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam, this);
 
             } catch (Exception ex) {
                 __.ShowErrorMsgBox(ex);

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NineCubedMemoTests", "NineC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{724654BB-6929-4281-860A-9F6582B0C938}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileInfoManager", "FileInfoManager\FileInfoManager.csproj", "{6170F4EA-BBE0-4E2A-8701-9D8A9F3C5D52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{724654BB-6929-4281-860A-9F6582B0C938}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{724654BB-6929-4281-860A-9F6582B0C938}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{724654BB-6929-4281-860A-9F6582B0C938}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6170F4EA-BBE0-4E2A-8701-9D8A9F3C5D52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6170F4EA-BBE0-4E2A-8701-9D8A9F3C5D52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6170F4EA-BBE0-4E2A-8701-9D8A9F3C5D52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6170F4EA-BBE0-4E2A-8701-9D8A9F3C5D52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

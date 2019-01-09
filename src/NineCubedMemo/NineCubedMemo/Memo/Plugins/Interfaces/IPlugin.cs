@@ -16,10 +16,15 @@ namespace NineCubed.Memo.Plugins.Interfaces
         string PluginId { get; set; }
 
         /// <summary>
+        /// 親プラグイン
+        /// </summary>
+        IPlugin ParentPlugin { get; set; }
+
+        /// <summary>
         /// プラグインのコンポーネントを返します
         /// </summary>
         /// <returns></returns>
-        Component GetComponent();
+        IComponent GetComponent();
 
         /// <summary>
         /// プラグインのタイトル

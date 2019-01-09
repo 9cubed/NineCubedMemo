@@ -102,17 +102,17 @@ namespace NineCubed.Common.Files
         /// <summary>
         /// 文字コード
         /// </summary>
-        private Encoding encoding = new UTF8Encoding(false);
+        protected Encoding _encoding = new UTF8Encoding(false);
 
         /// <summary>
         /// iniファイルを出力します
         /// <param name="path">パス</param>
         /// </summary>
-        public void Save(string path = null)
+        public virtual void Save(string path = null)
         {
             if (path != null) this.Path = path;
 
-            using (var writer = new StreamWriter(this.Path, false, encoding)) {
+            using (var writer = new StreamWriter(this.Path, false, _encoding)) {
                 //セクション名が未指定の Map を先にファイル出力します
                 WriteKeyValue(writer, _data[""]);
 
@@ -147,6 +147,7 @@ namespace NineCubed.Common.Files
         /// iniファイルを読み込みます
         /// </summary>
         /// <param name="path">パス</param>
+        virtual
         public void Load(string path = null)
         {
             if (path != null) this.Path = path; //パスが指定されている場合は、パスを保持します
@@ -154,7 +155,7 @@ namespace NineCubed.Common.Files
 
             string section = ""; //セクション名
 
-            using(var reader = new StreamReader(this.Path, encoding)) {
+            using(var reader = new StreamReader(this.Path, _encoding)) {
                 while (reader.EndOfStream == false) {
                     //ファイルから1行読み込みます
                     var line = reader.ReadLine().Trim();
@@ -178,11 +179,53 @@ namespace NineCubed.Common.Files
         }
 
         //値を取得します
-        public string ToString(string section, string key, string defaultValue = null)  => this[section, key]?.ToString();
-        public int    ToInt   (string section, string key, int    defaultValue = 0)     =>    int.TryParse(this[section, key]?.ToString(), out int    value) ? value : 0;
-        public long   ToLong  (string section, string key, long   defaultValue = 0)     =>   long.TryParse(this[section, key]?.ToString(), out long   value) ? value : 0;
-        public double ToDouble(string section, string key, double defaultValue = 0)     => double.TryParse(this[section, key]?.ToString(), out double value) ? value : 0;
-        public bool   ToBool  (string section, string key, bool   defaultValue = false) =>   bool.TryParse(this[section, key]?.ToString(), out bool   value) ? value : false;
+        public string ToString(string section, string key, string defaultValue = null) {
+            var value = this[section, key]?.ToString();
+            return  (value == null) ? defaultValue : value;
+        }
+        public int    ToInt   (string section, string key, int    defaultValue = 0)     =>    int.TryParse(this[section, key]?.ToString(), out int    value) ? value : defaultValue;
+        public long   ToLong  (string section, string key, long   defaultValue = 0)     =>   long.TryParse(this[section, key]?.ToString(), out long   value) ? value : defaultValue;
+        public double ToDouble(string section, string key, double defaultValue = 0)     => double.TryParse(this[section, key]?.ToString(), out double value) ? value : defaultValue;
+        public bool   ToBool  (string section, string key, bool   defaultValue = false) =>   bool.TryParse(this[section, key]?.ToString(), out bool   value) ? value : defaultValue;
+
+    } //class
+
+    public class PluginListIni : IniFile 
+    {
+        /// <summary>
+        /// iniファイルを読み込みます
+        /// </summary>
+        /// <param name="path">パス</param>
+        override
+        public void Load(string path = null)
+        {
+            if (path != null) this.Path = path; //パスが指定されている場合は、パスを保持します
+            if (File.Exists(this.Path) == false) return; //ファイルか存在しない場合
+
+            int no = 0; //セクションの連番
+
+            using(var reader = new StreamReader(this.Path, _encoding)) {
+                while (reader.EndOfStream == false) {
+                    //ファイルから1行読み込みます
+                    var line = reader.ReadLine().Trim();
+
+                    //コメントの場合は無視します
+                    if (line.StartsWith(";") || line.StartsWith("#")) continue;
+
+                    // [ ] で挟まている値をセクション名として取得します
+                    if (line.StartsWith("[plugin]")) {
+                        no++;
+                        continue;
+                    }
+
+                    //「=」が含まれる場合は、キーと値に分割して、値を保持します
+                    var (key, value) = StringUtils.GetKeyValue(line);
+                    if (string.IsNullOrEmpty(key) == false) {
+                        this["plugin_" + no, key] = value;
+                    }
+                }
+            }
+        }
 
     } //class
 }

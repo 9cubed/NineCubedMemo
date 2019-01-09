@@ -84,13 +84,14 @@ namespace NineCubed.Memo.Plugins
         /// <param name="eventName">イベント名</param>
         /// <param name="sender">イベント発生元オブジェクト</param>
         /// <param name="param">イベントパラメーター</param>
-        public void RaiseEvent(string eventName, object sender, EventParam param, IPlugin plugin = null) {
+        /// <return>イベントを処理済みにしたプラグイン</return>
+        public IPlugin RaiseEvent(string eventName, object sender, EventParam param, IPlugin plugin = null) {
 
             //イベントを発生させるプラグインが指定されている場合は、
             //イベントハンドラーリストを使わずに、すぐにイベントメソッドを実行します
             if (plugin != null) {
                 InvokeEventMethod(eventName, sender, param, plugin);
-                return;
+                return plugin;
             }
 
             //イベント名をキーにして、イベントハンドラーリストを取得します
@@ -101,20 +102,20 @@ namespace NineCubed.Memo.Plugins
                 var eventHandlerList = tmpEventHandlerList.ToList();
 
                 foreach(var eventHandler in eventHandlerList) {
-                    //イベントの発生元と受け取り先が同じ場合は処理しない
-                    if (sender == eventHandler) continue;
-
                     //イベントメソッドを実行します
                     InvokeEventMethod(eventName, sender, param, eventHandler);
 
-                    //イベントのキャンセル指示が出た場合は処理を抜けます
-                    if (param.Cancel) return;
+                    //イベントがプラグインにて処理済みとなった場合には、処理を抜けます
+                    if (param.Handled) return eventHandler;
                 }
             }
+
+            return null;
         }
 
         /// <summary>
         /// イベント用のメソッドを実行します。
+        /// 引数のイベント名(eventName)を、そのままメソッド名として実行します。
         /// </summary>
         /// <param name="eventName"></param>
         /// <param name="sender"></param>
@@ -122,6 +123,8 @@ namespace NineCubed.Memo.Plugins
         /// <param name="eventHandler"></param>
         private void InvokeEventMethod(string eventName, object sender, EventParam param, IPlugin eventHandler)
         {
+            //TODO Console.WriteLine("■" + eventName + ":" + eventHandler.PluginId);
+
             //イベントの受け取り先のメソッド情報を取得します
             var methodInfo = eventHandler.GetType().GetMethod(eventName);
             if (methodInfo == null) {

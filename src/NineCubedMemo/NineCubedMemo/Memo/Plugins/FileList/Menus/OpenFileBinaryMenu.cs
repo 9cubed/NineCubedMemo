@@ -1,4 +1,5 @@
-﻿using NineCubed.Common.Utils;
+﻿using NineCubed.Common.Controls.FileList;
+using NineCubed.Common.Utils;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Memo.Plugins.TextEditor;
 using System;
@@ -12,7 +13,7 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
 {
     public class OpenFileBinaryMenu : ToolStripMenuItem
     {
-        public OpenFileBinaryMenu(FileListPlugin fileList) 
+        public OpenFileBinaryMenu(FileListGrid fileList) 
         {
             this.Text = "開く（バイナリ形式）";
 
@@ -32,7 +33,7 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
                 };
 
                 //テキストエディタープラグインを生成します
-                var plugin = (IFilePlugin)PluginManager.GetInstance().CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam);
+                var plugin = (IFilePlugin)PluginManager.GetInstance().CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam, this);
             };
         }
     }

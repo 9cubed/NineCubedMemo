@@ -1,4 +1,5 @@
-﻿using NineCubed.Common.Utils;
+﻿using NineCubed.Common.Controls.FileList;
+using NineCubed.Common.Utils;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Memo.Plugins.TextEditor;
 using System;
@@ -12,7 +13,7 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
 {
     public class OpenFileEncodingMenu : ToolStripMenuItem
     {
-        public OpenFileEncodingMenu(FileListPlugin fileList, string text, Encoding encoding)
+        public OpenFileEncodingMenu(FileListGrid fileList, string text, Encoding encoding)
         {
             this.Text = text;
 
@@ -32,7 +33,7 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
                 };
 
                 //テキストエディタープラグインを生成します
-                var plugin = (IFilePlugin)PluginManager.GetInstance().CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam);
+                var plugin = (IFilePlugin)PluginManager.GetInstance().CreatePluginInstance(typeof(TextEditorPlugin), pluginCreateParam, this);
             };
         }
     }

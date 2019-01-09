@@ -47,11 +47,12 @@ namespace NineCubed.Memo.Plugins.SearchForm
         public void InitializePlaced() {}
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return null; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      SetFocus()       {  }                          //フォーカスを設定します
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return null; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       SetFocus()       {  }                          //フォーカスを設定します
 
         /// <summary>
         /// プラグインの終了処理

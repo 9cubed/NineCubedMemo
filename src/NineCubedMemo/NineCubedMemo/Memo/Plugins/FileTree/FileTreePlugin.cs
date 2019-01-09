@@ -5,6 +5,7 @@ using NineCubed.Memo.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -72,6 +73,18 @@ namespace NineCubed.Memo.Plugins.FileTree
                     this.Refresh(this.SelectedNode);
                 };
             }
+            {
+                var menu = new ToolStripMenuItem("フォルダを開く");
+                popupMenu.Items.Add(menu);
+                menu.Click += (sender, e) => {
+                    //選択されているノードのパスを取得します
+                    var path = GetPath(this.SelectedNode);
+                    if (string.IsNullOrEmpty(path)) return;
+
+                    //ネイティブな方法でフォルダを開きます
+                    Process.Start(path);
+                };
+            }
             this.ContextMenuStrip = popupMenu;
 
             return true;
@@ -82,11 +95,12 @@ namespace NineCubed.Memo.Plugins.FileTree
             this.BringToFront();
         } 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
 
         //フォーカスを設定します
         public void SetFocus() {
@@ -107,8 +121,7 @@ namespace NineCubed.Memo.Plugins.FileTree
         /// </summary>
         public void RefreshData()
         {
-            //TODO
-            MessageBox.Show("まだ作ってないのです。");
+            this.Refresh(this.SelectedNode);
         }
 
         /******************************************************************************
@@ -129,7 +142,7 @@ namespace NineCubed.Memo.Plugins.FileTree
             
             //フォルダ選択イベントを発生させます
             var param = new DirSelectedEventParam { Path = path };
-            _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name,  null, param);
+            _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
         }
 
         /// <summary>

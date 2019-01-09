@@ -27,10 +27,10 @@ namespace NineCubed.Memo.Plugins.ImageViewer
             _ImageViewer.Dock = DockStyle.Fill;
 
             //画像を読み込みます
-            _ImageViewer.LoadImage(param.Path);
+            var result = _ImageViewer.LoadImage(param.Path);
 
             //ファイル名をタイトルとして保持します（タブのタイトルになります）
-            this.Title = Path.GetFileName(param.Path);
+            if (result) this.Title = Path.GetFileName(param.Path);
 
             //イベントハンドラーを登録します
             _pluginManager.GetEventManager().AddEventHandler(FileSelectingEventParam.Name, this);
@@ -45,11 +45,12 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         }
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return _ImageViewer; }      //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { _ImageViewer.Parent = null; //プラグインの終了処理
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return _ImageViewer; }      //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { _ImageViewer.Parent = null; //プラグインの終了処理
                                             _ImageViewer.Dispose(); }   
 
         //フォーカスを設定します
@@ -78,10 +79,10 @@ namespace NineCubed.Memo.Plugins.ImageViewer
             var path = ((FileSelectingEventParam)param).Path;
 
             //画像を読み込みます
-            _ImageViewer.LoadImage(path);
+            var result = _ImageViewer.LoadImage(path);
 
             //ファイル名をタイトルとして保持します（タブのタイトルになります）
-            this.Title = Path.GetFileName(path);
+            if (result) this.Title = Path.GetFileName(path);
 
             //タイトル変更イベントを発生させます
             var p = new TitleChangedEventParam{ Plugin = this };

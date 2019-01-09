@@ -12,9 +12,9 @@ namespace NineCubed.Memo.Plugins.Events
     public class EventParam
     {
         /// <summary>
-        /// true:イベントを途中で中止にする
+        /// true:イベントを処理済みとし、他のプラグインへイベントを通知しないようにする。
         /// </summary>
-        public bool Cancel = false;
+        public bool Handled = false;
 
     } //class
 }

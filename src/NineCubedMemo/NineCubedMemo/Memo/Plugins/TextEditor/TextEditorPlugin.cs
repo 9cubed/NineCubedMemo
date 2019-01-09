@@ -274,15 +274,6 @@ namespace NineCubed.Memo.Plugins.TextEditor
         }
 
         /// <summary>
-        /// 保存確認メッセージを表示します
-        /// </summary>
-        /// <returns>押されたボタン</returns>
-        private DialogResult ShowConfirmSavingMsgBox() {
-            var dialogResult = MessageBox.Show("変更されています。保存しますか？", "確認", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-            return dialogResult;
-        }
-
-        /// <summary>
         /// メニュー・ファイル・文字コードのメニューに、チェックをつけます
         /// </summary>
         private void CheckedMenu_MenuFile_Encoding(Encoding encoding) {
@@ -645,9 +636,10 @@ namespace NineCubed.Memo.Plugins.TextEditor
          ******************************************************************************/ 
 
         
-        public string    PluginId       { get; set; }    //プラグインID
-        public Component GetComponent() { return this; } //プラグインのコンポーネントを返します
-        public string    Title          { get; set; }    //プラグインのタイトルを返します
+        public string     PluginId       { get; set; }    //プラグインID
+        public IPlugin    ParentPlugin   { get; set; }    //親プラグイン
+        public IComponent GetComponent() { return this; } //プラグインのコンポーネントを返します
+        public string     Title          { get; set; }    //プラグインのタイトルを返します
 
         /// <summary>
         /// プラグインが終了できるかどうか
@@ -656,7 +648,7 @@ namespace NineCubed.Memo.Plugins.TextEditor
         public bool CanClosePlugin() {
             if (txtMain.Modified) {
                 //テキストに変更がある場合、保存の確認を行います
-                var result = ShowConfirmSavingMsgBox();
+                var result = MsgBoxUtils.ShowMsgBoxToConfirmSaving();
                 if (result == DialogResult.Yes) {
                     //ファイルを保存します
                     SaveFile();

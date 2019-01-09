@@ -80,7 +80,7 @@ namespace NineCubed.Common.Utils
 
             //パスにドライブだけ指定されている場合には、\マークをつけます
             if (path.EndsWith(":")) path = path + Path.DirectorySeparatorChar; 
-
+            
             //パスが存在しない場合は処理を抜けます
             if (Directory.Exists(path) == false) return new List<string>();
 
@@ -165,6 +165,22 @@ namespace NineCubed.Common.Utils
         {
             var file = new FileInfo(path);
             return !( file.Attributes.HasFlag(FileAttributes.Directory) );
+        }
+
+        /// <summary>
+        /// フォルダまたはファイルが存在するかチェックします
+        /// </summary>
+        /// <param name="path">パス</param>
+        /// <returns>true:存在する</returns>
+        public static bool Exists(string path)
+        {
+            bool exists;
+            if (FileUtils.IsFile(path)) {
+                exists = File.Exists(path);
+            } else {
+                exists = Directory.Exists(path);
+            }
+            return exists;
         }
 
         /// <summary>
@@ -360,6 +376,16 @@ namespace NineCubed.Common.Utils
             return null;
         }
 
+        /// <summary>
+        /// フォルダが存在しない場合は、フォルダを作成します
+        /// </summary>
+        /// <param name="dirPath"></param>
+        public static void CreateDir(string dirPath)
+        {
+            if (Directory.Exists(dirPath) == false) {
+                Directory.CreateDirectory(dirPath);
+            }
+        }
 
     } //class
 }

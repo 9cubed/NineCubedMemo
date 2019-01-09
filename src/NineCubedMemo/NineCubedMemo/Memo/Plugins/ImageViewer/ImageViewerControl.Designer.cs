@@ -36,6 +36,8 @@
             this.btnTopLeft = new System.Windows.Forms.Button();
             this.scrBarRate = new System.Windows.Forms.HScrollBar();
             this.pnlMain = new System.Windows.Forms.Panel();
+            this.cmbQuality = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pic)).BeginInit();
             this.pnlTop.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -58,6 +60,8 @@
             // pnlTop
             // 
             this.pnlTop.BackColor = System.Drawing.Color.Silver;
+            this.pnlTop.Controls.Add(this.label1);
+            this.pnlTop.Controls.Add(this.cmbQuality);
             this.pnlTop.Controls.Add(this.chkLockImage);
             this.pnlTop.Controls.Add(this.lblRate);
             this.pnlTop.Controls.Add(this.chkFit);
@@ -66,17 +70,17 @@
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(576, 38);
+            this.pnlTop.Size = new System.Drawing.Size(813, 38);
             this.pnlTop.TabIndex = 3;
             // 
             // chkLockImage
             // 
             this.chkLockImage.AutoSize = true;
-            this.chkLockImage.Location = new System.Drawing.Point(474, 10);
+            this.chkLockImage.Location = new System.Drawing.Point(487, 10);
             this.chkLockImage.Name = "chkLockImage";
-            this.chkLockImage.Size = new System.Drawing.Size(100, 16);
+            this.chkLockImage.Size = new System.Drawing.Size(72, 16);
             this.chkLockImage.TabIndex = 4;
-            this.chkLockImage.Text = "画像を固定する";
+            this.chkLockImage.Text = "画像固定";
             this.chkLockImage.UseVisualStyleBackColor = true;
             this.chkLockImage.CheckedChanged += new System.EventHandler(this.chkLockImage_CheckedChanged);
             // 
@@ -102,7 +106,7 @@
             // 
             // btnTopLeft
             // 
-            this.btnTopLeft.Location = new System.Drawing.Point(326, 4);
+            this.btnTopLeft.Location = new System.Drawing.Point(565, 4);
             this.btnTopLeft.Name = "btnTopLeft";
             this.btnTopLeft.Size = new System.Drawing.Size(132, 27);
             this.btnTopLeft.TabIndex = 1;
@@ -135,6 +139,25 @@
             this.pnlMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pnlMain_MouseUp);
             this.pnlMain.Resize += new System.EventHandler(this.pnlMain_Resize);
             // 
+            // cmbQuality
+            // 
+            this.cmbQuality.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbQuality.FormattingEnabled = true;
+            this.cmbQuality.Location = new System.Drawing.Point(355, 8);
+            this.cmbQuality.Name = "cmbQuality";
+            this.cmbQuality.Size = new System.Drawing.Size(126, 20);
+            this.cmbQuality.TabIndex = 5;
+            this.cmbQuality.SelectedIndexChanged += new System.EventHandler(this.cmbQuality_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(320, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "画質";
+            // 
             // ImageViewerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -143,7 +166,7 @@
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.pnlTop);
             this.Name = "ImageViewerControl";
-            this.Size = new System.Drawing.Size(576, 388);
+            this.Size = new System.Drawing.Size(813, 388);
             ((System.ComponentModel.ISupportInitialize)(this.pic)).EndInit();
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
@@ -162,5 +185,7 @@
         private System.Windows.Forms.HScrollBar scrBarRate;
         private System.Windows.Forms.CheckBox chkLockImage;
         private System.Windows.Forms.Panel pnlMain;
+        private System.Windows.Forms.ComboBox cmbQuality;
+        private System.Windows.Forms.Label label1;
     }
 }

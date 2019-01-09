@@ -65,11 +65,12 @@ namespace NineCubed.Memo.Plugins.Splitter
         }
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      SetFocus()       {  }                          //フォーカスを設定します
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       SetFocus()       {  }                          //フォーカスを設定します
 
         /// <summary>
         /// プラグインの終了処理
@@ -104,7 +105,7 @@ namespace NineCubed.Memo.Plugins.Splitter
             //パネル１が未割当の場合は、生成されたプラグインをパネル１に割り当てます
             if (this.Panel1.Controls.Count == 0) {
                 ((Control)plugin.GetComponent()).Parent = this.Panel1;
-                param.Cancel = true; //処理済みとしてイベントをキャンセルします
+                param.Handled = true; //処理済みとしてイベントをキャンセルします
                 return;
             }
 
@@ -116,7 +117,7 @@ namespace NineCubed.Memo.Plugins.Splitter
                 //イベントハンドラーを削除します
                 _pluginManager.GetEventManager().RemoveEventHandler(PluginCreatedEventParam.Name, this);
 
-                param.Cancel = true; //処理済みとしてイベントをキャンセルします
+                param.Handled = true; //処理済みとしてイベントをキャンセルします
                 return;
             }
         }

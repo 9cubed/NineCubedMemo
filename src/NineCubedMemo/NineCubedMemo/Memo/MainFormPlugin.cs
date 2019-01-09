@@ -101,13 +101,14 @@ namespace NineCubed.Memo
         }
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public void      InitializePlaced() { }                         //プラグイン配置後の初期化処理を行います
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
-        public void      SetFocus()       {  }                          //フォーカスを設定します
+        public void       InitializePlaced() { }                         //プラグイン配置後の初期化処理を行います
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { Parent = null; Dispose(); } //プラグインの終了処理
+        public void       SetFocus()       {  }                          //フォーカスを設定します
 
         /// <summary>
         /// MainForm の FormClosing イベント
@@ -228,7 +229,7 @@ namespace NineCubed.Memo
                 var ctl = ((MenuStrip)plugin.GetComponent());
                 ctl.Parent = this;
                 ctl.Dock = DockStyle.Top;
-                param.Cancel = true; //処理済みとしてイベントをキャンセルします
+                param.Handled = true; //処理済みとしてイベントをキャンセルします
                 return;
             }
             
@@ -239,7 +240,7 @@ namespace NineCubed.Memo
                 var ctl = ((ToolStrip)plugin.GetComponent());
                 ctl.Parent = this;
                 ctl.Dock = DockStyle.Top;
-                param.Cancel = true; //処理済みとしてイベントをキャンセルします
+                param.Handled = true; //処理済みとしてイベントをキャンセルします
                 return;
             }
 
@@ -250,7 +251,7 @@ namespace NineCubed.Memo
                 //コントロールをフォームに配置します
                 control.Parent = this;
                 control.Dock = DockStyle.Fill;
-                param.Cancel = true; //処理済みとしてイベントをキャンセルします
+                param.Handled = true; //処理済みとしてイベントをキャンセルします
                 return;
             }
         }

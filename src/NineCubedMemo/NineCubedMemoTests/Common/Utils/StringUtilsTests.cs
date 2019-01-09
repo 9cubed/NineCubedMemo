@@ -96,5 +96,30 @@ namespace NineCubed.Common.Utils.Tests
             Assert.AreEqual(StringUtils.RepeatChar('a', 0), "");
             Assert.AreEqual(StringUtils.RepeatChar('a', -1), "");
         }
+
+        [TestMethod()]
+        public void IsNotEmptyTest()
+        {
+            Assert.AreEqual(StringUtils.IsNotEmpty(null), false);
+            Assert.AreEqual(StringUtils.IsNotEmpty(""), false);
+            Assert.AreEqual(StringUtils.IsNotEmpty(" "), true);
+            Assert.AreEqual(StringUtils.IsNotEmpty("0"), true);
+            Assert.AreEqual(StringUtils.IsNotEmpty("a"), true);
+        }
+
+        [TestMethod()]
+        public void ToBoolTest()
+        {
+            Assert.AreEqual(StringUtils.ToBool("true" , false), true);
+            Assert.AreEqual(StringUtils.ToBool("TRUE" , false), true);
+            Assert.AreEqual(StringUtils.ToBool("TRue" , false), true);
+            Assert.AreEqual(StringUtils.ToBool("false", false), false);
+            Assert.AreEqual(StringUtils.ToBool("FALSE", false), false);
+            Assert.AreEqual(StringUtils.ToBool("FAlse", false), false);
+            Assert.AreEqual(StringUtils.ToBool(""  , false), false);
+            Assert.AreEqual(StringUtils.ToBool("0" , false), false);
+            Assert.AreEqual(StringUtils.ToBool("1" , false), false);
+            Assert.AreEqual(StringUtils.ToBool("-1", false), false);
+        }
     } //class
 }

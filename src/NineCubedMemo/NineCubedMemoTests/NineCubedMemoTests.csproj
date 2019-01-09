@@ -60,6 +60,7 @@
     <Compile Include="Common\Files\TextFileTests.cs" />
     <Compile Include="Common\Utils\BinaryUtilsTests.cs" />
     <Compile Include="Common\Utils\FileUtilsTests.cs" />
+    <Compile Include="Common\Utils\ListUtilsTests.cs" />
     <Compile Include="Common\Utils\SerializeUtilsTests.cs" />
     <Compile Include="Common\Utils\StringUtilsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

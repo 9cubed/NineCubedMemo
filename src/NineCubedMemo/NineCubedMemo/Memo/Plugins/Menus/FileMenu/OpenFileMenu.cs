@@ -61,7 +61,7 @@ namespace NineCubed.Memo.Plugins.Menus.FileMenu
 
             //ファイル選択イベントを発生させます
             var param = new FileSelectedEventParam { Path = path };
-            _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name,  null, param);
+            _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name, this, param);
         }
 
     } //class

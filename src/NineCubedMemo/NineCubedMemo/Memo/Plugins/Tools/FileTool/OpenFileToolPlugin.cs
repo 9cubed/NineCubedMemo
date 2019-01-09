@@ -33,13 +33,14 @@ namespace NineCubed.Memo.Plugins.Tools.FileTool
         }
         
         private PluginManager _pluginManager = null;                      //プラグインマネージャー
-        public void      InitializePlaced() {}                            //プラグイン配置後の初期化処理を行います
-        public string    PluginId           { get; set; }                 //プラグインID
-        public Component GetComponent()     { return this; }              //プラグインのコンポーネントを返します
-        public string    Title              { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin()   { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()      { Parent = null; Dispose(); } //プラグインの終了処理
-        public void      SetFocus()         {  }                          //フォーカスを設定します
+        public void       InitializePlaced() {}                            //プラグイン配置後の初期化処理を行います
+        public string     PluginId           { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin       { get; set; }                 //親プラグイン
+        public IComponent GetComponent()     { return this; }              //プラグインのコンポーネントを返します
+        public string     Title              { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin()   { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()      { Parent = null; Dispose(); } //プラグインの終了処理
+        public void       SetFocus()         {  }                          //フォーカスを設定します
 
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace NineCubed.Memo.Plugins.Tools.FileTool
 
             //ファイル選択イベントを発生させます
             var param = new FileSelectedEventParam { Path = path };
-            _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name,  null, param);
+            _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name, this, param);
         }
 
 

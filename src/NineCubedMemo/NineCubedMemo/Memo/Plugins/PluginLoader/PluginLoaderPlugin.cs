@@ -31,15 +31,6 @@ namespace NineCubed.Memo.Plugins.PluginLoader
         private readonly IniFile _pluginExtIni = new IniFile();
 
         /// <summary>
-        /// 起動時に生成するプラグインリストを定義したIniファイル
-        /// Key1 : plugin_1 ～ plugin_n
-        /// Key2 : id    プラグインID。データフォルダ名になる。未指定の場合、自動的に付与される。
-        ///        class プラグインのフルクラス名
-        ///        param 生成時の引数
-        /// </summary>
-        ///private readonly IniFile _pluginListIni = new IniFile();
-
-        /// <summary>
         /// コンストラクタ
         /// </summary>
         public PluginLoaderPlugin() { }
@@ -70,15 +61,16 @@ namespace NineCubed.Memo.Plugins.PluginLoader
          * 
          *  IPlugin
          * 
-         ******************************************************************************/ 
+         ******************************************************************************/
         private PluginManager _pluginManager = null;       //プラグインマネージャー
-        public string    PluginId         { get; set; }    //プラグインID
-        public Component GetComponent()   { return null; } //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }    //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; } //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { }              //プラグインの終了処理
-        public void      SetFocus()       { }              //フォーカスを設定します
-        public void      InitializePlaced() { }            //プラグイン配置後の初期化処理を行います
+        public string     PluginId         { get; set; }    //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }    //親プラグイン
+        public IComponent GetComponent()   { return null; } //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }    //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; } //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { }              //プラグインの終了処理
+        public void       SetFocus()       { }              //フォーカスを設定します
+        public void       InitializePlaced() { }            //プラグイン配置後の初期化処理を行います
 
         //初期処理を行います
         public bool Initialize(PluginCreateParam param)
@@ -93,11 +85,15 @@ namespace NineCubed.Memo.Plugins.PluginLoader
             _pluginExtIni.Load( FileUtils.AppendPath(param.DataPath, "plugin_extension.ini") );
 
             //plugin_list.ini を読み込みます
-            var pluginListIni = new IniFile();
+            var pluginListIni = new PluginListIni(); //new IniFile();
                 pluginListIni.Load( FileUtils.AppendPath(param.DataPath, "plugin_list.ini") );
 
             //plugin_list.ini で指定されているプラグインを全て生成します
             CreatePlugin(pluginListIni);
+
+            //全てのプラグインの生成が完了したことを通知するイベントを発生させます
+            var eventParam = new AllPluginCreatedEventParam();
+            _pluginManager.GetEventManager().RaiseEvent(AllPluginCreatedEventParam.Name, this, eventParam);
 
             return true;
         }
@@ -146,7 +142,7 @@ namespace NineCubed.Memo.Plugins.PluginLoader
                 }
                 
                 //プラグインを生成します
-                var plugin = _pluginManager.CreatePluginInstance(pluginType, param, parentPlugin, pluginId);
+                var plugin = _pluginManager.CreatePluginInstance(pluginType, param, this, parentPlugin, pluginId);
 
                 //Dockが指定されている場合は、Dockを設定します
                 if (pluginDock != null) {
@@ -190,7 +186,7 @@ namespace NineCubed.Memo.Plugins.PluginLoader
             pluginCreateParam.Path = path; //選択されたパス
 
             //プラグインを生成します
-            var plugin = _pluginManager.CreatePluginInstance(pluginType, pluginCreateParam);
+            var plugin = _pluginManager.CreatePluginInstance(pluginType, pluginCreateParam, this);
         }
 
     } //class

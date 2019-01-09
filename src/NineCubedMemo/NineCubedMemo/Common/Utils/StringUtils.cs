@@ -12,6 +12,13 @@ namespace NineCubed.Common.Utils
     public class StringUtils
     {
         /// <summary>
+        /// 文字列が空でない場合は、true を返します
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsNotEmpty(string value) => !string.IsNullOrEmpty(value);
+
+        /// <summary>
         /// 文字列中の特定の文字を数えます
         /// </summary>
         /// <param name="target"></param>
@@ -35,7 +42,10 @@ namespace NineCubed.Common.Utils
         /// </summary>
         /// <param name="c">繰り返す文字</param>
         /// <param name="count">繰り返す回数</param>
-        public static string RepeatChar(char c, int count) => new string(c, count);
+        public static string RepeatChar(char c, int count) {
+            if (count < 0) return "";
+            return new string(c, count);
+        }
 
         /// <summary>
         /// 文字列中に特定の文字があるかどうかを返します
@@ -233,8 +243,11 @@ namespace NineCubed.Common.Utils
         /// <param name="s">文字列</param>
         /// <param name="defaultValue">デフォルト値</param>
         /// <returns>数値</returns>
-        public static int ToInt  (string s, int defaultValue = 0) => int.TryParse(s, out int result) ? result : defaultValue;
-        public static int ToFloat(string s, int defaultValue = 0) => int.TryParse(s, out int result) ? result : defaultValue;
+        public static int    ToInt   (string s, int    defaultValue = 0)     =>    int.TryParse(s, out int    result) ? result : defaultValue;
+        public static long   ToLong  (string s, long   defaultValue = 0)     =>   long.TryParse(s, out long   result) ? result : defaultValue;
+        public static float  ToFloat (string s, float  defaultValue = 0)     =>  float.TryParse(s, out float  result) ? result : defaultValue;
+        public static double ToDouble(string s, double defaultValue = 0)     => double.TryParse(s, out double result) ? result : defaultValue;
+        public static bool   ToBool  (string s, bool   defaultValue = false) =>   bool.TryParse(s.ToLower(), out bool result) ? result : defaultValue;
 
         /// <summary>
         /// サイズの単位の変換用

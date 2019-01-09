@@ -40,21 +40,22 @@ namespace NineCubed.Memo.Plugins.PluginLoader
 
                 //iniファイルのパスを作成します
                 var pluginClassName = Path.GetFileName(dirPath);
-                var iniFileName = pluginClassName + ".ini";
+                var iniFileName = "plugin.ini"; //パスが長くなるため廃止:pluginClassName + ".ini";
                 var iniPath = FileUtils.AppendPath(dirPath, iniFileName);
 
                 //ファイルチェック
-                if (File.Exists(iniPath) == false) {
-                    //TODO
-                    throw new Exception(iniPath + "が見つかりません。");
+                if (File.Exists(iniPath)) {
+                    //iniファイルを読み込みます
+                    var iniFile = new IniFile();
+                    iniFile.Load(iniPath);
+
+                    //iniファイルをプラグイン名をキーにして保持します
+                    _pluginDefineData[pluginClassName] = iniFile;
+
+                } else {
+                    //TODO warningをログとして残す。残骸ファイルがあっても、動作上は問題ないため。
+                    //throw new Exception(iniPath + "が見つかりません。");
                 }
-
-                //iniファイルを読み込みます
-                var iniFile = new IniFile();
-                iniFile.Load(iniPath);
-
-                //iniファイルをプラグイン名をキーにして保持します
-                _pluginDefineData[pluginClassName] = iniFile;
             }
         }
 

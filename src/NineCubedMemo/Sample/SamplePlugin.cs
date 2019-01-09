@@ -31,18 +31,25 @@ namespace Sample
             _textbox = new TextBox();
             _textbox.Text = "サンプルプラグインです。";
             _textbox.Dock = DockStyle.Fill;
+            _textbox.KeyDown += _textbox_KeyDown;
 
             return true;
         }
 
+        private void _textbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine("test");
+        }
+
         public void InitializePlaced() { } //プラグイン配置後の初期化処理を行います
         private PluginManager _pluginManager = null;           //プラグインマネージャー
-        public string    PluginId         { get; set; }        //プラグインID
-        public Component GetComponent()   { return _textbox; } //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }        //プラグインのタイトル
-        public void      SetFocus()       { _textbox.Focus();} //フォーカスを設定します
-        public bool      CanClosePlugin() { return true; }     //プラグインが終了できるかどうか
-        public void      ClosePlugin()    {                    //プラグインの終了処理
+        public string     PluginId         { get; set; }        //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }        //親プラグイン
+        public IComponent GetComponent()   { return _textbox; } //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }        //プラグインのタイトル
+        public void       SetFocus()       { _textbox.Focus();} //フォーカスを設定します
+        public bool       CanClosePlugin() { return true; }     //プラグインが終了できるかどうか
+        public void       ClosePlugin()    {                    //プラグインの終了処理
             _textbox.Parent = null;
             _textbox.Dispose();
         }

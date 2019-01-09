@@ -54,11 +54,14 @@ namespace NineCubed.Memo.Plugins.Test
         /// </summary>
         public string PluginId { get; set; } 
 
+        //親プラグイン
+        public IPlugin ParentPlugin { get; set; }
+
         /// <summary>
         /// プラグインのコンポーネントを返します
         /// </summary>
         /// <returns></returns>
-        public Component GetComponent() { return this; }
+        public IComponent GetComponent() { return this; }
 
         //タイトル用の連番
         static int no = 1;

@@ -1,4 +1,5 @@
-﻿using NineCubed.Common.Utils;
+﻿using NineCubed.Common.Controls.FileList;
+using NineCubed.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace NineCubed.Memo.Plugins.FileList.Menus
 {
     public class CreateDirMenu : ToolStripMenuItem
     {
-        public CreateDirMenu(FileListPlugin fileList)
+        public CreateDirMenu(FileListGrid fileList)
         {
             this.Text = "新規作成（フォルダ）";
 

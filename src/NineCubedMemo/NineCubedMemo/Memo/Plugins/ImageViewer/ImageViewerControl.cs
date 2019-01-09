@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing.Drawing2D;
 using NineCubed.Memo.Plugins.Interfaces;
+using NineCubed.Common.Utils;
 
 namespace NineCubed.Memo.Plugins.ImageViewer
 {
@@ -67,6 +68,16 @@ namespace NineCubed.Memo.Plugins.ImageViewer
             this.MouseWheel += new MouseEventHandler(this.pic_MouseWheel);
              pic.MouseWheel += new MouseEventHandler(this.pic_MouseWheel);
 
+            //画質のコンボボックスを設定します
+            cmbQuality.Items.Add("Low");                 //低品質
+            cmbQuality.Items.Add("High");                //高品質
+            cmbQuality.Items.Add("Bilinear");            //双一次補間
+            cmbQuality.Items.Add("Bicubic");             //双三次補間
+            cmbQuality.Items.Add("NearestNeighbor");     //ニアレスト ネイバーの補間
+            cmbQuality.Items.Add("HighQualityBilinear"); //高品質で双一次補間
+            cmbQuality.Items.Add("HighQualityBicubic");  //最高品質  高品質の双三次補間
+            cmbQuality.SelectedIndex = 4; //NearestNeighbor をデフォルトにする
+
             //画像の表示領域の位置を設定します
             pic.Left = 0;
             pic.Top  = 0;
@@ -79,29 +90,28 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         /// 画像を読み込みます
         /// </summary>
         /// <param name="path"></param>
-        public void LoadImage(string path)
+        public bool LoadImage(string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentException();
             if (File.Exists(path) == false) throw new FileNotFoundException();
 
             //拡張子が画像ファイル以外の場合は処理しない
-            var ext = System.IO.Path.GetExtension(path).ToLower();
-            if ((ext.EndsWith(".jpeg") || 
-                 ext.EndsWith(".jpg")  || 
-                 ext.EndsWith(".png")  ||
-                 ext.EndsWith(".bmp")  ||
-                 ext.EndsWith(".gif")) == false) {
-                return;
-            }
+            if (ImageUtils.IsImageFile(path) == false) return false;
 
             //画像ファイルを読み込みます
-            var image = Image.FromFile(path);
+            //var image = Image.FromFile(path); //ファイルがロックされるため FileStream に変更
+            Image image;
+            using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+                image = Image.FromStream(stream);
+            }
 
             //画像を設定します
             SetImage(image);
 
             //パスを保持します
             this.Path = path;
+
+            return true;
         }
 
         /// <summary>
@@ -198,8 +208,7 @@ namespace NineCubed.Memo.Plugins.ImageViewer
                     //新しい Bitmap に、拡大縮小したイメージを描画します
 
                     //拡大縮小アルゴリズムを設定します(画質・処理速度が異なる)
-                    //g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                    g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+                    g.InterpolationMode = GetInterpolationMode();
 
                     //描画します
                     g.DrawImage(orgImage, 0, 0, width, height);
@@ -212,12 +221,23 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         }
 
         /// <summary>
+        /// 画質のコンボボックスで選択されている InterpolationMode を返します
+        /// </summary>
+        /// <returns></returns>
+        private InterpolationMode GetInterpolationMode()
+        {
+            if (Enum.TryParse(cmbQuality.SelectedItem.ToString(), out InterpolationMode mode)) {
+                return mode;
+            }
+            return InterpolationMode.Default;
+        }
+
+        /// <summary>
         /// 拡大縮小率を表示します
         /// </summary>
         public void ShowRate()
         {
             int rate = (int)Math.Ceiling(this.Rate * 100);
-            scrBarRate.Value = rate;   //スクロールバー
             lblRate.Text = rate + "%"; //ラベル
         }
 
@@ -284,6 +304,9 @@ namespace NineCubed.Memo.Plugins.ImageViewer
 
                 //拡大縮小率のスクロールバーを使用可にします
                 scrBarRate.Enabled = true;
+
+                //スクロールバーの値を設定します
+                scrBarRate.Value = (int)Math.Ceiling(this.Rate * 100);
             }
 
             //画像を表示します
@@ -343,6 +366,17 @@ namespace NineCubed.Memo.Plugins.ImageViewer
 
             //アクティブプラグインと設定します
             SetActivePlugin();
+        }
+
+        /// <summary>
+        /// 画質コンボボックスの選択イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmbQuality_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //画像を表示します
+            ShowImage();
         }
 
         /******************************************************************************

@@ -38,6 +38,13 @@ namespace NineCubed.Memo.Plugins.PathField
             //プラグインマネージャーを保持します
             _pluginManager = PluginManager.GetInstance();
 
+            //親フォルダへ移動ボタン用の画像の読み込み
+            var imgDirPath = FileUtils.AppendPath(param.DataPath, "img");
+            var imgOpenedFolder = Image.FromFile(FileUtils.AppendPath(imgDirPath, "move_to_parent_dir.png"));
+
+            //ボタンに画像を設定します
+            btnMoveToParentDir.Image = imgOpenedFolder;
+
             //イベントハンドラーを登録します
             _pluginManager.GetEventManager().AddEventHandler(DirSelectedEventParam.Name, this);
 
@@ -50,11 +57,12 @@ namespace NineCubed.Memo.Plugins.PathField
         }
 
         private PluginManager _pluginManager = null;                    //プラグインマネージャー
-        public string    PluginId         { get; set; }                 //プラグインID
-        public Component GetComponent()   { return this; }              //プラグインのコンポーネントを返します
-        public string    Title            { get; set; }                 //プラグインのタイトル
-        public bool      CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
-        public void      ClosePlugin()    { Parent = null; Dispose();}  //プラグインの終了処理
+        public string     PluginId         { get; set; }                 //プラグインID
+        public IPlugin    ParentPlugin     { get; set; }                 //親プラグイン
+        public IComponent GetComponent()   { return this; }              //プラグインのコンポーネントを返します
+        public string     Title            { get; set; }                 //プラグインのタイトル
+        public bool       CanClosePlugin() { return true; }              //プラグインが終了できるかどうか
+        public void       ClosePlugin()    { Parent = null; Dispose();}  //プラグインの終了処理
 
         //フォーカスを設定します
         public void SetFocus() {
@@ -74,13 +82,13 @@ namespace NineCubed.Memo.Plugins.PathField
                 if (FileUtils.IsFile(path)) {
                     //ファイルの場合、ファイル選択イベントを発生させます
                     var param = new FileSelectedEventParam { Path = path };
-                    _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name,  null, param);
+                    _pluginManager.GetEventManager().RaiseEvent(FileSelectedEventParam.Name, this, param);
                 } else {
                     if (Directory.Exists(path) == false) return; //フォルダが存在しない場合は処理を抜けます
 
                     //フォルダの場合、フォルダ選択イベントを発生させます
                     var param = new DirSelectedEventParam { Path = path };
-                    _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name,  null, param);
+                    _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
                 }
             }
         }

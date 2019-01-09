@@ -61,7 +61,7 @@ namespace NineCubed.Memo.Plugins.Menus.FileMenu
         {
             if (_pluginManager.ActivePlugin is IFilePlugin plugin) {
 
-                //名前を付けて保存ダイアログを表示します
+                //名前を付けて保存の場合は、保存ダイアログを表示します
                 if (_isShowDialog) {
 
                     //保存ダイアログのプラグインを取得します
