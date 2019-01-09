@@ -1,74 +1,9 @@
-# NineCubedMemo
-メモ帳です。This is a simple notepad.
+# 概要
+ただのメモ帳です。This is a simple notepad.  
+C# で作ってます。  
+[You Tube](https://www.youtube.com/watch?v=ujb8tAfaT6g&list=PLzEbEpZ4njvO1tb9A8mqloiRyoyvKMbuf&index=1) で作り方を動画で説明しています。  
 
-# 見出し
-# 見出し1
-## 見出し2
-### 見出し3
-#### 見出し4
-##### 見出し5
-###### 見出し6
-
-# 改行
-1
-2
-3
-4
-5 末尾に半角スペースを2個入れると改行されます  
-6
-7
-8
-9
-0
-  
-# 強調
-前後にアンダーバーを2つ付けて囲う  
-普通  
-__強調__  
-  
-# リンク
-[google](https://www.google.co.jp/)  
-  
-# ソース
-```
-TEST
-```
-
-```C#
-public void main() {
-    Console.Writeline("test");
-}
-```
-
-```C#:test.cs
-public void main() {
-    Console.Writeline("test");
-}
-```
-  
-# リスト
-1. りんご
-2. みかん
-3. バナナ
-
-*半角スペース文字列  
-* りんご
-* みかん
-* バナナ
-  
-# 水平線
-
-***
-
-*か-を3個以上書く。
-
----
-  
-# テーブル
-
-|ヘッダー1|ヘッダー2|ヘッダー3|
-|:-|-:|:-:|
-|111|222|333|
-|値値値値値値値値値|値値値値値値値値値|値値値値値値値値値|
-|111|222|333|
-
+# 画面
+![画面1](https://9cubed.info/_img/article/nine_cubed_memo/20190109-01.jpg "画面1")  
+![画面2](https://9cubed.info/_img/article/nine_cubed_memo/20190109-02.jpg "画面2")  
+![画面3](https://9cubed.info/_img/article/nine_cubed_memo/20190109-03.jpg "画面3")  
