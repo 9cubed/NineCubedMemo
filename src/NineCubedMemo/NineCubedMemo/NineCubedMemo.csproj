@@ -492,15 +492,6 @@
   <ItemGroup>
     <Content Include="icon.ico" />
     <Content Include="Memo\Plugins\PathField\resource\MoveToParentDir.png" />
-    <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\new.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\open.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\toolbar\save.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPluginEx\data\img\opened_folder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
