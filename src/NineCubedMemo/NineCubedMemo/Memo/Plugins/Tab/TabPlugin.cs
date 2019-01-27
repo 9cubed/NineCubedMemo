@@ -124,17 +124,30 @@ namespace NineCubed.Memo.Plugins.Tab
         /// <param name="e"></param>
         private void TabPlugin_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _pluginManager.ActivePlugin = null; 
-
             if (this.SelectedTab != null) {
-                if (this.SelectedTab.Controls.Count == 0) return;
+                if (this.SelectedTab.Controls.Count == 0) {
+                    //アクティブプラグをリセットします
+                    _pluginManager.ActivePlugin = null;
+                    return;
+                }
 
                 //フォーカスを設定します
                 var plugin = _pluginManager.GetPlugin(this.SelectedTab.Controls[0]);
                 if (plugin != null) {
                     plugin.SetFocus();
+
+                    //選択中のタブに表示されているプラグインが
+                    //アクティブプラグインと異なる場合は、
+                    //アクティブプラグインとして設定します。
+                    if (_pluginManager.ActivePlugin != plugin) {
+                        _pluginManager.ActivePlugin = plugin;
+                    }
+                    return;
                 }
             }
+
+            //アクティブプラグをリセットします
+            _pluginManager.ActivePlugin = null;
         }
 
         private void TabPlugin_MouseDown(object sender, MouseEventArgs e)

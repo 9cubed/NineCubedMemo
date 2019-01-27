@@ -47,10 +47,10 @@ namespace NineCubed.Common.Controls.FileList.Columns
             e.Graphics.FillRectangle(Brushes.White, e.CellBounds.X + 0, e.CellBounds.Y - 1, e.CellBounds.Width, e.CellBounds.Height);
 
             //ファイルの種類に応じて画像を描画します
-            var cellValue = FileList[e.ColumnIndex, e.RowIndex].Value.ToString();
+            var cellValue = this.DataGridView[e.ColumnIndex, e.RowIndex].Value.ToString();
             if (cellValue.Equals(FileKindColumn.KIND_DIR)) {
                 //フォルダの場合、フォルダの画像を描画します
-                e.Graphics.DrawImage(FileList._imgFolder, e.CellBounds.Left + 1, e.CellBounds.Top + 1);
+                e.Graphics.DrawImage(((FileListGrid)this.DataGridView)._imgFolder, e.CellBounds.Left + 1, e.CellBounds.Top + 1);
 
             } else {
                 //ファイルの場合、拡張子に対応する画像を描画します

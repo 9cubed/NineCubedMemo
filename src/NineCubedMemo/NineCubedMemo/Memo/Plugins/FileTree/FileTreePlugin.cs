@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace NineCubed.Memo.Plugins.FileTree
 {
-    public class FileTreePlugin : FileTreeView, IPlugin, IRefreshPlugin
+    public class FileTreePlugin : FileTreeView, IPlugin, IRefreshPlugin, IPathPlugin
     {
         private void InitializeComponent()
         {
@@ -126,6 +126,18 @@ namespace NineCubed.Memo.Plugins.FileTree
 
         /******************************************************************************
          * 
+         *  IPathPlugin
+         * 
+         ******************************************************************************/
+
+        /// <summary>
+        /// パスを返します
+        /// </summary>
+        /// <returns></returns>
+        public string GetPath() => GetPath(this.SelectedNode);
+
+        /******************************************************************************
+         * 
          *  ファイルツリービューのイベント
          * 
          ******************************************************************************/ 
@@ -178,7 +190,26 @@ namespace NineCubed.Memo.Plugins.FileTree
          * 
          ******************************************************************************/
 
+        /// <summary>
+        /// プラグイン生成イベント
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="sender"></param>
+        public void PluginEvent_PluginCreated(EventParam param, object sender)
+        {
+            //生成されたプラグインを取得します
+            var plugin = ((PluginCreatedEventParam)param).Plugin;
 
+            //生成されたプラグインのコンポーネントがメニューの場合
+            var component = plugin.GetComponent();
+            if (component is ToolStripMenuItem) {
+                //メニューを追加します
+                this.ContextMenuStrip.Items.Add((ToolStripMenuItem)component);
+
+                //イベントを処理済みにします
+                param.Handled = true;
+            }
+        }
 
 
     } //class

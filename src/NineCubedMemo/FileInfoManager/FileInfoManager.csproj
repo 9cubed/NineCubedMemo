@@ -31,6 +31,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,30 +66,61 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileListColumns\TitleColumn.cs" />
+    <Compile Include="FileListColumns\TitleColumnPlugin.cs" />
+    <Compile Include="Manager\Columns\FileExtensionColumn.cs" />
+    <Compile Include="Manager\Columns\UpdatedDateColumn.cs" />
+    <Compile Include="Manager\Columns\FileNameColumn.cs" />
+    <Compile Include="Manager\Columns\TagColumn.cs" />
+    <Compile Include="Manager\Columns\CreatedDateColumn.cs" />
+    <Compile Include="Manager\Columns\IDColumn.cs" />
+    <Compile Include="Manager\Columns\ValueColumn.cs" />
+    <Compile Include="Manager\Columns\TitleColumn.cs" />
+    <Compile Include="Manager\Columns\FileSizeColumn.cs" />
+    <Compile Include="Manager\Columns\IFileListColumnForFileInfo.cs" />
+    <Compile Include="Manager\Columns\PathColumn.cs" />
     <Compile Include="DB\FileDataDao.cs" />
     <Compile Include="DB\FileData.cs" />
     <Compile Include="DB\FileDB.cs" />
     <Compile Include="DB\TagDataDao.cs" />
     <Compile Include="DB\TagData.cs" />
     <Compile Include="Events\FileInfoSelectingEventParam.cs" />
-    <Compile Include="FileInfoEditorControl.cs">
+    <Compile Include="Editor\FileInfoEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FileInfoEditorControl.Designer.cs">
+    <Compile Include="Editor\FileInfoEditorControl.Designer.cs">
       <DependentUpon>FileInfoEditorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileInfoEditorPlugin.cs" />
-    <Compile Include="FileInfoManagerControl.cs">
+    <Compile Include="Editor\FileInfoEditorPlugin.cs" />
+    <Compile Include="Manager\FileInfoManagerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="FileInfoManagerControl.Designer.cs">
+    <Compile Include="Manager\FileInfoManagerControl.Designer.cs">
       <DependentUpon>FileInfoManagerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileInfoManagerPlugin.cs" />
-    <Compile Include="FileMemoColumnPlugin.cs" />
-    <Compile Include="FileMemoColumn.cs" />
-    <Compile Include="FileValueColumn.cs" />
-    <Compile Include="FileValueColumnPlugin.cs" />
+    <Compile Include="Manager\FileInfoManagerPlugin.cs" />
+    <Compile Include="FileListColumns\FileMemoColumnPlugin.cs" />
+    <Compile Include="FileListColumns\FileMemoColumn.cs" />
+    <Compile Include="FileListColumns\FileValueColumn.cs" />
+    <Compile Include="FileListColumns\FileValueColumnPlugin.cs" />
+    <Compile Include="Manager\Menus\AddTagMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Manager\Menus\DeleteTagMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Manager\Menus\UpdateTagMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Manager\Menus\UpdateValueMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Manager\TagForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Manager\TagForm.Designer.cs">
+      <DependentUpon>TagForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -81,16 +130,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="plugins\define\FileInfoManager.FileInfoManagerPlugin\plugin.ini">
+    <None Include="plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\FileInfoManager.FileMemoColumnPlugin\plugin.ini">
+    <None Include="plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\data\property.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\FileInfoManager.FileInfoEditorPlugin\plugin.ini">
+    <None Include="plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="plugins\define\FileInfoManager.FileValueColumnPlugin\plugin.ini">
+    <None Include="plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.PluginLoader.PluginLoaderPlugin\data\plugin_list.ini">
@@ -98,23 +153,35 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FileInfoEditorControl.resx">
+    <EmbeddedResource Include="Editor\FileInfoEditorControl.resx">
       <DependentUpon>FileInfoEditorControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FileInfoManagerControl.resx">
+    <EmbeddedResource Include="Manager\FileInfoManagerControl.resx">
       <DependentUpon>FileInfoManagerControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Manager\TagForm.resx">
+      <DependentUpon>TagForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rem dllをプラグインフォルダへ移動します
-move $(TargetPath) $(TargetDir)plugins\define\FileInfoManager.FileInfoManagerPlugin\
+move $(TargetPath) $(TargetDir)plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\
 
 rem メインプロジェクトにプラグインフォルダを作成します
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileInfoManagerPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin
 
 rem プラグインフォルダをメインプロジェクトのプラグインフォルダへコピーします
-copy $(TargetDir)plugins\define\FileInfoManager.FileInfoManagerPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileInfoManagerPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\
 
 echo ■FileInfoManagerプロジェクト コピー完了
 </PostBuildEvent>

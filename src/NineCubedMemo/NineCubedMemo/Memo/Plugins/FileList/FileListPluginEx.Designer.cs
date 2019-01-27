@@ -110,6 +110,7 @@
             this.fileListGrid.SelectionChanged += new System.EventHandler(this.fileListGrid_SelectionChanged);
             this.fileListGrid.Enter += new System.EventHandler(this.fileListGrid_Enter);
             this.fileListGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.fileListGrid_KeyDown);
+            this.fileListGrid.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fileListGrid_KeyPress);
             // 
             // FileListPluginEx
             // 

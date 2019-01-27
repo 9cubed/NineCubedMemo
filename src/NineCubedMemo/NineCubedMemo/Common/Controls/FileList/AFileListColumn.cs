@@ -15,11 +15,6 @@ namespace NineCubed.Common.Controls.FileList
     public abstract class AFileListColumn : DataGridViewColumn, IFileListColumn
     {
         /// <summary>
-        /// ファイルリスト本体
-        /// </summary>
-        public FileListGrid FileList { get; set; }
-
-        /// <summary>
         /// コンストラクタ
         /// </summary>
         public AFileListColumn()

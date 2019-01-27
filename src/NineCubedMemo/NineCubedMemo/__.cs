@@ -40,6 +40,18 @@ namespace NineCubed
         ///     Console.WriteLine("後処理");
         /// });
         /// 
+        /// 
+        /// ■既存の処理を計測する場合は、Stopwatch()を直接使う
+        /// 
+        /// var watch = new Stopwatch();
+        /// watch.Start();
+        ///
+        /// 処理();
+        ///
+        /// watch.Stop();
+        /// Console.WriteLine("処理時間:" + watch.ElapsedMilliseconds);
+        ///
+        /// 
         /// </summary>
         /// <param name="act"></param>
         /// <param name="loopCount">処理を繰り返す回数</param>

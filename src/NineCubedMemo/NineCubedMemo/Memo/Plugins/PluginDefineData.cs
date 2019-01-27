@@ -28,7 +28,7 @@ namespace NineCubed.Memo.Plugins.PluginLoader
 
         /// <summary>
         /// プラグインの定義データを全て読み込みます
-        /// plugins/{フルクラス名}/フルクラス名.ini を全て読み込みます
+        /// plugins/{フルクラス名}/plugin.ini を全て読み込みます
         /// </summary>
         public void Load()
         {

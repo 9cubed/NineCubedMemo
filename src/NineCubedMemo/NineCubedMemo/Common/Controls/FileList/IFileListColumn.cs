@@ -13,11 +13,6 @@ namespace NineCubed.Common.Controls.FileList
     public interface IFileListColumn
     {
         /// <summary>
-        /// ファイルリスト本体
-        /// </summary>
-        FileListGrid FileList { get; set; }
-
-        /// <summary>
         /// ファイル一覧表示直前の処理を行います
         /// キャッシュの初期化やDBのコネクションの取得などを行います。
         /// </summary>

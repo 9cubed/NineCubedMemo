@@ -15,6 +15,7 @@ namespace FileInfoManager.DB
         public string memo    = ""; //メモ
         public int    value   = 0;  //評価・重要度
         public string path    = ""; //ファイルのフルパス
+        public int    kind    = 0;  //ファイル種別  0:存在しない 1:ファイル 2:フォルダ
         public long   size    = 0;  //ファイルサイズ
         public string created = ""; //作成日時
         public string updated = ""; //更新日時
@@ -28,11 +29,7 @@ namespace FileInfoManager.DB
         /// <returns></returns>
         public IList<string> GetTagList() {
             //スペース区切りタグをリストにします
-            var list = this._tags.Split(' ').ToList();
-
-            //空の要素を全て削除します
-            ListUtils.RemoveAllEmpty(list);
-
+            var list = this._tags.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries).ToList();
             return list;
         }
 

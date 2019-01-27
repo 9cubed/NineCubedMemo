@@ -28,6 +28,7 @@ namespace NineCubed.Memo.Plugins.ImageViewer
 
             //画像を読み込みます
             var result = _ImageViewer.LoadImage(param.Path);
+            if (result == false) return false;
 
             //ファイル名をタイトルとして保持します（タブのタイトルになります）
             if (result) this.Title = Path.GetFileName(param.Path);
@@ -80,6 +81,7 @@ namespace NineCubed.Memo.Plugins.ImageViewer
 
             //画像を読み込みます
             var result = _ImageViewer.LoadImage(path);
+            if (result == false) return;
 
             //ファイル名をタイトルとして保持します（タブのタイトルになります）
             if (result) this.Title = Path.GetFileName(path);

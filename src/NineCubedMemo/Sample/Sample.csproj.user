@@ -4,4 +4,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>D:\~9cubed\NineCubedMemo\src\NineCubedMemo\Sample\bin\Debug\NineCubedMemo.exe</StartProgram>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartProgram>D:\~9cubed\NineCubedMemo\src\NineCubedMemo\Sample\bin\Debug\NineCubedMemo.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>

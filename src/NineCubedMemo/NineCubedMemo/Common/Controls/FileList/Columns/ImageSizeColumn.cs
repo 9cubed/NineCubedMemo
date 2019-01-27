@@ -97,11 +97,11 @@ namespace NineCubed.Common.Controls.FileList.Columns
                 //キューにデータが追加されるのを少し待ちます
                 //次のデータがキューに入る前に処理が終わってしまうと、
                 //スレッドが破棄され、またスレッドが生成されてしまうため
-                Thread.Sleep(100);
+                Thread.Sleep(500);
             }
 
             //列のデータを更新します
-            FileList.UpdateColumn(this);
+            ((FileListGrid)this.DataGridView).UpdateColumn(this);
         }
 
     } // class

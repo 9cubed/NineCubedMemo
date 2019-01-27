@@ -17,6 +17,14 @@ namespace NineCubed.Common.Utils
             return MessageBox.Show("変更されています。保存しますか？", "確認", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
         }
 
+        /// <summary>
+        /// エラーメッセージを表示します
+        /// </summary>
+        /// <returns></returns>
+        public static void ShowErrorMsgBox(string msg) {
+            MessageBox.Show(msg, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
 
     } //class
 } 

@@ -18,7 +18,7 @@ using System.Windows.Forms;
 
 namespace NineCubed.Memo.Plugins.FileList
 {
-    public class FileListPlugin : FileListGrid, IPlugin, IEditPlugin, IRefreshPlugin
+    public class FileListPlugin : FileListGrid, IPlugin, IEditPlugin, IRefreshPlugin, IPathPlugin
     {
         public FileListPlugin() {
             InitializeComponent();
@@ -212,9 +212,6 @@ namespace NineCubed.Memo.Plugins.FileList
             this.Columns.Add(new FileSizeColumn      ());
             this.Columns.Add(new FileUpdateDateColumn());
 
-            //各カラムに FileListGrid 本体を設定します
-            foreach (var colums in this.Columns) ((IFileListColumn)colums).FileList = this;
-
             //イベントハンドラーを登録します
             _pluginManager.GetEventManager().AddEventHandler(DirSelectedEventParam.Name, this);
 
@@ -299,6 +296,18 @@ namespace NineCubed.Memo.Plugins.FileList
             //ファイルリストを更新します
             this.ShowFileList();
         }
+
+        /******************************************************************************
+         * 
+         *  IPathPlugin
+         * 
+         ******************************************************************************/
+
+        /// <summary>
+        /// パスを返します
+        /// </summary>
+        /// <returns></returns>
+        public string GetPath() => GetSelectedPath();
 
         /******************************************************************************
          * 
@@ -442,8 +451,11 @@ namespace NineCubed.Memo.Plugins.FileList
             var newValue = this[e.ColumnIndex, e.RowIndex].Value?.ToString(); //入力値
             if (newValue == null) newValue = "";
 
+            var oldFile = new FileInfo(path);
+
             //カラムオブジェクトに値の変更を通知します(カラム側ではファイル名の変更などを行う)
             var newFile = ((IFileListColumn)this.Columns[e.ColumnIndex]).ValueChanged(new FileInfo(path), newValue);
+            if (newFile == null) newFile = oldFile;
 
             //行の更新します
             this.SetRowData(e.RowIndex, newFile.FullName);
@@ -472,6 +484,35 @@ namespace NineCubed.Memo.Plugins.FileList
             var path = (param as DirSelectedEventParam).Path;
             this.ShowFileList(path);
         }
+
+        /******************************************************************************
+         * 
+         *  プラグイン用イベントハンドラー
+         * 
+         ******************************************************************************/
+
+        /// <summary>
+        /// プラグイン生成イベント
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="sender"></param>
+        public void PluginEvent_PluginCreated(EventParam param, object sender)
+        {
+            //生成されたプラグインを取得します
+            var plugin = ((PluginCreatedEventParam)param).Plugin;
+
+            //生成されたプラグインのコントロールがカラムの場合は、カラムを追加します
+            var component = plugin.GetComponent();
+            if (component is ToolStripMenuItem) {
+                //コントロールがメニューだった場合
+                this.ContextMenuStrip.Items.Add((ToolStripMenuItem)component);
+
+                //イベントを処理済みにします
+                param.Handled = true;
+            }
+        }
+
+
 
     } //class
 }

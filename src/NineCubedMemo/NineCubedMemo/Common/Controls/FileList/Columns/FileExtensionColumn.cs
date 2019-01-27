@@ -28,14 +28,14 @@ namespace NineCubed.Common.Controls.FileList.Columns
         public FileInfo ValueChanged(FileInfo orgFile, string newValue)
         {
             //フォルダの場合は処理しない
-            if (FileUtils.IsFile(orgFile.FullName) == false) return orgFile; 
+            if (FileUtils.IsFile(orgFile.FullName) == false) return null; 
 
             //新旧の拡張子を取得します
             var oldExt = Path.GetExtension(orgFile.FullName).Replace(".", "");
             var newExt = newValue.Replace(".", ""); //入力値の先頭に「.」がある場合は削除する
 
             //変更がない場合は処理を抜けます
-            if (oldExt.Equals(newExt)) return orgFile; 
+            if (oldExt.Equals(newExt)) return null; 
 
             var oldDirPath  = orgFile.DirectoryName;                          //フルパス
             var oldFileName = Path.GetFileNameWithoutExtension(orgFile.Name); //拡張子を除いたファイル名
@@ -51,7 +51,7 @@ namespace NineCubed.Common.Controls.FileList.Columns
                 }
             } catch (Exception ex) {
                 __.ShowErrorMsgBox(ex.Message);
-                return orgFile;
+                return null;
             }
 
             return new FileInfo(newPath);

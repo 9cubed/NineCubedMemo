@@ -1,9 +1,12 @@
 ﻿using NineCubed.Common.Controls.FileList.Columns;
 using NineCubed.Common.Files;
+using NineCubed.Common.Utils;
+using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,6 +55,25 @@ namespace NineCubed.Memo.Plugins.FileList.Columns
             _property.Save();
 
             Dispose();
+        }
+
+        /// <summary>
+        /// セルの値が変更された時の処理
+        /// </summary>
+        /// <param name="orgFile"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
+        override
+        public FileInfo ValueChanged(FileInfo orgFile, string newValue)
+        {
+            var newFile = base.ValueChanged(orgFile, newValue);
+            if (newFile == null) return null;
+
+            //ファイル名変更イベントを発生させます
+            var param = new FileNameChangedEventParam { OldPath = orgFile.FullName, NewPath = newFile.FullName };
+            _pluginManager.GetEventManager().RaiseEvent(FileNameChangedEventParam.Name, this, param);
+
+            return newFile;
         }
 
     } //class

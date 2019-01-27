@@ -15,7 +15,7 @@ using System.IO;
 
 namespace NineCubed.Memo.Plugins.PathField
 {
-    public partial class PathFieldPlugin : UserControl, IPlugin
+    public partial class PathFieldPlugin : UserControl, IPlugin, IPathPlugin
     {
         public PathFieldPlugin()
         {
@@ -132,6 +132,18 @@ namespace NineCubed.Memo.Plugins.PathField
             _pluginManager.ActivePlugin = this;
         }
 
+
+        /******************************************************************************
+         * 
+         *  IPathPlugin
+         * 
+         ******************************************************************************/
+
+        /// <summary>
+        /// パスを返します
+        /// </summary>
+        /// <returns></returns>
+        public string GetPath() => txtPath.Text;
 
         /******************************************************************************
          * 

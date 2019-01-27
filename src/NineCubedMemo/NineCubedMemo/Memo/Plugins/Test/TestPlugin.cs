@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Memo.Plugins.Events;
+using NineCubed.Common.Utils;
+using System.IO;
 
 namespace NineCubed.Memo.Plugins.Test
 {

@@ -39,8 +39,10 @@ namespace NineCubed.Common.Controls.FileList
             this.RowTemplate.Height = 21;
             this.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.FileListGrid_CellPainting);
             this.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.FileListGrid_SortCompare);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FileListGrid_MouseMove);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         /// <summary>
@@ -106,6 +108,33 @@ namespace NineCubed.Common.Controls.FileList
         public string CurrentPath {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// マウスダウン処理
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            //クリックされた位置のセルを取得します
+            var hitTestInfo = this.HitTest(e.X, e.Y);
+            var col = hitTestInfo.ColumnIndex;
+            var row = hitTestInfo.RowIndex;
+
+            //セル以外がクリックされた場合は、
+            //既存のマウスダウンの処理を行います
+            if (col == -1 || row == -1) {
+                base.OnMouseDown(e);
+                return;
+            }
+
+            //選択中のセルをクリックした場合は、何も処理しない
+            if (this.SelectedCells.Contains(this[col, row])) {
+                return;
+            }
+
+            //既存のマウスダウンの処理を行います
+            base.OnMouseDown(e);
         }
 
         /// <summary>
@@ -272,6 +301,50 @@ namespace NineCubed.Common.Controls.FileList
         private void FileListGrid_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             ((AFileListColumn)this.Columns[e.ColumnIndex]).CellPainting(sender, e);
+        }
+
+        /// <summary>
+        /// マウスムーブイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileListGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            //マウスボタンが押されていない場合は処理しない
+            if (e.Button == MouseButtons.None) return;
+
+            //クリックされた位置のセルを取得します
+            var hitTestInfo = this.HitTest(e.X, e.Y);
+            var row = hitTestInfo.RowIndex;
+            if (row == -1) return; //行が選択されている場合は、処理しない
+
+            //選択されているファイルリストを取得します
+            var pathList = GetSelectedPathList().ToArray();
+            if (pathList.Count() == 0) return;
+
+            //ドラッグを開始します
+            var dataObj = new DataObject(DataFormats.FileDrop, pathList);
+            var effect = DragDropEffects.Copy; // | DragDropEffects.Move;
+            this.DoDragDrop(dataObj, effect);
+        }
+
+        /// <summary>
+        /// 選択されているパスリストを返します
+        /// </summary>
+        /// <returns></returns>
+        private List<string> GetSelectedPathList()
+        {
+            var list = new List<string>();
+            foreach(DataGridViewCell cell in this.SelectedCells) {
+                //選択されている行のパスを取得します
+                var path = this[0, cell.RowIndex].Value?.ToString();
+                if (string.IsNullOrEmpty(path)) continue;
+
+                //リストに追加されていない場合は、リストに追加します
+                if (list.IndexOf(path) == -1)list.Add(path);
+            }
+            
+            return list;
         }
 
     } //class 

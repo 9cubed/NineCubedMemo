@@ -129,11 +129,6 @@ namespace NineCubed.Common.Files
         {
             if (path == null) path = this.Path;
 
-            if ((new FileInfo(path)).Length >= 1024 * 1024 * 50) {
-                //ファイルサイズが50MBを超える場合はエラーとする。TODO:Configで設定させる
-                throw new Exception("ファイルサイズが50MBを越えています。");
-            }
-
             //文字コードと改行コードの判別のため、
             //先頭の8KBだけ読み込んでバイト配列にいれます。8KBに根拠なし。なんとなく。
             byte[] textByteArray = null;

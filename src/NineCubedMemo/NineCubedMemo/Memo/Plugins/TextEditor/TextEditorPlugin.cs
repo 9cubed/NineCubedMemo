@@ -52,6 +52,12 @@ namespace NineCubed.Memo.Plugins.TextEditor
         }
 
         /// <summary>
+        /// メインのテキストボックスを返します
+        /// </summary>
+        /// <returns></returns>
+        public TextBoxEx GetTextbox() => txtMain;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public TextEditorPlugin()
@@ -118,9 +124,9 @@ namespace NineCubed.Memo.Plugins.TextEditor
             splitContainer.PanelLeftVisible = false;
             splitContainer.PanelTopVisible  = false;
             splitContainer.Dock = DockStyle.Fill;
-            titleListbox.Dock   = DockStyle.Fill;
-            txtSplit.Dock       = DockStyle.Fill;
-            txtMain.Dock        = DockStyle.Fill;
+            titleListbox  .Dock = DockStyle.Fill;
+            txtSplit      .Dock = DockStyle.Fill;
+            txtMain       .Dock = DockStyle.Fill;
 
             /****************************************
              * 
@@ -132,14 +138,16 @@ namespace NineCubed.Memo.Plugins.TextEditor
             var path      = param.Path;
             var encoding  = param["encoding"] as Encoding;
             var is_binary = param.ToBool("is_binary");
+            var textFile  = param["file"] as IFile;
 
-            //ファイルオブジェクトを生成します
-            IFile textFile;
-            if (is_binary) {
-                textFile = new BinaryFile();
-            } else {
-                textFile = new TextFile();
-                ((TextFile)textFile).TextEncoding = encoding;
+            //ファイルオブジェクトが未指定の場合は、生成します
+            if (textFile == null) {
+                if (is_binary) {
+                    textFile = new BinaryFile();
+                } else {
+                    textFile = new TextFile();
+                    ((TextFile)textFile).TextEncoding = encoding;
+                }
             }
             
             //テキストファイルを読み込みます
@@ -442,18 +450,36 @@ namespace NineCubed.Memo.Plugins.TextEditor
                 //カーソルがある行を取得します
                 int lineNo = txtMain.GetLineFromCharIndex(txtMain.SelectionStart);
 
-                //選択されている文字列のパスを開きます
+                //選択されている文字列を取得します
                 var selectedText = txtMain.SelectedText.Trim(' ', '\"', '\'', '\n');
                 if (selectedText.Length > 0) {
-                    _openByNative(selectedText);
-                    return;
-                }
+                    //文字列が選択されている場合
 
-                //画像パスを検出します
-                var path = DetectImagePath(txtMain.Lines[lineNo].ToLower());
-                if (path != null) {
-                    _openByNative(path);
-                    return;
+                    //ファイルかフォルダの場合は、他のアプリで開きます
+                    if (File.Exists(selectedText) || Directory.Exists(selectedText)) {
+                        _openByNative(selectedText);
+                        return;
+                    }
+
+                    //選択されている文字列を計算します
+                    var result = Calculator.Calc(txtMain.SelectedText);
+                    if (result != null) {
+                        //計算結果を挿入します
+                        txtMain.SelectionStart = txtMain.SelectionStart + txtMain.SelectionLength;
+                        txtMain.SelectionLength = 0;
+                        txtMain.SelectedText = " = " + result + " ";
+                    }
+                } else {
+                    //文字列が選択されていない場合、行にある文字列で判断します
+
+                    //カーソルがある行の画像パスを検出します
+                    var path = DetectImagePath(txtMain.Lines[lineNo].ToLower());
+                    if (path != null) {
+                        if (File.Exists(path)) {
+                            _openByNative(path);
+                            return;
+                        } else { } //画像ファイルが存在しない場合は処理しない
+                    }
                 }
             }
 
@@ -653,6 +679,10 @@ namespace NineCubed.Memo.Plugins.TextEditor
                     //ファイルを保存します
                     SaveFile();
                 }
+                if (result == DialogResult.No) {
+                    //保存せずに、変更なしの状態にします
+                    txtMain.Modified = false;
+                }
                 if (result == DialogResult.Cancel) {
                     //終了できないことを返します
                     return false;
@@ -677,7 +707,6 @@ namespace NineCubed.Memo.Plugins.TextEditor
             //コントロールを削除します
             this.Parent = null;
             this.Dispose();
-
         }
 
         /// <summary>

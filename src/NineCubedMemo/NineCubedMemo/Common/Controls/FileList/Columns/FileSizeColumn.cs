@@ -35,6 +35,12 @@ namespace NineCubed.Common.Controls.FileList.Columns
             }
         }
 
+        /// <summary>
+        /// ソートします
+        /// </summary>
+        /// <param name="sValue1"></param>
+        /// <param name="sValue2"></param>
+        /// <returns></returns>
         override
         public int SortCompare(string sValue1, string sValue2)
         {
@@ -47,5 +53,6 @@ namespace NineCubed.Common.Controls.FileList.Columns
 
             return iValue1 > iValue2 ? 1 : -1;
         }
+
     } // class
 }

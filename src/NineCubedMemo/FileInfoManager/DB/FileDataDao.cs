@@ -22,13 +22,14 @@ namespace FileInfoManager.DB
 
             using (var cmd = connection.CreateCommand()) {
                 cmd.CommandText = "insert into d_file (" + 
-                    "  title,  memo,  value,  path,  size,  created,  updated) values " + 
-                    "(@title, @memo, @value, @path, @size, @created, @updated)";
+                    "  title,  memo,  value,  path,  kind,  size,  created,  updated) values " + 
+                    "(@title, @memo, @value, @path, @kind, @size, @created, @updated)";
                 
                 cmd.Parameters.Add(new SQLiteParameter("@title"  , data.title));
                 cmd.Parameters.Add(new SQLiteParameter("@memo"   , data.memo));
                 cmd.Parameters.Add(new SQLiteParameter("@value"  , data.value));
                 cmd.Parameters.Add(new SQLiteParameter("@path"   , data.path));
+                cmd.Parameters.Add(new SQLiteParameter("@kind"   , data.kind));
                 cmd.Parameters.Add(new SQLiteParameter("@size"   , data.size));
                 cmd.Parameters.Add(new SQLiteParameter("@created", data.created));
                 cmd.Parameters.Add(new SQLiteParameter("@updated", data.updated));
@@ -58,6 +59,7 @@ namespace FileInfoManager.DB
                         "memo      = @memo,      " +
                         "value     = @value,     " +
                         "path      = @path,      " +
+                        "kind      = @kind,      " +
                         "size      = @size,      " +
                         "created   = @created,   " +
                         "updated   = @updated    " +
@@ -67,6 +69,7 @@ namespace FileInfoManager.DB
                 cmd.Parameters.Add(new SQLiteParameter("@memo"      , data.memo));
                 cmd.Parameters.Add(new SQLiteParameter("@value"     , data.value));
                 cmd.Parameters.Add(new SQLiteParameter("@path"      , data.path));
+                cmd.Parameters.Add(new SQLiteParameter("@kind"      , data.kind));
                 cmd.Parameters.Add(new SQLiteParameter("@size"      , data.size));
                 cmd.Parameters.Add(new SQLiteParameter("@created"   , data.created));
                 cmd.Parameters.Add(new SQLiteParameter("@updated"   , data.updated));
@@ -187,6 +190,7 @@ namespace FileInfoManager.DB
             data.memo    = reader["memo"   ].ToString();
             data.value   = StringUtils.ToInt(reader["value"].ToString(), 0);
             data.path    = reader["path"   ].ToString();
+            data.kind    = StringUtils.ToInt(reader["kind"].ToString(), 0);
             data.size    = StringUtils.ToLong(reader["size"].ToString(), 0);
             data.created = reader["created"].ToString();
             data.updated = reader["updated"].ToString();
@@ -207,84 +211,36 @@ namespace FileInfoManager.DB
             NOT  //条件の全てに一致しないデータ(AND の逆)
         }
 
-        //データを検索します
+        /// <summary>
+        /// データを検索します
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="valueFrom"></param>
+        /// <param name="valueTo"></param>
+        /// <param name="keywordList"></param>
+        /// <param name="tagList"></param>
+        /// <param name="searchModeTag"></param>
+        /// <param name="searchModeKeyword"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
         public static IList<FileData> GetDataList(SQLiteConnection connection, 
             int valueFrom,
             int valueTo,
             IList<String> keywordList,
             IList<String> tagList,
             SearchMode searchModeTag,
-            SearchMode searchModeKeyword
+            SearchMode searchModeKeyword,
+            bool fileVisible,
+            bool dirVisible,
+            int limit
             ) {
 
             var list = new List<FileData>();
 
             using (var cmd = connection.CreateCommand()) {
-                string sql = 
-                    "select *, " + 
-                        "(select group_concat(tag, ' ') from d_tag T2 where T2.d_file_id = T1.id group by d_file_id) as tags " + 
-                    " from d_file T1 ";
-
-                //where句リスト。1つの条件につき、1要素。最後に "and" で結合して SQL に追加します
-                var whereList = new List<string>(); 
-
-                //評価 from
-                if (valueFrom >= 0) {
-                    whereList.Add("value >= @value_from");
-                    cmd.Parameters.Add(new SQLiteParameter("@value_from", valueFrom));
-                }
-
-                //評価 to
-                if (valueTo >= 0) {
-                    whereList.Add("@value_to >= value");
-                    cmd.Parameters.Add(new SQLiteParameter("@value_to", valueTo));
-                }
-
-                //キーワード
-                if (keywordList != null && keywordList.Count > 0) {
-                    string and_or_not = null;
-                    if (searchModeKeyword.Equals(SearchMode.AND)) and_or_not = " and ";
-                    if (searchModeKeyword.Equals(SearchMode.OR))  and_or_not = " or  ";
-                    if (searchModeKeyword.Equals(SearchMode.NOT)) and_or_not = " and not ";
-
-                    var where = "";
-                    for (int i = 0; i < keywordList.Count; i++) {
-                        var paramName = "@keyword_" + i.ToString();
-                        where = where + and_or_not + "(" +
-                            "title like " + paramName + " or " +
-                            "memo  like " + paramName + " or " +
-                            "path  like " + paramName + ")";
-                        cmd.Parameters.Add(new SQLiteParameter(paramName, "%" + keywordList[i] + "%"));
-                    }
-
-                    whereList.Add("(" + where.Substring(4) + ")");
-                }
-
-                //タグ
-                if (tagList != null && tagList.Count > 0) {
-                    
-                    string and_or_not = null;
-                    if (searchModeTag.Equals(SearchMode.AND)) and_or_not = " and id in ";
-                    if (searchModeTag.Equals(SearchMode.OR))  and_or_not = " or  id in ";
-                    if (searchModeTag.Equals(SearchMode.NOT)) and_or_not = " and id not in ";
-
-                    var where = "";
-                    for (int i = 0; i < tagList.Count; i++) {
-                        var paramName = "@tag" + i.ToString();
-                        where = where + and_or_not + " (select d_file_id from d_tag where tag = " + paramName + ") ";
-                        cmd.Parameters.Add(new SQLiteParameter(paramName, tagList[i]));
-                    }
-
-                    whereList.Add("(" + where.Substring(4) + ")");
-                }
-
-                //検索条件の追加
-                if (whereList.Count > 0) {
-                    sql = sql + " where " + string.Join( " and ", whereList.ToArray());
-                }
-
-                cmd.CommandText = sql;
-                cmd.Prepare();
+                SetCommandForGetDataList(
+                    cmd, valueFrom, valueTo, keywordList, tagList, 
+                    searchModeTag, searchModeKeyword, fileVisible, dirVisible, limit, false);
 
                 using (var reader = cmd.ExecuteReader()) {
                     while (reader.Read()) {
@@ -295,7 +251,158 @@ namespace FileInfoManager.DB
             }
 
             return list;
-        } //getDataList()
+        }
+
+        /// <summary>
+        /// データの件数を取得します
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="valueFrom"></param>
+        /// <param name="valueTo"></param>
+        /// <param name="keywordList"></param>
+        /// <param name="tagList"></param>
+        /// <param name="searchModeTag"></param>
+        /// <param name="searchModeKeyword"></param>
+        /// <returns></returns>
+        public static int GetDataListCount(SQLiteConnection connection, 
+            int valueFrom,
+            int valueTo,
+            IList<String> keywordList,
+            IList<String> tagList,
+            SearchMode searchModeTag,
+            SearchMode searchModeKeyword,
+            bool fileVisible,
+            bool dirVisible
+            ) {
+
+            using (var cmd = connection.CreateCommand()) {
+                SetCommandForGetDataList(
+                    cmd, valueFrom, valueTo, keywordList, tagList, 
+                    searchModeTag, searchModeKeyword, fileVisible, dirVisible, 0, true);
+
+                using (var reader = cmd.ExecuteReader()) {
+                    while (reader.Read()) {
+                        return StringUtils.ToInt(reader["count"].ToString(), 0);
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// 検索用のSQLの設定とパラメーターの設定を行います。
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="valueFrom"></param>
+        /// <param name="valueTo"></param>
+        /// <param name="keywordList"></param>
+        /// <param name="tagList"></param>
+        /// <param name="searchModeTag"></param>
+        /// <param name="searchModeKeyword"></param>
+        /// <param name="limit"></param>
+        /// <param name="isCount"></param>
+        private static void SetCommandForGetDataList(
+            SQLiteCommand cmd,
+            int valueFrom,
+            int valueTo,
+            IList<String> keywordList,
+            IList<String> tagList,
+            SearchMode searchModeTag,
+            SearchMode searchModeKeyword,
+            bool fileVisible,
+            bool dirVisible,
+            int limit,
+            bool isCount) //true:件数だけ返す
+        {
+
+            string sql;
+            if (isCount) {
+                sql = "select count(*) as count from d_file T1 ";
+            } else {
+                sql = "select *, " +
+                             "(select group_concat(tag, ' ') from (select tag from d_tag T2 where T2.d_file_id = T1.id order by tag)) as tags " + 
+                       " from d_file T1 ";
+            }
+
+            //where句リスト。1つの条件につき、1要素。最後に "and" で結合して SQL に追加します
+            var whereList = new List<string>(); 
+
+            //評価 from
+            if (valueFrom >= 0) {
+                whereList.Add("value >= @value_from");
+                cmd.Parameters.Add(new SQLiteParameter("@value_from", valueFrom));
+            }
+
+            //評価 to
+            if (valueTo >= 0) {
+                whereList.Add("@value_to >= value");
+                cmd.Parameters.Add(new SQLiteParameter("@value_to", valueTo));
+            }
+
+            //キーワード
+            if (keywordList != null && keywordList.Count > 0) {
+                string and_or_not = null;
+                if (searchModeKeyword.Equals(SearchMode.AND)) and_or_not = " and ";
+                if (searchModeKeyword.Equals(SearchMode.OR))  and_or_not = " or  ";
+                if (searchModeKeyword.Equals(SearchMode.NOT)) and_or_not = " and not ";
+
+                var where = "";
+                for (int i = 0; i < keywordList.Count; i++) {
+                    var paramName = "@keyword_" + i.ToString();
+                    where = where + and_or_not + "(" +
+                        "title like " + paramName + " or " +
+                        "memo  like " + paramName + " or " +
+                        "path  like " + paramName + ")";
+                    cmd.Parameters.Add(new SQLiteParameter(paramName, "%" + keywordList[i] + "%"));
+                }
+
+                whereList.Add("(" + where.Substring(4) + ")");
+            }
+
+            //タグ
+            if (tagList != null && tagList.Count > 0) {
+                    
+                string and_or_not = null;
+                if (searchModeTag.Equals(SearchMode.AND)) and_or_not = " and id in ";
+                if (searchModeTag.Equals(SearchMode.OR))  and_or_not = " or  id in ";
+                if (searchModeTag.Equals(SearchMode.NOT)) and_or_not = " and id not in ";
+
+                var where = "";
+                for (int i = 0; i < tagList.Count; i++) {
+                    var paramName = "@tag" + i.ToString();
+                    where = where + and_or_not + " (select d_file_id from d_tag where lower(tag) = lower(" + paramName + ")) ";
+                    cmd.Parameters.Add(new SQLiteParameter(paramName, tagList[i]));
+                }
+
+                whereList.Add("(" + where.Substring(4) + ")");
+            }
+
+            //ファイル種別
+            if (fileVisible == false && dirVisible == false) {
+                whereList.Add("kind = 0");
+            }
+            if (fileVisible == true  && dirVisible == false) {
+                whereList.Add("kind = 1");
+            }
+            if (fileVisible == false && dirVisible == true) {
+                whereList.Add("kind = 2");
+            }
+            if (fileVisible == true  && dirVisible == true) {
+                whereList.Add("(kind = 1 or kind = 2)");
+            }
+
+            //検索条件の追加
+            if (whereList.Count > 0) {
+                sql = sql + " where " + string.Join( " and ", whereList.ToArray());
+            }
+
+            //検索結果数の制限
+            if (limit > 0) sql = sql + " limit " + limit;
+
+            cmd.CommandText = sql;
+            cmd.Prepare();
+        }
 
     } //class
 }

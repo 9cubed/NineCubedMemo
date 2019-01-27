@@ -31,7 +31,7 @@ namespace NineCubed.Common.Controls.FileList.Columns
             var newPath = FileUtils.AppendPath(orgFile.DirectoryName, newValue);
 
             //ファイル名の変更がない場合は処理を抜けます
-            if (orgFile.Name.Equals(newValue)) return orgFile;
+            if (orgFile.Name.Equals(newValue)) return null;
 
             try {
                 if (FileUtils.IsFile(oldPath)) {
@@ -43,7 +43,7 @@ namespace NineCubed.Common.Controls.FileList.Columns
                 }
             } catch (Exception ex) {
                 __.ShowErrorMsgBox(ex.Message);
-                return orgFile;
+                return null;
             }
 
             return new FileInfo(newPath);

@@ -53,6 +53,26 @@
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -111,6 +131,7 @@
     <Compile Include="Common\Utils\ListUtils.cs" />
     <Compile Include="Common\Utils\MsgBoxUtils.cs" />
     <Compile Include="Common\Utils\SerializeUtils.cs" />
+    <Compile Include="Common\Utils\TextFileUtils.cs" />
     <Compile Include="frmTest.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +139,13 @@
       <DependentUpon>frmTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Memo\AppConfig.cs" />
+    <Compile Include="Memo\Plugins\Calendar\CalendarControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Calendar\CalendarControl.Designer.cs">
+      <DependentUpon>CalendarControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Memo\Plugins\Calendar\CalendarPlugin.cs" />
     <Compile Include="Memo\Plugins\Dialogs\OpenDialog\IOpenDialog.cs" />
     <Compile Include="Memo\Plugins\Dialogs\OpenDialog\OpenDialogPlugin.cs" />
     <Compile Include="Memo\Plugins\Dialogs\SaveDialog\ISaveDialog.cs" />
@@ -127,6 +155,7 @@
     </Compile>
     <Compile Include="Memo\Plugins\EventManager.cs" />
     <Compile Include="Memo\Plugins\Events\DirSelectingEventParam.cs" />
+    <Compile Include="Memo\Plugins\Events\FileNameChangedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\FileSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\DirSelectedEventParam.cs" />
     <Compile Include="Memo\Plugins\Events\EventParam.cs" />
@@ -170,6 +199,14 @@
     <Compile Include="Memo\Plugins\FileTree\FileTreePlugin.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\Grep\GrepControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Grep\GrepControl.Designer.cs">
+      <DependentUpon>GrepControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Memo\Plugins\Grep\GrepPlugin.cs" />
+    <Compile Include="Memo\Plugins\Grep\GrepThread.cs" />
     <Compile Include="Memo\Plugins\ImageViewer\ImageViewerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -181,9 +218,19 @@
     <Compile Include="Memo\Plugins\Interfaces\IFilePlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IKeyMacroPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\INewLinePlugin.cs" />
+    <Compile Include="Memo\Plugins\Interfaces\IPathPlugin.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IPlugin.cs" />
     <Compile Include="Memo\Exceptions\CancelException.cs" />
     <Compile Include="Memo\Plugins\Interfaces\IRefreshPlugin.cs" />
+    <Compile Include="Memo\Plugins\Menus\CommonMenu\CreatePluginMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\CommonMenu\GroupMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Menus\CommonMenu\InvokeMethodMenuPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\Menus\DebugMenu\DebugMenuPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -220,6 +267,7 @@
     <Compile Include="Memo\Plugins\Menus\SearchMenu\SearchMenuPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\PluginProperty.cs" />
     <Compile Include="Memo\Plugins\SearchForm\SearchData.cs" />
     <Compile Include="Memo\KeyMacro.cs" />
     <Compile Include="Memo\MainFormPlugin.cs">
@@ -275,6 +323,9 @@
     <Compile Include="Memo\Plugins\TextEditor\TitleListbox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\Tools\CommonTool\InvokeMethodToolPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Memo\Plugins\Tools\FileTool\OpenFileToolPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -282,6 +333,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Memo\Plugins\Tools\MainToolPlugin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Memo\Plugins\Tools\CommonTool\CreatePluginToolPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />
@@ -306,6 +360,9 @@
     <EmbeddedResource Include="Memo\MainFormPlugin.resx">
       <DependentUpon>MainFormPlugin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\Calendar\CalendarControl.resx">
+      <DependentUpon>CalendarControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\FileList\FileListPluginEx.resx">
       <DependentUpon>FileListPluginEx.cs</DependentUpon>
     </EmbeddedResource>
@@ -314,6 +371,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\FileTree\FileTreePlugin.resx">
       <DependentUpon>FileTreePlugin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Memo\Plugins\Grep\GrepControl.resx">
+      <DependentUpon>GrepControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Memo\Plugins\ImageViewer\ImageViewerControl.resx">
       <DependentUpon>ImageViewerControl.cs</DependentUpon>
@@ -346,10 +406,52 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="plugins\data\menu_calendar\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\menu_plugin\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\menu_grep\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\menu_copy\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\tool_paste\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\tool_delete\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\tool_copy\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\tool_cut\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\tool_calendar\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\file_list_menu_grep\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\file_tree_menu_grep\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\data\tool_grep\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\data\property.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Grep.GrepPlugin\data\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Grep.GrepPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Dialogs.OpenDialog.OpenDialogPlugin\plugin.ini">
@@ -397,6 +499,12 @@
     <None Include="plugins\define\NineCubed.Memo.Plugins.ImageViewer.ImageViewerPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.CommonMenu.GroupMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.CommonMenu.InvokeMethodMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.DebugMenu.DebugMenuPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -407,6 +515,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.FileMenu.FileMenuPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.CommonMenu.CreatePluginMenuPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Menus.HelpMenu.HelpMenuPlugin\plugin.ini">
@@ -439,6 +550,9 @@
     <None Include="plugins\define\NineCubed.Memo.Plugins.Splitter.SplitContainerPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Calendar.CalendarPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -451,7 +565,13 @@
     <None Include="plugins\define\NineCubed.Memo.Plugins.TextEditor.TextEditorPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.CommonTool.InvokeMethodToolPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.OpenFileToolPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.CommonTool.CreatePluginToolPlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\plugin.ini">
@@ -492,6 +612,24 @@
   <ItemGroup>
     <Content Include="icon.ico" />
     <Content Include="Memo\Plugins\PathField\resource\MoveToParentDir.png" />
+    <Content Include="plugins\data\tool_paste\img\paste.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\data\tool_delete\img\delete.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\data\tool_copy\img\copy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\data\tool_cut\img\cut.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\data\tool_calendar\img\calendar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plugins\data\tool_grep\img\grep.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="plugins\define\NineCubed.Memo.Plugins.FileList.FileListPluginEx\data\img\opened_folder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -528,25 +666,16 @@
     <Content Include="plugins\define\NineCubed.Memo.Plugins.Tools.FileTool.SaveFileToolPlugin\data\img\save.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="resource\file\cd.png" />
-    <Content Include="resource\file\closed_folder.png" />
-    <Content Include="resource\file\opened_folder.png" />
-    <Content Include="resource\file\hdd.png" />
-    <Content Include="resource\file\removable.png" />
-    <Content Include="resource\file\root.png" />
     <Content Include="resource\icon\icon.ico" />
     <Content Include="resource\icon\icon16.png" />
     <Content Include="resource\icon\icon24.png" />
     <Content Include="resource\icon\icon32.png" />
     <Content Include="resource\icon\icon48.png" />
-    <Content Include="resource\toolbar\new.png" />
-    <Content Include="resource\toolbar\open.png" />
-    <Content Include="resource\toolbar\save.png" />
     <Content Include="メモ.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Memo\Interfaces\" />
-    <Folder Include="plugins\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Calendar.CalendarPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.EmptyPanel.PanelPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileAccessDateColumnPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.FileList.Columns.FileCreateDateColumnPlugin\data\" />
@@ -559,6 +688,8 @@
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.SearchForm.SearchFormPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tab.TabPlugin\data\" />
     <Folder Include="plugins\define\NineCubed.Memo.Plugins.Test.TestPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tools.CommonTool.CreatePluginToolPlugin\data\" />
+    <Folder Include="plugins\define\NineCubed.Memo.Plugins.Tools.CommonTool.InvokeMethodToolPlugin\data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

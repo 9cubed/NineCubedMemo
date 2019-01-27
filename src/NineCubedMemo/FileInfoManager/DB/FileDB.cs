@@ -57,6 +57,7 @@ namespace FileInfoManager.DB
                     "memo    TEXT, "    + //メモ
                     "value   INTEGER, " + //評価・重要度
                     "path    TEXT, "    + //ファイルのフルパス
+                    "kind    INTEGER, " + //ファイル種別 1:ファイル 2:フォルダ
                     "size    INTEGER, " + //ファイルサイズ
                     "created TEXT, "    + //作成日時
                     "updated TEXT  "    + //更新日時
@@ -152,15 +153,21 @@ namespace FileInfoManager.DB
                 FileDataDao.Update(connection, fileData);
             }
 
+            //タグデータを更新します
+            UpdateTag(connection, fileData);
+        }
+
+        /// <summary>
+        /// タグデータを更新します
+        /// </summary>
+        public static void UpdateTag(SQLiteConnection connection, FileData fileData)
+        {
             //タグデータを削除します
             TagDataDao.Delete(connection, fileData.id);
 
             //タグデータを追加します
             foreach (var tag in fileData.GetTagList()) {
-                var tagData = new TagData();
-                tagData.tag = tag;
-                tagData.d_file_id = fileData.id;
-                TagDataDao.Insert(connection, tagData);
+                TagDataDao.Insert(connection, tag, fileData.id);
             }
         }
 

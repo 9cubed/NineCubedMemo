@@ -93,7 +93,7 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         public bool LoadImage(string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentException();
-            if (File.Exists(path) == false) throw new FileNotFoundException();
+            if (File.Exists(path) == false) return false;
 
             //拡張子が画像ファイル以外の場合は処理しない
             if (ImageUtils.IsImageFile(path) == false) return false;

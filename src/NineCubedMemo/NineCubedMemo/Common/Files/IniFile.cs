@@ -2,6 +2,7 @@
 using NineCubed.Common.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -51,6 +52,12 @@ namespace NineCubed.Common.Files
         private readonly Map<string, Map<string, string>> _data = new Map<string, Map<string, string>>();
 
         /// <summary>
+        /// セクション一覧を返します
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetSectionList() => _data.Keys.ToArray();
+  
+        /// <summary>
         /// セクション未指定の空文字
         /// </summary>
         public const string NO_SECTION = "";
@@ -87,6 +94,18 @@ namespace NineCubed.Common.Files
         /// <param name="section"></param>
         /// <returns></returns>
         public Map<string, string> GetSubData(string section) => _data[section];
+
+        /// <summary>
+        /// 現在のiniに、引数の差分iniを追加します
+        /// </summary>
+        /// <param name="iniFile">差分iniファイル</param>
+        public void AddData(IniFile iniFile) {
+            foreach (var section in iniFile.GetSectionList()) {
+                foreach (var keyValue in iniFile.GetSubData(section)) {
+                    this[section, keyValue.Key] = keyValue.Value;
+                }
+            }
+        }
         
         /// <summary>
         /// ファイルのパス
@@ -181,9 +200,25 @@ namespace NineCubed.Common.Files
         //値を取得します
         public string ToString(string section, string key, string defaultValue = null) {
             var value = this[section, key]?.ToString();
-            return  (value == null) ? defaultValue : value;
+            return value ?? defaultValue;
         }
-        public int    ToInt   (string section, string key, int    defaultValue = 0)     =>    int.TryParse(this[section, key]?.ToString(), out int    value) ? value : defaultValue;
+        public int ToInt (string section, string key, int defaultValue = 0) {
+            var targetValue = this[section, key]?.ToString();
+            if (string.IsNullOrEmpty(targetValue)) return defaultValue;
+
+            targetValue = targetValue.ToLower();
+            if (targetValue.StartsWith("0x")) {
+                //16進数の場合
+                targetValue = targetValue.Substring(2);
+                var v = int.TryParse(targetValue, NumberStyles.HexNumber, null, out int value) ? value : defaultValue;
+                return v;
+            } else {
+                //10進数の場合
+                return int.TryParse(targetValue, out int value) ? value : defaultValue;
+            }
+
+             
+        }
         public long   ToLong  (string section, string key, long   defaultValue = 0)     =>   long.TryParse(this[section, key]?.ToString(), out long   value) ? value : defaultValue;
         public double ToDouble(string section, string key, double defaultValue = 0)     => double.TryParse(this[section, key]?.ToString(), out double value) ? value : defaultValue;
         public bool   ToBool  (string section, string key, bool   defaultValue = false) =>   bool.TryParse(this[section, key]?.ToString(), out bool   value) ? value : defaultValue;

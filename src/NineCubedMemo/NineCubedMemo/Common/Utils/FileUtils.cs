@@ -132,6 +132,28 @@ namespace NineCubed.Common.Utils
             return resultList;
         }
 
+        /// <summary>
+        /// 指定されたパス配下のファイル一覧を取得します。
+        /// 1ファイル毎に、引数の関数(Func)にパスを渡して呼び出します。
+        /// 関数の戻り値が false の場合は、処理をキャンセルします
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="dirPath"></param>
+        /// <param name="subDir"></param>
+        public static bool GetFileList(Func<string, bool> func, string dirPath, bool subDir = false)
+        {
+            foreach (var path in Directory.EnumerateFiles(dirPath)) {
+                func(path);
+            }
+
+            if (subDir) {
+                foreach (var path in Directory.EnumerateDirectories(dirPath)) {
+                    GetFileList(func, path, subDir);
+                }
+            }
+            return true;
+        }
+
         // パスを結合します。
         // Path.Combine() は以下の動作になるので使わない。
         // Path.Combine("c:", "test.txt")    -> c:test.txt  ドライブの前に \ がついてくれない。
@@ -154,17 +176,27 @@ namespace NineCubed.Common.Utils
             //パスを結合して返します
             return path1 + Path.DirectorySeparatorChar.ToString() + path2;
         }
+        public static string AppendPath(string path1, string path2, string path3) {
+            return AppendPath(AppendPath(path1, path2), path3);
+        }
+        public static string AppendPath(string path1, string path2, string path3, string path4) {
+            return AppendPath(AppendPath(AppendPath(path1, path2), path3), path4);
+        }
 
         /// <summary>
-        /// 指定されたファイルがフォルダ出ない場合はファイルをそのまま返します。
-        /// フォルダの場合はnullを返します
+        /// ファイルかどうかの判定をします。
         /// </summary>
         /// <param name="path"></param>
-        /// <returns>true:フォルダ false:ファイル</returns>
+        /// <returns>true:ファイル false:ファイル以外(フォルダ or 不正なパス)</returns>
         public static bool IsFile(string path)
         {
             var file = new FileInfo(path);
-            return !( file.Attributes.HasFlag(FileAttributes.Directory) );
+            return file.Exists;
+            //return !( file.Attributes.HasFlag(FileAttributes.Directory) );
+        }
+        public static bool IsDir(string path) {
+            var dir = new DirectoryInfo(path);
+            return dir.Exists;
         }
 
         /// <summary>

@@ -23,5 +23,7 @@ namespace NineCubed.Common.Controls.FileList.Columns
         //表示する値を返します
         override
         public string ToString(FileInfo file) => file.FullName;
+
+
     }
 }

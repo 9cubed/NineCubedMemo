@@ -72,7 +72,17 @@ namespace NineCubed.Memo.Plugins
         /// 現在フォーカスがあるプラグイン。
         /// アクティブになったプラグイン側から設定します。
         /// </summary>
-        public IPlugin ActivePlugin { get; set; }
+        public IPlugin _activePlugin;
+        public IPlugin ActivePlugin {
+            get
+            {
+                return _activePlugin;
+            }
+            set
+            {
+                _activePlugin = value;
+            }
+        }
 
         /// <summary>
         /// メインフォーム
@@ -230,6 +240,14 @@ namespace NineCubed.Memo.Plugins
         /// プラグインを終了します
         /// </summary>
         public bool ClosePlugin(IPlugin plugin) {
+
+            //子プラグインリストを終了します
+            //1つでも終了できないプラグインがある場合は、終了を中止します
+            var childPluginList = GetChildPluginList(plugin);
+            foreach (var childPlugin in childPluginList) {
+                if (ClosePlugin(childPlugin) == false) return false;
+            }
+
             //プラグインを終了できるか？
             if (plugin.CanClosePlugin()) {
 
@@ -276,11 +294,9 @@ namespace NineCubed.Memo.Plugins
         /// 全てのプラグインを終了します
         /// </summary>
         public void CloseAllPlugins() {
-            int pluginCount = _pluginList.Count(); //リストから削除していくと Count() の値が変わるため、事前にプラグイン数を取得します
-
-            //プラグインリストの先頭を、プラグインの数だけ削除します (先頭を削除すると次の要素が先頭になるため)
-            for (int i = 0; i < pluginCount; i++) {
-                ClosePlugin(_pluginList[0]); 
+            //プラグインがなくなるまで削除します
+            while (_pluginList.Count() > 0) {
+                if (ClosePlugin(_pluginList[0]) == false) break;
             }
         }
 
@@ -336,7 +352,7 @@ namespace NineCubed.Memo.Plugins
         /// </summary>
         /// <param name="pluginClassName"></param>
         /// <returns></returns>
-        public string GetDefineDataPath(string pluginClassName)
+        public static string GetDefineDataPath(string pluginClassName)
         {
             return FileUtils.AppendPath(__.GetAppDirPath(), "plugins/define/" + pluginClassName + "/data");
         }
@@ -346,7 +362,7 @@ namespace NineCubed.Memo.Plugins
         /// </summary>
         /// <param name="pluginId">プラグインID</param>
         /// <returns></returns>
-        public string GetDataPath(string pluginId)
+        public static string GetDataPath(string pluginId)
         {
             return FileUtils.AppendPath(__.GetAppDirPath(), "plugins/data/" + pluginId + "/");
         }
@@ -355,13 +371,13 @@ namespace NineCubed.Memo.Plugins
         /// プラグイン用共通データフォルダのパスを返します
         /// </summary>
         /// <returns></returns>
-        public string GetCommonDataPath() => GetDataPath("common");
+        public static string GetCommonDataPath() => GetDataPath("common");
 
         /// <summary>
         /// プラグインIDを採番して返します
         /// </summary>
         /// <returns></returns>
-        public string GetPluginId() => Guid.NewGuid().ToString();
+        public static string GetPluginId() => Guid.NewGuid().ToString();
 
         /// <summary>
         /// 指定したプラグインIDのプラグインを返します
@@ -395,13 +411,12 @@ namespace NineCubed.Memo.Plugins
             return list;
         }
 
-
         /// <summary>
         /// GUIDの形式チェックを行います
         /// </summary>
         /// <param name="guid">true:GUIDです。</param>
         /// <returns></returns>
-        public bool IsGuid(string guid) {
+        public static bool IsGuid(string guid) {
             //事前に桁数チェックをして、桁数が異なるものははじきます
             if ("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx".Length != guid.Length) return false; //GUIDではない(桁数不一致)
 

@@ -19,7 +19,7 @@ using NineCubed.Common.Controls.FileList.Columns;
 
 namespace NineCubed.Memo.Plugins.FileList
 {
-    public partial class FileListPluginEx : UserControl, IPlugin, IEditPlugin, IRefreshPlugin
+    public partial class FileListPluginEx : UserControl, IPlugin, IEditPlugin, IRefreshPlugin, IPathPlugin
     {
         public FileListPluginEx()
         {
@@ -85,7 +85,94 @@ namespace NineCubed.Memo.Plugins.FileList
                 };
                 this.ContextMenuStrip.Items.Add(menu);
             }
+
+            //パスのコピー
+            {
+                var menu = new ToolStripMenuItem("パスのコピー");
+                menu.Click += (sender, e) => {
+                    var data = new Dictionary<int, string>();
+                    foreach (DataGridViewCell cell in fileListGrid.SelectedCells) {
+                        data[cell.RowIndex] = fileListGrid[0, cell.RowIndex].Value.ToString();
+                    }
+
+                    var text = "";
+                    foreach (var keyValue in data) {
+                        text += keyValue.Value + "\n";
+                    }
+                    text = StringUtils.RemoveRight(text, 1); //最後の改行を削除
+
+                    if (StringUtils.IsNotEmpty(text)) {
+                        //クリップボードに文字列を設定します
+                        Clipboard.SetText(text);
+                    }
+                };
+                this.ContextMenuStrip.Items.Add(menu);
+            }
+            /*
+            //NG:わざわざ作らなくても、標準でこの機能ついてる。。。。。。。。。。
+            //選択範囲のコピー
+            {
+                var menu = new ToolStripMenuItem("選択範囲のコピー");
+                menu.Click += (sender, e) => {
+                    //選択されているセルの値をタブ区切りの文字列で取得します
+                    var text = GetSelectedCellValues();
+                    if (StringUtils.IsNotEmpty(text)) {
+                        //クリップボードに文字列を設定します
+                        Clipboard.SetText(text);
+                    }
+                };
+                this.ContextMenuStrip.Items.Add(menu);
+            }*/
         }
+        /*
+        /// <summary>
+        /// 選択されているセルの値を、タブ区切りの文字列で返します。
+        /// 行は改行コードで区切ります。
+        /// </summary>
+        /// <returns></returns>
+        private string GetSelectedCellValues()
+        {
+            //選択範囲の上下左右の端のindexを取得します
+            int minCol = fileListGrid.ColumnCount; //選択範囲の左端
+            int minRow = fileListGrid.RowCount;    //選択範囲の上端
+            int maxCol = 0;                        //選択範囲の右端
+            int maxRow = 0;                        //選択範囲の下端
+            foreach (DataGridViewCell cell in fileListGrid.SelectedCells) {
+                if (cell.ColumnIndex < minCol) minCol = cell.ColumnIndex;
+                if (cell.RowIndex    < minRow) minRow = cell.RowIndex;
+                if (cell.ColumnIndex > maxCol) maxCol = cell.ColumnIndex;
+                if (cell.RowIndex    > maxRow) maxRow = cell.RowIndex;
+            }
+
+            //選択されているセルの値だけを、連想配列にコピーします。キーは「列_行」
+            var data = new Dictionary<string, string>();
+            foreach (DataGridViewCell cell in fileListGrid.SelectedCells) {
+                var key = cell.ColumnIndex.ToString() + "_" + cell.RowIndex.ToString();
+                data[key] = cell.Value?.ToString().Trim();
+            }
+
+            //連想配列の値を結合して文字列にします
+            var text = new StringBuilder();
+            for (int row = minRow; row <= maxRow; row++) {
+                string line = "";
+                for (int col = minCol; col <= maxCol; col++) {
+                    var key = col.ToString() + "_" + row.ToString();
+                    if (data.TryGetValue(key, out string value)) {
+                        line += value;
+                    }
+                    line += "\t";
+                }
+
+                //末尾がタブの場合は、削除します
+                if (line.EndsWith("\t")) line = StringUtils.RemoveRight(line, 1);
+
+                if (StringUtils.IsNotEmpty(line.Trim('\t'))){
+                    //空行でない場合、戻り値用文字列に追加します
+                    text.Append(line + "\n");
+                }
+            }
+            return text.ToString();
+        }*/
 
         /// <summary>
         /// ファイルリストで選択されたフォルダまたはファイルの選択イベントを発生させます
@@ -327,6 +414,18 @@ namespace NineCubed.Memo.Plugins.FileList
 
         /******************************************************************************
          * 
+         *  IPathPlugin
+         * 
+         ******************************************************************************/
+
+        /// <summary>
+        /// パスを返します
+        /// </summary>
+        /// <returns></returns>
+        public string GetPath() => GetSelectedPath();
+
+        /******************************************************************************
+         * 
          *  グリッドのイベント
          * 
          ******************************************************************************/
@@ -461,6 +560,26 @@ namespace NineCubed.Memo.Plugins.FileList
         }
 
         /// <summary>
+        /// グリッドのキープレスイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void fileListGrid_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (fileListGrid.CurrentCell == null) return;
+            if (fileListGrid.CurrentCell.ColumnIndex == -1) return;
+            
+            //編集可能なセルの場合は、編集モードにします
+            if (fileListGrid.Columns[fileListGrid.CurrentCell.ColumnIndex].ReadOnly == false) {
+                //編集中にします
+                fileListGrid.BeginEdit(true);
+
+                //入力されたキーを送信します
+                SendKeys.Send(e.KeyChar.ToString());
+            }
+        }
+
+        /// <summary>
         /// グリッドの手入力後に発生するイベント
         /// </summary>
         /// <param name="sender"></param>
@@ -471,9 +590,12 @@ namespace NineCubed.Memo.Plugins.FileList
             var newValue = fileListGrid[e.ColumnIndex, e.RowIndex].Value?.ToString(); //入力値
             if (newValue == null) newValue = "";
 
-            //カラムオブジェクトに値の変更を通知します(カラム側ではファイル名の変更などを行う)
-            var newFile = ((IFileListColumn)fileListGrid.Columns[e.ColumnIndex]).ValueChanged(new FileInfo(path), newValue);
+            var oldFile = new FileInfo(path);
 
+            //カラムオブジェクトに値の変更を通知します(カラム側ではファイル名の変更などを行う)
+            var newFile = ((IFileListColumn)fileListGrid.Columns[e.ColumnIndex]).ValueChanged(oldFile, newValue);
+            if (newFile == null) newFile = oldFile;
+            
             //行の更新します
             fileListGrid.SetRowData(e.RowIndex, newFile.FullName);
         }
@@ -552,18 +674,28 @@ namespace NineCubed.Memo.Plugins.FileList
             //生成されたプラグインを取得します
             var plugin = ((PluginCreatedEventParam)param).Plugin;
 
-            //生成されたプラグインのコントロールがカラムの場合は、カラムを追加します
+            //生成されたプラグインのコンポーネントを取得します
             var component = plugin.GetComponent();
+
+            //生成されたプラグインのコンポーネントがカラムの場合
             if (component is DataGridViewColumn column) {
-                //コントロールがカラムだった場合
+                //カラムを追加します
                 fileListGrid.Columns.Add(column);
 
-                //ファイルリスト本体をカラムに設定します
-                ((IFileListColumn)column).FileList = fileListGrid;
+                //イベントを処理済みにします
+                param.Handled = true;
+                return;
+            }
+
+            //生成されたプラグインのコンポーネントがメニューの場合
+            if (component is ToolStripMenuItem) {
+                //メニューを追加します
+                this.ContextMenuStrip.Items.Add((ToolStripMenuItem)component);
 
                 //イベントを処理済みにします
                 param.Handled = true;
             }
         }
+
     } //class
 }
