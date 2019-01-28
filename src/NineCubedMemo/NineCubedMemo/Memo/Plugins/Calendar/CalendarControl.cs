@@ -315,6 +315,9 @@ namespace NineCubed.Memo.Plugins.Calendar
             var yyyyMMdd = year + month.ToString("00") + day.ToString("00");
             var path = FileUtils.AppendPath(dataDirPath, yyyyMMdd + ".txt");
 
+            //フォルダがない場合は、フォルダを作成します
+            FileUtils.CreateDir(dataDirPath);
+
             //ファイルがない場合は、ファイルを作成します
             if (File.Exists(path) == false) {
                 File.Create(path).Close();

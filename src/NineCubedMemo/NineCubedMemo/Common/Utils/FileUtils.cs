@@ -409,7 +409,7 @@ namespace NineCubed.Common.Utils
         }
 
         /// <summary>
-        /// フォルダが存在しない場合は、フォルダを作成します
+        /// フォルダが存在しない場合は、途中のフォルダを含めて全てのフォルダを作成します
         /// </summary>
         /// <param name="dirPath"></param>
         public static void CreateDir(string dirPath)

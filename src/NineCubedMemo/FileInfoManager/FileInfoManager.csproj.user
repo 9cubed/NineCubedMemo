@@ -14,7 +14,7 @@
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <StartProgram>D:\~9cubed\NineCubedMemo\src\NineCubedMemo\FileInfoManager\bin\Debug\NineCubedMemo.exe</StartProgram>
+    <StartProgram>D:\~9cubed\NineCubedMemo\src\NineCubedMemo\FileInfoManager\bin\x86\Debug\NineCubedMemo.exe</StartProgram>
     <StartAction>Program</StartAction>
   </PropertyGroup>
 </Project>

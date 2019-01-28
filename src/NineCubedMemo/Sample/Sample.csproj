@@ -86,10 +86,10 @@
 move $(TargetPath) $(TargetDir)plugins\define\Sample.SamplePlugin\
 
 rem メインプロジェクトにプラグインフォルダを作成します
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\Sample.SamplePlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\Sample.SamplePlugin
 
 rem プラグインフォルダをメインプロジェクトのプラグインフォルダへコピーします
-copy $(TargetDir)plugins\define\Sample.SamplePlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\Sample.SamplePlugin\
+copy $(TargetDir)plugins\define\Sample.SamplePlugin $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\Sample.SamplePlugin\
 
 echo ■Sampleプロジェクト コピー完了
 </PostBuildEvent>

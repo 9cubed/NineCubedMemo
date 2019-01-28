@@ -170,18 +170,18 @@
 move $(TargetPath) $(TargetDir)plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\
 
 rem メインプロジェクトにプラグインフォルダを作成します
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin
-mkdir $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin
+mkdir $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin
 
 rem プラグインフォルダをメインプロジェクトのプラグインフォルダへコピーします
-copy $(TargetDir)plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin\
-copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin\
-copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin\
-copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin\
-copy $(TargetDir)plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin $(SolutionDir)NineCubedMemo\bin\Debug\plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin                          $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.Editor.FileInfoEditorPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin           $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.FileListColumns.TitleColumnPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.FileListColumns.FileMemoColumnPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin   $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.FileListColumns.FileValueColumnPlugin\
+copy $(TargetDir)plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin               $(SolutionDir)NineCubedMemo\bin\x86\$(ConfigurationName)\plugins\define\FileInfoManager.Manager.FileInfoManagerPlugin\
 
 echo ■FileInfoManagerプロジェクト コピー完了
 </PostBuildEvent>
