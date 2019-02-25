@@ -52,6 +52,7 @@ namespace NineCubed.Memo.Plugins.Splitter
             this.BackColor        = Color.LightGray; //スプリットのバーの色
             this.Panel1.BackColor = SystemColors.Control;
             this.Panel2.BackColor = SystemColors.Control;
+
             return true;
         }
 

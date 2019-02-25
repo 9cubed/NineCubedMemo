@@ -44,7 +44,8 @@ namespace NineCubed.Common.Controls.FileList.Columns
             e.Paint(e.ClipBounds, paintParts);
             
             //セル全体を描画します
-            e.Graphics.FillRectangle(Brushes.White, e.CellBounds.X + 0, e.CellBounds.Y - 1, e.CellBounds.Width, e.CellBounds.Height);
+            var backgroundBrush = new SolidBrush(this.DataGridView.BackgroundColor);
+            e.Graphics.FillRectangle(backgroundBrush, e.CellBounds.X + 0, e.CellBounds.Y - 1, e.CellBounds.Width, e.CellBounds.Height);
 
             //ファイルの種類に応じて画像を描画します
             var cellValue = this.DataGridView[e.ColumnIndex, e.RowIndex].Value.ToString();

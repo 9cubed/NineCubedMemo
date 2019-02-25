@@ -236,6 +236,9 @@ namespace NineCubed.Memo.Plugins.Tab
             //プラグインにフォーカスを設定します
             plugin.SetFocus();
 
+            //タブを表示します
+            this.Visible = true;
+
             //イベントを処理済みにします
             param.Handled = true;
         }
@@ -249,6 +252,13 @@ namespace NineCubed.Memo.Plugins.Tab
         {
             //タブがある場合は、先頭のタブを選択します
             if (this.TabPages.Count >= 1) this.SelectedTab = this.TabPages[0];
+
+            //タブがある場合は、タブを表示します
+            if (this.TabCount > 0) {
+                this.Visible = true;
+            } else {
+                this.Visible = false;
+            }
         }
 
         /// <summary>
@@ -277,6 +287,9 @@ namespace NineCubed.Memo.Plugins.Tab
                     this.SelectedTab = this.TabPages[index];
                 }
             }
+
+            //タブが1つもない場合は、タブを非表示にします
+            if (this.TabCount == 0) this.Visible = false;
         }
 
         /// <summary>

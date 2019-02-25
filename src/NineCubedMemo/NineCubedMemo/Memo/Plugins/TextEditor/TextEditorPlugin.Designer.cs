@@ -51,10 +51,11 @@
             this.popupMenuForTextbox_TitleList = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.statusPath = new System.Windows.Forms.ToolStripStatusLabel();
-            this.txtMain = new NineCubed.Common.Controls.TextBoxEx();
-            this.splitContainer = new NineCubed.Common.Controls.ThreePaneContainer();
-            this.txtSplit = new NineCubed.Common.Controls.TextBoxEx();
             this.titleListbox = new NineCubed.Memo.Plugins.TextEditor.TitleListbox();
+            this.txtSplit = new NineCubed.Common.Controls.TextBoxEx();
+            this.splitContainer = new NineCubed.Common.Controls.ThreePaneContainer();
+            this.txtMain = new NineCubed.Common.Controls.TextBoxEx();
+            this.statusPosition = new System.Windows.Forms.ToolStripStatusLabel();
             this.popupMenuForTextbox.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.SuspendLayout();
@@ -209,9 +210,11 @@
             // 
             // statusBar
             // 
+            this.statusBar.BackColor = System.Drawing.SystemColors.Control;
             this.statusBar.Font = new System.Drawing.Font("Yu Gothic UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusPath});
+            this.statusPath,
+            this.statusPosition});
             this.statusBar.Location = new System.Drawing.Point(0, 395);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(924, 25);
@@ -221,43 +224,10 @@
             // statusPath
             // 
             this.statusPath.BackColor = System.Drawing.SystemColors.Control;
+            this.statusPath.ForeColor = System.Drawing.Color.Black;
             this.statusPath.Name = "statusPath";
             this.statusPath.Size = new System.Drawing.Size(151, 20);
             this.statusPath.Text = "toolStripStatusLabel1";
-            // 
-            // txtMain
-            // 
-            this.txtMain.ContextMenuStrip = this.popupMenuForTextbox;
-            this.txtMain.Location = new System.Drawing.Point(187, 192);
-            this.txtMain.Name = "txtMain";
-            this.txtMain.Size = new System.Drawing.Size(87, 76);
-            this.txtMain.TabIndex = 4;
-            this.txtMain.Text = "";
-            this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
-            this.txtMain.Enter += new System.EventHandler(this.txtMain_Enter);
-            this.txtMain.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMain_KeyDown);
-            // 
-            // splitContainer
-            // 
-            this.splitContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.splitContainer.HorizontalDistance = 149;
-            this.splitContainer.Location = new System.Drawing.Point(374, 93);
-            this.splitContainer.Name = "splitContainer";
-            this.splitContainer.PanelLeftVisible = false;
-            this.splitContainer.PanelTopVisible = false;
-            this.splitContainer.Size = new System.Drawing.Size(163, 116);
-            this.splitContainer.TabIndex = 8;
-            this.splitContainer.VerticalDistance = 142;
-            // 
-            // txtSplit
-            // 
-            this.txtSplit.ContextMenuStrip = this.popupMenuForTextbox;
-            this.txtSplit.Location = new System.Drawing.Point(130, 45);
-            this.txtSplit.Name = "txtSplit";
-            this.txtSplit.Size = new System.Drawing.Size(87, 76);
-            this.txtSplit.TabIndex = 9;
-            this.txtSplit.Text = "";
-            this.txtSplit.Enter += new System.EventHandler(this.txtSplit_Enter);
             // 
             // titleListbox
             // 
@@ -270,6 +240,49 @@
             this.titleListbox.TargetTextbox = null;
             this.titleListbox.TitleCharList = ((System.Collections.Generic.IList<string>)(resources.GetObject("titleListbox.TitleCharList")));
             this.titleListbox.Enter += new System.EventHandler(this.titleListbox_Enter);
+            // 
+            // txtSplit
+            // 
+            this.txtSplit.ContextMenuStrip = this.popupMenuForTextbox;
+            this.txtSplit.Location = new System.Drawing.Point(130, 45);
+            this.txtSplit.Name = "txtSplit";
+            this.txtSplit.Size = new System.Drawing.Size(87, 76);
+            this.txtSplit.TabIndex = 9;
+            this.txtSplit.Text = "";
+            this.txtSplit.Enter += new System.EventHandler(this.txtSplit_Enter);
+            // 
+            // splitContainer
+            // 
+            this.splitContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.splitContainer.HorizontalDistance = 149;
+            this.splitContainer.Location = new System.Drawing.Point(374, 93);
+            this.splitContainer.Name = "splitContainer";
+            this.splitContainer.PanelLeftVisible = false;
+            this.splitContainer.PanelTopVisible = false;
+            this.splitContainer.Size = new System.Drawing.Size(163, 116);
+            this.splitContainer.TabIndex = 8;
+            this.splitContainer.VerticalDistance = 142;
+            // 
+            // txtMain
+            // 
+            this.txtMain.ContextMenuStrip = this.popupMenuForTextbox;
+            this.txtMain.Location = new System.Drawing.Point(187, 192);
+            this.txtMain.Name = "txtMain";
+            this.txtMain.Size = new System.Drawing.Size(87, 76);
+            this.txtMain.TabIndex = 4;
+            this.txtMain.Text = "";
+            this.txtMain.SelectionChanged += new System.EventHandler(this.txtMain_SelectionChanged);
+            this.txtMain.ModifiedChanged += new System.EventHandler(this.txtMain_ModifiedChanged);
+            this.txtMain.Enter += new System.EventHandler(this.txtMain_Enter);
+            this.txtMain.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMain_KeyDown);
+            // 
+            // statusPosition
+            // 
+            this.statusPosition.BackColor = System.Drawing.SystemColors.Control;
+            this.statusPosition.ForeColor = System.Drawing.Color.Black;
+            this.statusPosition.Name = "statusPosition";
+            this.statusPosition.Size = new System.Drawing.Size(151, 20);
+            this.statusPosition.Text = "toolStripStatusLabel1";
             // 
             // TextEditorPlugin
             // 
@@ -318,5 +331,6 @@
         private System.Windows.Forms.ToolStripMenuItem popupMenuForTextbox_TitleList;
         private Common.Controls.TextBoxEx txtSplit;
         private TitleListbox titleListbox;
+        private System.Windows.Forms.ToolStripStatusLabel statusPosition;
     }
 }

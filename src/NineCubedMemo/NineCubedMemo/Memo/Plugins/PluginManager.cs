@@ -192,7 +192,9 @@ namespace NineCubed.Memo.Plugins
             param.DataPath = dataPath; //データパスを設定します
             try {
                 var result = plugin.Initialize(param);
-                if (result == false) return null;
+
+                //初期化に失敗した場合は、プラグインを破棄します
+                if (result == false) return null; 
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message + "\n" + plugin.GetType().FullName); //TODO ただのログ出力にする
                 return null;
@@ -264,7 +266,7 @@ namespace NineCubed.Memo.Plugins
                 //イベントhandlerを全て削除します
                 _pluginManager.GetEventManager().RemoveEventHandler(plugin);
 
-                //プラグインID が GUID の場合(自動採番された場合)は、
+                //プラグインID が GUID の場合(自動採番された場合)は、フォルダを削除します
                 if (IsGuid(plugin.PluginId)) {
                     var dataPath = GetDataPath(plugin.PluginId);
                     FileUtils.DeleteDir(dataPath);
@@ -442,7 +444,8 @@ namespace NineCubed.Memo.Plugins
     public enum CommonDataKeys {
 
                     //CommonData の値
-        SearchData  //NineCubed.Memo.Interfaces.SearchData
+        SearchData, //NineCubed.Memo.Plugins.SearchForm.SearchData  検索データ
+        ColorData   //NineCubed.Memo.Plugins.Theme.ColorData        テーマ用カラーデータ
     }
 
 }

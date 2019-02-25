@@ -12,6 +12,7 @@ using NineCubed.Common.Utils;
 using System.IO;
 using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.Interfaces;
+using NineCubed.Memo.Plugins.Theme;
 
 namespace NineCubed.Memo.Plugins.Calendar
 {
@@ -33,6 +34,9 @@ namespace NineCubed.Memo.Plugins.Calendar
         //プラグイン
         private IPlugin _plugin;
 
+        //カラーデータ(フォント、背景の色)
+        private ColorData _colorData;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -43,6 +47,10 @@ namespace NineCubed.Memo.Plugins.Calendar
             //引数を保持します
             _pluginManager = pluginManager;
             _plugin = plugin;
+
+            //共通カラーデータを取得します
+            _colorData = (ColorData)_pluginManager.CommonData[CommonDataKeys.ColorData];
+            if (_colorData == null) _colorData = new ColorData();
 
             //グリッドを初期化します
             InitGrid();
@@ -82,7 +90,7 @@ namespace NineCubed.Memo.Plugins.Calendar
             //列の設定
             for (int col = 0; col <= 6; col++) {
                 grid.Columns[col].DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft;
-                grid.Columns[col].DefaultCellStyle.Padding = new Padding(2); //セル内の余白
+                grid.Columns[col].DefaultCellStyle.Padding   = new Padding(2); //セル内の余白
                 grid.Columns[col].SortMode = DataGridViewColumnSortMode.NotSortable;
                 grid.Columns[col].Width = 140;
                 grid.Columns[col].DefaultCellStyle.WrapMode = DataGridViewTriState.True; //折り返す
@@ -91,22 +99,27 @@ namespace NineCubed.Memo.Plugins.Calendar
             //grid.RowHeadersWidth = 20; //行ヘッダの幅を狭くする
             grid.RowHeadersVisible = false; //行ヘッダの列を非表示にする
 
-            grid.RowCount = 7 * 2;
-
-            //行の高さを設定します
-            for (int row = 0; row <= 6; row++) {
-                grid.Rows[row * 2 + 1].Height = 80;
-            }
+            grid.RowCount = 6 * 2; //6週 * 2行(日付1行 + メモ1行)
 
             //日付部分のスタイルを設定します
-            for (int row = 0; row <= 6; row++) {
+            for (int weekNo = 1; weekNo <= 6; weekNo++) {
+                int row = (weekNo - 1) * 2;
                 for (int col = 0; col <= 6; col++) {
                     //文字の位置
-                    grid[col, row * 2].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    grid[col, row].Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                    //背景色
-                    grid[col, row * 2].Style.BackColor = Color.LightGray;
+                    //文字と背景の色
+                    grid[col, row].Style.ForeColor = Color.Black;
+                    grid[col, row].Style.BackColor = Color.LightGray;
                 }
+            }
+
+            //メモ部分のスタイルを設定します
+            for (int weekNo = 1; weekNo <= 6; weekNo++) {
+                int row = (weekNo - 1) * 2 + 1;
+
+                //高さ
+                grid.Rows[row].Height = 80;
             }
 
             //フォントの設定
@@ -138,20 +151,33 @@ namespace NineCubed.Memo.Plugins.Calendar
             //データの取得
             var map = GetDiaryData(year, month);
 
+            //当日の日付
+            var now = DateTime.Now;
+
             //1日から1日ずつ加算していき、月が変わるまでループします
             var dt = new DateTime(year, month, 1);
             while (dt.Month == month) {
                 //カレンダーの位置の取得
-                int col = (int)dt.DayOfWeek;               //曜日
-                int row = DateTimeUtils.GetWeekNo(dt) - 1; //第何週か
+                int col = (int)dt.DayOfWeek;                  //曜日
+                int weekNo = DateTimeUtils.GetWeekNo(dt) - 1; //第何週か
+                int row = weekNo * 2;
 
                 //日付の設定
-                grid[col, row * 2].Value = dt.Day;
+                grid[col, row].Value = dt.Day;
 
                 //値の設定
                 var yyyyMMdd = DateTimeUtils.GetDateString(dt, "");
-                grid[col, row * 2 + 1].Value       = StringUtils.Left(map[yyyyMMdd], 128);
-                grid[col, row * 2 + 1].ToolTipText = map[yyyyMMdd];
+                grid[col, row + 1].Value       = StringUtils.Left(map[yyyyMMdd], 128);
+                grid[col, row + 1].ToolTipText = map[yyyyMMdd];
+
+                //当日の場合は、背景を赤にします
+                if (dt.ToShortDateString().Equals(now.ToShortDateString())) {
+                    grid[col, row + 1].Style.ForeColor = Color.Black;
+                    grid[col, row + 1].Style.BackColor = Color.LightPink;
+                } else {
+                    grid[col, row + 1].Style.ForeColor = _colorData.ForeColor;
+                    grid[col, row + 1].Style.BackColor = _colorData.BackColor;
+                }
 
                 //1日加算します
                 dt = dt.AddDays(1);

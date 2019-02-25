@@ -39,6 +39,7 @@ namespace NineCubed.Common.Controls.FileList
             this.RowTemplate.Height = 21;
             this.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.FileListGrid_CellPainting);
             this.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.FileListGrid_SortCompare);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FileListGrid_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FileListGrid_MouseMove);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
             this.ResumeLayout(false);
@@ -59,6 +60,9 @@ namespace NineCubed.Common.Controls.FileList
             this.SelectionMode = DataGridViewSelectionMode.FullRowSelect;  //行選択
             this.RowHeadersVisible = false; //行ヘッダの列を非表示にする
             //grid.RowHeadersWidth = 20; //行ヘッダの幅を狭くする
+
+            this.ForeColor       = Color.Black;
+            this.BackgroundColor = Color.White;
 
             /* //この処理はコントロールの利用者側から行う
             //カラムの設定
@@ -335,9 +339,20 @@ namespace NineCubed.Common.Controls.FileList
         private List<string> GetSelectedPathList()
         {
             var list = new List<string>();
+            if (this.SelectedCells.Count == 0) return list;
+
+            //選択されているセルのRowIndexのリストを取得して、昇順でソートします
+            //(this.SelectedCellsは順序がおかしいので)
+            var indexList = new List<int>();
             foreach(DataGridViewCell cell in this.SelectedCells) {
+                indexList.Add(cell.RowIndex);
+            }
+            indexList.Sort(); //ソート
+
+            //選択行のパスをリストに追加します
+            foreach(int rowIndex in indexList) {
                 //選択されている行のパスを取得します
-                var path = this[0, cell.RowIndex].Value?.ToString();
+                var path = this[0, rowIndex].Value?.ToString();
                 if (string.IsNullOrEmpty(path)) continue;
 
                 //リストに追加されていない場合は、リストに追加します
@@ -345,6 +360,21 @@ namespace NineCubed.Common.Controls.FileList
             }
             
             return list;
+        }
+
+        /// <summary>
+        /// マウスダウンイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileListGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            //右クリックの場合は、一番近いノードを選択します
+            if (e.Button == MouseButtons.Right) {
+                var hitTestInfo = this.HitTest(e.X, e.Y);
+                if (hitTestInfo.ColumnIndex == -1 || hitTestInfo.RowIndex == -1) return;
+                this.CurrentCell = this[hitTestInfo.ColumnIndex, hitTestInfo.RowIndex];
+            }
         }
 
     } //class 

@@ -13,6 +13,7 @@ using NineCubed.Memo.Plugins.SearchForm;
 using NineCubed.Memo.Plugins.Tab;
 using NineCubed.Memo.Plugins.Test;
 using NineCubed.Memo.Plugins.TextEditor;
+using NineCubed.Memo.Plugins.Theme;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -96,6 +97,14 @@ namespace NineCubed.Memo
 
             //プロパティファイルを読み込みます
             LoadProperty(param.PropertyPath);
+
+            //共通カラーデータを取得します
+            //未設定の場合は、生成して共通データに設定します
+            var colorData = (ColorData)_pluginManager.CommonData[CommonDataKeys.ColorData];
+            if (colorData == null) {
+                colorData = new ColorData();
+                _pluginManager.CommonData[CommonDataKeys.ColorData] = colorData;
+            }
 
             return true;
         }

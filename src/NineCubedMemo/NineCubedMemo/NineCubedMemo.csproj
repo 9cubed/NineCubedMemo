@@ -62,6 +62,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -72,6 +73,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -268,6 +270,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Memo\Plugins\PluginProperty.cs" />
+    <Compile Include="Memo\Plugins\ProcessStart\ProcessStartPlugin.cs" />
     <Compile Include="Memo\Plugins\SearchForm\SearchData.cs" />
     <Compile Include="Memo\KeyMacro.cs" />
     <Compile Include="Memo\MainFormPlugin.cs">
@@ -323,6 +326,8 @@
     <Compile Include="Memo\Plugins\TextEditor\TitleListbox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Memo\Plugins\Theme\ColorData.cs" />
+    <Compile Include="Memo\Plugins\Theme\DarkThemePlugin.cs" />
     <Compile Include="Memo\Plugins\Tools\CommonTool\InvokeMethodToolPlugin.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -446,6 +451,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.MainFormPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.ProcessStart.ProcessStartPlugin\plugin.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Theme.DarkThemePlugin\data\property.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="plugins\define\NineCubed.Memo.Plugins.Theme.DarkThemePlugin\plugin.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="plugins\define\NineCubed.Memo.Plugins.Grep.GrepPlugin\data\property.ini">

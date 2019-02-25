@@ -19,6 +19,7 @@ using NineCubed.Common.Files;
 using NineCubed.Common.Controls;
 using NineCubed.Memo.Plugins.Events;
 using NineCubed.Memo.Plugins.SearchForm;
+using NineCubed.Memo.Plugins.Theme;
 
 namespace NineCubed.Memo.Plugins.TextEditor
 {
@@ -58,6 +59,11 @@ namespace NineCubed.Memo.Plugins.TextEditor
         public TextBoxEx GetTextbox() => txtMain;
 
         /// <summary>
+        /// カラーデータ(フォント、背景の色)
+        /// </summary>
+        ColorData _colorData;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public TextEditorPlugin()
@@ -80,6 +86,10 @@ namespace NineCubed.Memo.Plugins.TextEditor
 
             //プロパティファイルを読み込みます
             _property.Load(param.PropertyPath);
+
+            //共通カラーデータを取得します
+            _colorData = (ColorData)_pluginManager.CommonData[CommonDataKeys.ColorData];
+            if (_colorData == null) _colorData = new ColorData();
 
             //テキストボックスを初期化します
             txtMain.Initialize(
@@ -118,6 +128,8 @@ namespace NineCubed.Memo.Plugins.TextEditor
                     _property["title_list", "level_2"],
                     _property["title_list", "level_3"],
                 }.ToList<string>();
+            titleListbox.ForeColor = _colorData.ForeColor; //文字の色
+            titleListbox.BackColor = _colorData.BackColor; //背景色
 
             //3ペイン用のスプリットコンテナーにコントロールを配置します
             splitContainer.SetControl(titleListbox, txtSplit, txtMain);
@@ -346,11 +358,13 @@ namespace NineCubed.Memo.Plugins.TextEditor
 
             //テキストが変更されている場合は、(*) をつける
             title.Append(txtMain.Modified ? "(*)" : "");
+            //目がチカチカするので色を付けるのは廃止
+            /*
             if (txtMain.Modified) {
                 statusPath.BackColor = Color.FromKnownColor(KnownColor.Pink);
             } else {
                 statusPath.BackColor = Color.FromKnownColor(KnownColor.Control);
-            }
+            }*/
 
             //キー操作の記録中
             if (_keyMacro.IsRecording) {
@@ -529,6 +543,19 @@ namespace NineCubed.Memo.Plugins.TextEditor
         private void txtMain_Enter     (object sender, EventArgs e) { _pluginManager.ActivePlugin = this; }
         private void txtSplit_Enter    (object sender, EventArgs e) { _pluginManager.ActivePlugin = this; }
         private void titleListbox_Enter(object sender, EventArgs e) { _pluginManager.ActivePlugin = this; }
+
+        /// <summary>
+        /// カーソルが移動した時のイベント
+        /// ステータスバーに行と列を表示します
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void txtMain_SelectionChanged(object sender, EventArgs e)
+        {
+            statusPosition.Text = 
+                "行:" + txtMain.GetCurrntLine() + " " +
+                "列:" + txtMain.GetCurrntColumn();
+        }
 
         /******************************************************************************
          * 

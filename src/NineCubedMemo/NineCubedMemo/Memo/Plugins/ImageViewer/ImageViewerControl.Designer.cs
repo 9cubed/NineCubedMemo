@@ -30,14 +30,18 @@
         {
             this.pic = new System.Windows.Forms.PictureBox();
             this.pnlTop = new System.Windows.Forms.Panel();
+            this.btnRotate = new System.Windows.Forms.Button();
+            this.lblBrightness = new System.Windows.Forms.Label();
+            this.scrBrightness = new System.Windows.Forms.HScrollBar();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cmbQuality = new System.Windows.Forms.ComboBox();
             this.chkLockImage = new System.Windows.Forms.CheckBox();
             this.lblRate = new System.Windows.Forms.Label();
             this.chkFit = new System.Windows.Forms.CheckBox();
             this.btnTopLeft = new System.Windows.Forms.Button();
             this.scrBarRate = new System.Windows.Forms.HScrollBar();
             this.pnlMain = new System.Windows.Forms.Panel();
-            this.cmbQuality = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.btnResetBrightness = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pic)).BeginInit();
             this.pnlTop.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -60,6 +64,10 @@
             // pnlTop
             // 
             this.pnlTop.BackColor = System.Drawing.Color.Silver;
+            this.pnlTop.Controls.Add(this.btnResetBrightness);
+            this.pnlTop.Controls.Add(this.btnRotate);
+            this.pnlTop.Controls.Add(this.lblBrightness);
+            this.pnlTop.Controls.Add(this.scrBrightness);
             this.pnlTop.Controls.Add(this.label1);
             this.pnlTop.Controls.Add(this.cmbQuality);
             this.pnlTop.Controls.Add(this.chkLockImage);
@@ -70,8 +78,56 @@
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(813, 38);
+            this.pnlTop.Size = new System.Drawing.Size(962, 38);
             this.pnlTop.TabIndex = 3;
+            // 
+            // btnRotate
+            // 
+            this.btnRotate.Location = new System.Drawing.Point(878, 4);
+            this.btnRotate.Name = "btnRotate";
+            this.btnRotate.Size = new System.Drawing.Size(58, 27);
+            this.btnRotate.TabIndex = 9;
+            this.btnRotate.Text = "右回り";
+            this.btnRotate.UseVisualStyleBackColor = true;
+            this.btnRotate.Click += new System.EventHandler(this.btnRotate_Click);
+            // 
+            // lblBrightness
+            // 
+            this.lblBrightness.AutoSize = true;
+            this.lblBrightness.Location = new System.Drawing.Point(794, 12);
+            this.lblBrightness.Name = "lblBrightness";
+            this.lblBrightness.Size = new System.Drawing.Size(11, 12);
+            this.lblBrightness.TabIndex = 8;
+            this.lblBrightness.Text = "0";
+            // 
+            // scrBrightness
+            // 
+            this.scrBrightness.Location = new System.Drawing.Point(620, 7);
+            this.scrBrightness.Maximum = 256;
+            this.scrBrightness.Minimum = -256;
+            this.scrBrightness.Name = "scrBrightness";
+            this.scrBrightness.Size = new System.Drawing.Size(162, 21);
+            this.scrBrightness.TabIndex = 5;
+            this.scrBrightness.ValueChanged += new System.EventHandler(this.scrBrightness_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(320, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "画質";
+            // 
+            // cmbQuality
+            // 
+            this.cmbQuality.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbQuality.FormattingEnabled = true;
+            this.cmbQuality.Location = new System.Drawing.Point(355, 8);
+            this.cmbQuality.Name = "cmbQuality";
+            this.cmbQuality.Size = new System.Drawing.Size(126, 20);
+            this.cmbQuality.TabIndex = 5;
+            this.cmbQuality.SelectedIndexChanged += new System.EventHandler(this.cmbQuality_SelectedIndexChanged);
             // 
             // chkLockImage
             // 
@@ -108,9 +164,9 @@
             // 
             this.btnTopLeft.Location = new System.Drawing.Point(565, 4);
             this.btnTopLeft.Name = "btnTopLeft";
-            this.btnTopLeft.Size = new System.Drawing.Size(132, 27);
+            this.btnTopLeft.Size = new System.Drawing.Size(41, 27);
             this.btnTopLeft.TabIndex = 1;
-            this.btnTopLeft.Text = "画像を左上に移動";
+            this.btnTopLeft.Text = "左上";
             this.btnTopLeft.UseVisualStyleBackColor = true;
             this.btnTopLeft.Click += new System.EventHandler(this.btnTopLeft_Click);
             // 
@@ -139,24 +195,15 @@
             this.pnlMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pnlMain_MouseUp);
             this.pnlMain.Resize += new System.EventHandler(this.pnlMain_Resize);
             // 
-            // cmbQuality
+            // btnResetBrightness
             // 
-            this.cmbQuality.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbQuality.FormattingEnabled = true;
-            this.cmbQuality.Location = new System.Drawing.Point(355, 8);
-            this.cmbQuality.Name = "cmbQuality";
-            this.cmbQuality.Size = new System.Drawing.Size(126, 20);
-            this.cmbQuality.TabIndex = 5;
-            this.cmbQuality.SelectedIndexChanged += new System.EventHandler(this.cmbQuality_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(320, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(29, 12);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "画質";
+            this.btnResetBrightness.Location = new System.Drawing.Point(814, 4);
+            this.btnResetBrightness.Name = "btnResetBrightness";
+            this.btnResetBrightness.Size = new System.Drawing.Size(58, 27);
+            this.btnResetBrightness.TabIndex = 10;
+            this.btnResetBrightness.Text = "リセット";
+            this.btnResetBrightness.UseVisualStyleBackColor = true;
+            this.btnResetBrightness.Click += new System.EventHandler(this.btnResetBrightness_Click);
             // 
             // ImageViewerControl
             // 
@@ -166,7 +213,7 @@
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.pnlTop);
             this.Name = "ImageViewerControl";
-            this.Size = new System.Drawing.Size(813, 388);
+            this.Size = new System.Drawing.Size(962, 388);
             ((System.ComponentModel.ISupportInitialize)(this.pic)).EndInit();
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
@@ -187,5 +234,9 @@
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ComboBox cmbQuality;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.HScrollBar scrBrightness;
+        private System.Windows.Forms.Label lblBrightness;
+        private System.Windows.Forms.Button btnRotate;
+        private System.Windows.Forms.Button btnResetBrightness;
     }
 }

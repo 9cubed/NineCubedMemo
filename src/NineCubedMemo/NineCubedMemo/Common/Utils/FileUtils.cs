@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,13 @@ namespace NineCubed.Common.Utils
     /// </summary>
     public class FileUtils
     {
+        //フォルダ・ファイル一覧をExplorerと同じソート順にする際に使用します
+        //参考:https://stackoverflow.com/questions/3099581/sorting-an-array-of-folder-names-like-windows-explorer-numerically-and-alphabet
+        [DllImport("shlwapi.dll", CharSet=CharSet.Unicode, ExactSpelling=true)]
+        static extern int StrCmpLogicalW(String x, String y);
+        //[DllImport("shlwapi.dll", CharSet=CharSet.Unicode, ExactSpelling=false)]
+        //static extern int StrCmpLogical(String x, String y);
+
         /// <summary>
         /// ファイルを読み込んでバイト配列で返します
         /// </summary>
@@ -90,6 +98,9 @@ namespace NineCubed.Common.Utils
             //フォルダ一覧を取得します
             var dirList = Directory.GetDirectories(path, searchPattern, option).ToList();
 
+            //Explorerと同じソート順にします
+            dirList.Sort(StrCmpLogicalW);
+
             return dirList;
         }
 
@@ -114,6 +125,9 @@ namespace NineCubed.Common.Utils
 
             //ファイル一覧を取得します
             var fileList = Directory.GetFiles(path, searchPattern, option).ToList();
+
+            //Explorerと同じソート順にします
+            fileList.Sort(StrCmpLogicalW);
 
             return fileList;
         }

@@ -243,6 +243,32 @@ namespace NineCubed.Common.Controls
                 Indent(e);
                 return;
             }
+
+            //移動できない方向のカーソルキーが押された場合は、
+            //エラー音が鳴るためキー操作を無効にします
+            int currentLine = this.GetLineFromCharIndex(this.SelectionStart); //先頭行
+            if (currentLine == 0) {
+                //先頭行が上が押された場合
+                if (e.KeyCode == Keys.Up) {
+                    e.Handled = true; return;
+                }
+                //テキストの先頭で左 or BSキーが押された場合
+                if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.Back) 
+                    && this.SelectionStart == 0) {
+                    e.Handled = true; return;
+                }
+            }
+            int lastLine = this.GetLineFromCharIndex(this.TextLength); //最終行
+            if (currentLine == lastLine) {
+                //最終行で下が押された場合
+                if (e.KeyCode == Keys.Down && currentLine == lastLine) {
+                    e.Handled = true; return;
+                }
+                //テキストの最後で右が押された場合
+                if (e.KeyCode == Keys.Right && this.SelectionStart == this.TextLength) {
+                    e.Handled = true; return;
+                }
+            }
         }
 
         /// <summary>
@@ -352,6 +378,33 @@ namespace NineCubed.Common.Controls
         }
 
         /// <summary>
+        /// 現在カーソルがある行を返します
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrntLine()
+        {
+               int currentLine = this.GetLineFromCharIndex(this.SelectionStart) + 1;
+            return currentLine;
+        }
+
+        /// <summary>
+        /// 現在カーソルがある列を返します
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrntColumn()
+        {
+            //現在の行を取得します
+            int currentLineIndex = GetCurrntLine() - 1;
+
+            //行の先頭のIndexを取得します
+            int firstCharIndex = this.GetFirstCharIndexFromLine(currentLineIndex);
+
+            //現在のIndex - 行の先頭のIndex で列を取得します
+               int column = this.SelectionStart - firstCharIndex;
+            return column;
+        }
+
+        /// <summary>
         /// ウィンドウプロシージャー
         /// Windowsメッセージを処理します
         /// </summary>
@@ -391,7 +444,6 @@ namespace NineCubed.Common.Controls
             //Windows メッセージを処理します
             base.WndProc(ref m);
         }
-
 
     } //class
 }

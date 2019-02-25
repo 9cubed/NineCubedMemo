@@ -20,7 +20,7 @@ namespace NineCubedMemo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new MainFormPlugin());
-            
+
             //簡単なプログラムの動作確認用フォームの表示
             #if DEBUG
             bool isTest = false;

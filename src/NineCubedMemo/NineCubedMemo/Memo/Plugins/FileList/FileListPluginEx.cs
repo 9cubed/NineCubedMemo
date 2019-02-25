@@ -43,6 +43,7 @@ namespace NineCubed.Memo.Plugins.FileList
             this.ContextMenuStrip.Items.Add( new CreateDirMenu (fileListGrid) ); //フォルダ
             this.ContextMenuStrip.Items.Add( new CreateFileMenu(fileListGrid) ); //ファイル
             this.ContextMenuStrip.Items.Add( new OpenFileMenu  (fileListGrid) ); //開く
+            this.ContextMenuStrip.Items.Add( new OpenFileEncodingMenu(fileListGrid, "編集する", null)); //編集する
 
             //開く（文字コード指定）
             {
@@ -605,8 +606,22 @@ namespace NineCubed.Memo.Plugins.FileList
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void fileListGrid_Enter(object sender, EventArgs e)
+        private void FileListPluginEx_Enter(object sender, EventArgs e) {
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
+        }
+        private void fileListGrid_MouseDown(object sender, MouseEventArgs e)
         {
+            //ファイルリストにフォーカスを設定します
+            fileListGrid.Focus();
+
+            //アクティブプラグインにします
+            _pluginManager.ActivePlugin = this;
+        }
+        private void pnlTop_Click(object sender, EventArgs e) {
+            //ファイルリストにフォーカスを設定します
+            fileListGrid.Focus();
+
             //アクティブプラグインにします
             _pluginManager.ActivePlugin = this;
         }

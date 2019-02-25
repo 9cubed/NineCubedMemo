@@ -57,6 +57,7 @@ namespace NineCubed.Memo.Plugins.FileList
             this.ContextMenuStrip.Items.Add( new CreateDirMenu (this) ); //フォルダ
             this.ContextMenuStrip.Items.Add( new CreateFileMenu(this) ); //ファイル
             this.ContextMenuStrip.Items.Add( new OpenFileMenu  (this) ); //開く
+            this.ContextMenuStrip.Items.Add( new OpenFileEncodingMenu(this, "編集する", null)); //編集する
 
             //開く（文字コード指定）
             {

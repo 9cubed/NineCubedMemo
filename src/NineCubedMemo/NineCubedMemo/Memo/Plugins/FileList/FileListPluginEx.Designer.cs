@@ -49,6 +49,7 @@
             this.pnlTop.Name = "pnlTop";
             this.pnlTop.Size = new System.Drawing.Size(685, 31);
             this.pnlTop.TabIndex = 1;
+            this.pnlTop.Click += new System.EventHandler(this.pnlTop_Click);
             // 
             // cmbPattern
             // 
@@ -108,9 +109,9 @@
             this.fileListGrid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.fileListGrid_CellDoubleClick);
             this.fileListGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.fileListGrid_CellEndEdit);
             this.fileListGrid.SelectionChanged += new System.EventHandler(this.fileListGrid_SelectionChanged);
-            this.fileListGrid.Enter += new System.EventHandler(this.fileListGrid_Enter);
             this.fileListGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.fileListGrid_KeyDown);
             this.fileListGrid.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fileListGrid_KeyPress);
+            this.fileListGrid.MouseDown += new System.Windows.Forms.MouseEventHandler(this.fileListGrid_MouseDown);
             // 
             // FileListPluginEx
             // 
@@ -120,6 +121,7 @@
             this.Controls.Add(this.pnlTop);
             this.Name = "FileListPluginEx";
             this.Size = new System.Drawing.Size(685, 450);
+            this.Enter += new System.EventHandler(this.FileListPluginEx_Enter);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileListGrid)).EndInit();

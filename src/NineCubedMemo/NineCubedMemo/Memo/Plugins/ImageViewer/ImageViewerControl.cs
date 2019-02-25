@@ -11,6 +11,8 @@ using System.IO;
 using System.Drawing.Drawing2D;
 using NineCubed.Memo.Plugins.Interfaces;
 using NineCubed.Common.Utils;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace NineCubed.Memo.Plugins.ImageViewer
 {
@@ -40,7 +42,7 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         /// <summary>
         /// オリジナル画像
         /// </summary>
-        private Image _orgImage;
+        private Bitmap _orgImage;
 
         /// <summary>
         /// 画像の拡大縮小率
@@ -104,9 +106,9 @@ namespace NineCubed.Memo.Plugins.ImageViewer
             using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
                 image = Image.FromStream(stream);
             }
-
+            
             //画像を設定します
-            SetImage(image);
+            SetImage(new Bitmap(image));
 
             //パスを保持します
             this.Path = path;
@@ -118,7 +120,7 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         /// 画像を設定します
         /// </summary>
         /// <param name="image"></param>
-        private void SetImage(Image image)
+        private void SetImage(Bitmap image)
         {
             //現在設定されている画像を解放します
             if (_orgImage != null) _orgImage.Dispose();
@@ -128,7 +130,6 @@ namespace NineCubed.Memo.Plugins.ImageViewer
 
             //画像を表示します
             ShowImage();
-
         }
 
         /// <summary>
@@ -150,10 +151,18 @@ namespace NineCubed.Memo.Plugins.ImageViewer
                 this.Rate = GetRate(_orgImage, pic.Width, pic.Height);
             }
 
+            //明るさを変更します
+            var bitmap = new Bitmap(_orgImage);
+            ChangeBrightness(bitmap, _orgImage, scrBrightness.Value);
+
             //拡大縮小画像を取得して、画像の表示領域に設定します
-            pic.Image = GetResizeImage(_orgImage,
+            var ResizedBitmap = GetResizeImage(bitmap,
                             (int)((double)_orgImage.Width  * this.Rate),
                             (int)((double)_orgImage.Height * this.Rate));
+            bitmap.Dispose();
+
+            //画像を PictureBox に反映します
+            pic.Image = ResizedBitmap;
 
             //画像の表示領域を画像サイズに合わせます
             pic.Width  = pic.Image.Width;
@@ -240,6 +249,129 @@ namespace NineCubed.Memo.Plugins.ImageViewer
             int rate = (int)Math.Ceiling(this.Rate * 100);
             lblRate.Text = rate + "%"; //ラベル
         }
+
+        /// <summary>
+        /// 画像の明るさを変更します
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void ChangeBrightness(Bitmap bitmap, Bitmap orgBitmap, int brightness) {
+            if (bitmap == null) return;
+            if (scrBrightness.Value == 0) return;
+
+            //Bitmap のメモリをロックします
+            var bmpRect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            var    bmpData =    bitmap.LockBits(bmpRect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            var orgBmpData = orgBitmap.LockBits(bmpRect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
+
+            //Bitmap のサイズ取得(1行あたりのバイト数(Stride) * 高さ)
+            int numBytes = bmpData.Stride * bitmap.Height; 
+
+            unsafe {
+                //Bitmapの先頭のポインターを取得します
+                byte*    ptr = (byte*)bmpData.Scan0;
+                byte* orgPtr = (byte*)bmpData.Scan0;
+
+                //for (int i = 0; i < numBytes; i += 4) {
+                for (int y = 0; y < bitmap.Height; y++) {
+                    for (int x = 0; x < bmpData.Stride / 4; x++) {
+                        //メモリから色を取得します(byte だと 255 を超えると 0 に戻るので int にしてます)
+                        int idx = y * bmpData.Stride + x * 4;
+                        int b = *(orgPtr + idx + 0); //B
+                        int g = *(orgPtr + idx + 1); //G
+                        int r = *(orgPtr + idx + 2); //R
+                        int a = *(orgPtr + idx + 3); //A
+
+                        //色を加算します
+                        if (brightness >= 0) {
+                            b = (int)(b + (256 - b) / 256f * brightness);
+                            g = (int)(g + (256 - g) / 256f * brightness);
+                            r = (int)(r + (256 - r) / 256f * brightness);
+                            a = a + 0;
+                        } else {
+                            b = (int)(b + b / 256f * brightness);
+                            g = (int)(g + g / 256f * brightness);
+                            r = (int)(r + r / 256f * brightness);
+                            a = a + 0;
+                        }
+
+                        //ぼかし
+                        //(b, g, r) = GetBlurColor(orgPtr, x, y, bitmap.Width, bitmap.Height);
+
+                        /*
+                        //白黒
+                        int avg = (r + g + b) / 3;
+                        b = avg;
+                        g = avg;
+                        r = avg;
+                        */
+                    
+                        /*
+                        //セピア
+                        int avg = (r + g + b) / 3;
+                        b = (int)(avg * 0.6f);
+                        g = (int)(avg * 0.8f);
+                        r = (int)(avg * 1);
+                        */
+
+                        //メモリに色を反映します
+                        *(ptr + idx + 0) = GetByte(b);
+                        *(ptr + idx + 1) = GetByte(g);
+                        *(ptr + idx + 2) = GetByte(r);
+                        *(ptr + idx + 3) = GetByte(a);
+
+                    } // for x
+                } // for y
+                
+                //Bitmapのメモリのロックを解除します
+                   bitmap.UnlockBits(   bmpData);
+                orgBitmap.UnlockBits(orgBmpData);
+            }
+
+            //ものすごく遅い
+            /*
+            for (int y = 0; y < _orgImage.Height; y++) {
+                for (int x = 0; x < _orgImage.Width; x++) {
+                    var color = bitmap.GetPixel(x, y);
+                    int r = color.R + 20; r = r > 255 ? 255 : r;
+                    int g = color.G + 20; g = g > 255 ? 255 : g;
+                    int b = color.B + 20; b = b > 255 ? 255 : b;
+                    color = Color.FromArgb(color.A, r, g, b);
+                    bitmap.SetPixel(x, y, color);
+                }
+            }*/
+
+            byte GetByte(int color) {
+                if (color > 256) return 255;
+                if (color < 0)   return 0;
+                return (byte)color;
+            }
+
+            //周辺の色の平均を取得して返します
+            unsafe
+            (int, int, int) GetBlurColor(byte* ptr, int px, int py, int width, int height) {
+                int count = 0;
+                int b = 0;
+                int g = 0;
+                int r = 0;
+                for (int y = - 2; y <= 2; y++) {
+                    for (int x = - 2; x <= 2; x++) {
+                        if (y + py < 0)       continue;
+                        if (x + px < 0)       continue;
+                        if (y + py >= height) continue;
+                        if (x + px >= width)  continue;
+
+                        int idx = (y + py) * (width * 4) + (x + px) * 4;
+                        b += *(ptr + idx + 0); //B
+                        g += *(ptr + idx + 1); //G
+                        r += *(ptr + idx + 2); //R
+                        count++;
+                    }
+                }
+
+                return (b / count, g / count, r / count);
+            }
+        }
+
 
         /******************************************************************************
          * 
@@ -377,6 +509,46 @@ namespace NineCubed.Memo.Plugins.ImageViewer
         {
             //画像を表示します
             ShowImage();
+        }
+
+        /// <summary>
+        /// 明るさのスクロールバー変更イベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void scrBrightness_ValueChanged(object sender, EventArgs e)
+        {
+            if (_orgImage == null) return;
+
+            //画像を再表示します
+            ShowImage();
+
+            //ラベルに明るさを表示します
+            lblBrightness.Text = scrBrightness.Value.ToString();
+        }
+
+        /// <summary>
+        /// 画像を右回りで90度回転します
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnRotate_Click(object sender, EventArgs e)
+        {
+            if (_orgImage == null) return;
+
+            _orgImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+
+            ShowImage();//SetImage()
+        }
+
+        /// <summary>
+        /// 明るさをリセットします
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnResetBrightness_Click(object sender, EventArgs e)
+        {
+            scrBrightness.Value = 0;
         }
 
         /******************************************************************************

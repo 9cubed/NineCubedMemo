@@ -23,7 +23,9 @@ namespace NineCubed.Memo.Plugins.FileTree
             // FileTreePlugin
             // 
             this.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.FileTreePlugin_AfterSelect);
+            this.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.FileTreePlugin_NodeMouseClick);
             this.Enter += new System.EventHandler(this.FileTreePlugin_Enter);
+            this.Leave += new System.EventHandler(this.FileTreePlugin_Leave);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FileTreePlugin_MouseDown);
             this.ResumeLayout(false);
 
@@ -110,6 +112,33 @@ namespace NineCubed.Memo.Plugins.FileTree
             _pluginManager.ActivePlugin = this;
         }
 
+        /// <summary>
+        /// ノードが選択された時に呼ばれます
+        ///   FileTreePlugin_AfterSelect()
+        ///   FileTreePlugin_NodeMouseClick()
+        /// </summary>
+        private void NodeSelected(TreeNode node)
+        {
+            //選択されたノードのパスを取得します
+            var path = this.GetPath(node);
+            
+            if (path.Equals(_oldSelectedPath) == false) {
+                //フォルダ選択イベントを発生させます
+                var param = new DirSelectedEventParam { Path = path };
+                _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
+
+                //選択されたパスを保持します
+                _oldSelectedPath = path;
+            }
+        }
+
+        /// <summary>
+        /// 前回選択されたノードのパス
+        /// ノード選択時に設定されます。
+        /// また、ファイルツリーからフォーカスがはずれた時にクリアされます。
+        /// </summary>
+        private string _oldSelectedPath;
+
         /******************************************************************************
          * 
          *  IRefreshPlugin
@@ -140,7 +169,7 @@ namespace NineCubed.Memo.Plugins.FileTree
          * 
          *  ファイルツリービューのイベント
          * 
-         ******************************************************************************/ 
+         ******************************************************************************/
 
         /// <summary>
         /// ノード選択直後に発生するイベント
@@ -149,12 +178,28 @@ namespace NineCubed.Memo.Plugins.FileTree
         /// <param name="e"></param>
         private void FileTreePlugin_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //選択されたノードのパスを取得します
-            var path = this.GetPath(e.Node);
-            
-            //フォルダ選択イベントを発生させます
-            var param = new DirSelectedEventParam { Path = path };
-            _pluginManager.GetEventManager().RaiseEvent(DirSelectedEventParam.Name, this, param);
+            NodeSelected(e.Node);
+        }
+
+        /// <summary>
+        /// ノードクリックイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileTreePlugin_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            NodeSelected(e.Node);
+        }
+
+        /// <summary>
+        /// フォーカスを失った時のイベント
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileTreePlugin_Leave(object sender, EventArgs e)
+        {
+            //選択されたパスをクリアします
+            _oldSelectedPath = null;
         }
 
         /// <summary>
@@ -166,11 +211,13 @@ namespace NineCubed.Memo.Plugins.FileTree
         /// <param name="e"></param>
         private void FileTreePlugin_MouseDown(object sender, MouseEventArgs e)
         {
+            /*
             //クリックされた位置の近くにあるノードを取得します
             var node = this.GetNodeAt(e.X, e.Y);
 
             //ノードを選択状態にします
             this.SelectedNode = node;
+            */
         }
 
         /// <summary>
@@ -210,7 +257,6 @@ namespace NineCubed.Memo.Plugins.FileTree
                 param.Handled = true;
             }
         }
-
 
     } //class
 }

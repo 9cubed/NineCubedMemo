@@ -58,7 +58,9 @@ namespace NineCubed.Common.Controls.FileTree
             // 
             this.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.FileTreeView_BeforeCollapse);
             this.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.FileTreeView_BeforeExpand);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FileTreeView_MouseDown);
             this.ResumeLayout(false);
+
         }
 
         /// <summary>
@@ -284,6 +286,22 @@ namespace NineCubed.Common.Controls.FileTree
 
             //ノード配下のノードを追加します
             AddSubNodes(node);
+        }
+
+        /// <summary>
+        /// マウスダウンイベント
+        /// 右クリックした場合に自動的にノードが選択されないため、
+        /// クリックされた位置の近くにあるノードを選択します
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileTreeView_MouseDown(object sender, MouseEventArgs e)
+        {
+            //クリックされた位置の近くにあるノードを取得します
+            var node = this.GetNodeAt(e.X, e.Y);
+
+            //ノードを選択状態にします
+            this.SelectedNode = node;
         }
 
     } //class
