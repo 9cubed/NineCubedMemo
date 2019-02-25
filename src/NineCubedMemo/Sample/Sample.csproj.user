@@ -5,7 +5,7 @@
     <StartProgram>D:\~9cubed\NineCubedMemo\src\NineCubedMemo\Sample\bin\Debug\NineCubedMemo.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <StartProgram>D:\~9cubed\NineCubedMemo\src\NineCubedMemo\Sample\bin\Debug\NineCubedMemo.exe</StartProgram>
+    <StartProgram>D:\~9cubed\01_main\NineCubedMemo\src\NineCubedMemo\FileInfoManager\bin\x86\Debug\NineCubedMemo.exe</StartProgram>
     <StartAction>Program</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">

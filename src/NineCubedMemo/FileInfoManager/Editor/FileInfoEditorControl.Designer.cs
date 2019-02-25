@@ -75,6 +75,7 @@
             this.pnlTop.Name = "pnlTop";
             this.pnlTop.Size = new System.Drawing.Size(903, 63);
             this.pnlTop.TabIndex = 0;
+            this.pnlTop.Click += new System.EventHandler(this.pnlTop_Click);
             // 
             // btnSave
             // 
@@ -94,7 +95,6 @@
             this.txtCreated.Size = new System.Drawing.Size(116, 19);
             this.txtCreated.TabIndex = 7;
             this.txtCreated.Text = "2019-01-01 00:00:00";
-            this.txtCreated.Enter += new System.EventHandler(this.txtCreated_Enter);
             // 
             // txtSize
             // 
@@ -105,7 +105,6 @@
             this.txtSize.TabIndex = 6;
             this.txtSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtSize.TextChanged += new System.EventHandler(this.txtSize_TextChanged);
-            this.txtSize.Enter += new System.EventHandler(this.txtSize_Enter);
             // 
             // btnTag
             // 
@@ -143,7 +142,6 @@
             this.txtUpdated.Size = new System.Drawing.Size(116, 19);
             this.txtUpdated.TabIndex = 8;
             this.txtUpdated.Text = "2019-01-01 00:00:00";
-            this.txtUpdated.Enter += new System.EventHandler(this.txtUpdated_Enter);
             // 
             // txtPath
             // 
@@ -152,7 +150,6 @@
             this.txtPath.Size = new System.Drawing.Size(215, 19);
             this.txtPath.TabIndex = 2;
             this.txtPath.TextChanged += new System.EventHandler(this.txtPath_TextChanged);
-            this.txtPath.Enter += new System.EventHandler(this.txtPath_Enter);
             // 
             // label6
             // 
@@ -188,7 +185,6 @@
             this.txtTag.Size = new System.Drawing.Size(175, 19);
             this.txtTag.TabIndex = 4;
             this.txtTag.TextChanged += new System.EventHandler(this.txtTag_TextChanged);
-            this.txtTag.Enter += new System.EventHandler(this.txtTag_Enter);
             // 
             // txtTitle
             // 
@@ -197,7 +193,6 @@
             this.txtTitle.Size = new System.Drawing.Size(221, 19);
             this.txtTitle.TabIndex = 1;
             this.txtTitle.TextChanged += new System.EventHandler(this.txtTitle_TextChanged);
-            this.txtTitle.Enter += new System.EventHandler(this.txtTitle_Enter);
             // 
             // label1
             // 
@@ -215,7 +210,6 @@
             this.txtId.ReadOnly = true;
             this.txtId.Size = new System.Drawing.Size(50, 19);
             this.txtId.TabIndex = 0;
-            this.txtId.Enter += new System.EventHandler(this.txtId_Enter);
             // 
             // label2
             // 
@@ -266,6 +260,7 @@
             this.Name = "FileInfoEditorControl";
             this.Size = new System.Drawing.Size(903, 383);
             this.Load += new System.EventHandler(this.FileInfoEditorControl_Load);
+            this.Enter += new System.EventHandler(this.FileInfoEditorControl_Enter);
             this.pnlTop.ResumeLayout(false);
             this.pnlTop.PerformLayout();
             this.ResumeLayout(false);

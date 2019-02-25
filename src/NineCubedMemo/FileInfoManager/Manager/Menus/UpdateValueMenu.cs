@@ -3,6 +3,7 @@ using FileInfoManager.Manager.Columns;
 using NineCubed.Common.Utils;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -112,9 +113,12 @@ namespace FileInfoManager.Manager.Menus
 
                 //検索データ一覧を更新します
                 _grid[_valueColIndex, row].Value = _value.ToString();
-                _grid[_valueColIndex, row].Style.BackColor = 
-                    ((ValueColumn)_grid.Columns[_valueColIndex]).GetBackColor(new FileData{ value = _value });
 
+                var (foreColor, backColor) = ((ValueColumn)_grid.Columns[_valueColIndex]).GetColor(new FileData{ value = _value });
+                if (foreColor == Color.Empty) foreColor = _control._colorData.ForeColor;
+                if (backColor == Color.Empty) backColor = _control._colorData.BackColor;
+                _grid[_valueColIndex, row].Style.ForeColor = foreColor;
+                _grid[_valueColIndex, row].Style.BackColor = backColor;
             }
         }
 

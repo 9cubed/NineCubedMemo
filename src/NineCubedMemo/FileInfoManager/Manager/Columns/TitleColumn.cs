@@ -45,7 +45,7 @@ namespace FileInfoManager.Manager.Columns
             return orgFileData;
         }
 
-        // データに応じた背景色を返します
-        public Color GetBackColor(FileData fileData) => Color.White;
+        // データに応じた色を返します
+        public (Color, Color) GetColor(FileData fileData) => (Color.Empty, Color.Empty);
     }
 }

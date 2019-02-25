@@ -116,7 +116,6 @@ namespace FileInfoManager.Editor
             _txtMemo.Dock = DockStyle.Fill;
             _txtMemo.BringToFront();
             _txtMemo.Initialize();
-            _txtMemo.Enter += _txtMemo_Enter;
             _txtMemo.TextChanged += _txtMemo_TextChanged;
         }
 
@@ -192,16 +191,9 @@ namespace FileInfoManager.Editor
             Modified = false;
         }
 
-        private void      txtId_Enter(object sender, EventArgs e) => EnterEvent();
-        private void   txtTitle_Enter(object sender, EventArgs e) => EnterEvent();
-        private void    txtPath_Enter(object sender, EventArgs e) => EnterEvent();
-        private void     txtTag_Enter(object sender, EventArgs e) => EnterEvent();
-        private void    txtSize_Enter(object sender, EventArgs e) => EnterEvent();
-        private void txtCreated_Enter(object sender, EventArgs e) => EnterEvent();
-        private void txtUpdated_Enter(object sender, EventArgs e) => EnterEvent();
-        private void   _txtMemo_Enter(object sender, EventArgs e) => EnterEvent();
-        private void EnterEvent()
-        {
+        private void pnlTop_Click               (object sender, EventArgs e) => EnterEvent();
+        private void FileInfoEditorControl_Enter(object sender, EventArgs e) => EnterEvent();
+        private void EnterEvent() {
             //アクティブプラグインを設定します
             _pluginManager.ActivePlugin = _plugin;
         }

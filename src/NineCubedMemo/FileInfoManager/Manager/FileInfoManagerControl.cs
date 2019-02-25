@@ -20,6 +20,7 @@ using FileInfoManager.Editor;
 using FileInfoManager.Manager.Columns;
 using NineCubed.Common.Controls.FileList;
 using FileInfoManager.Manager.Menus;
+using NineCubed.Memo.Plugins.Theme;
 
 namespace FileInfoManager.Manager
 {
@@ -55,6 +56,9 @@ namespace FileInfoManager.Manager
 
         DataGridViewEx _grid;
 
+        //共通カラーデータ
+        public ColorData _colorData;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -75,6 +79,9 @@ namespace FileInfoManager.Manager
 
             //グリッドを生成します
             _grid = new DataGridViewEx();
+
+            //共通カラーデータを取得します
+            _colorData = (ColorData)_pluginManager.CommonData[CommonDataKeys.ColorData];
         }
 
         /// <summary>
@@ -406,8 +413,18 @@ namespace FileInfoManager.Manager
             //行データの設定
             int colIndex = 0;
             foreach (IFileListColumnForFileInfo column in _grid.Columns) {
-                _grid[colIndex, rowIndex].Value = column.ToString(fileData); //値の設定
-                _grid[colIndex, rowIndex].Style.BackColor = column.GetBackColor(fileData); //背景色の設定
+                //値を設定します
+                _grid[colIndex, rowIndex].Value = column.ToString(fileData);
+
+                //データに応じた背景色を取得します。取得できない場合は、共通カラーの背景を使います
+                var (foreColor, backColor) = column.GetColor(fileData);
+                if (foreColor == Color.Empty) foreColor = _colorData.ForeColor;
+                if (backColor == Color.Empty) backColor = _colorData.BackColor;
+
+                //前景色と背景色を設定します
+                _grid[colIndex, rowIndex].Style.ForeColor = foreColor;
+                _grid[colIndex, rowIndex].Style.BackColor = backColor;
+
                 colIndex++;
             }
         }

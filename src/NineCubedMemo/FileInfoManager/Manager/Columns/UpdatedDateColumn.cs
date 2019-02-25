@@ -37,7 +37,7 @@ namespace FileInfoManager.Manager.Columns
         //編集で値が変更された場合に呼ばれます
         public FileData ValueChanged(FileData orgFileData, string newValue) => null;
 
-        // データに応じた背景色を返します
-        public Color GetBackColor(FileData fileData) => Color.White;
+        // データに応じた色を返します
+        public (Color, Color) GetColor(FileData fileData) => (Color.Empty, Color.Empty);
     }
 }

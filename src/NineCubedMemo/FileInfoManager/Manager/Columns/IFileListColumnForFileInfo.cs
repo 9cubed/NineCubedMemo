@@ -14,10 +14,10 @@ namespace FileInfoManager.Manager.Columns
         FileData ValueChanged(FileData orgFileData, string newValue);
 
         /// <summary>
-        /// データに応じた背景色を返します
+        /// データに応じた色を返します
         /// </summary>
         /// <param name="fileData"></param>
-        /// <returns></returns>
-        Color GetBackColor(FileData fileData);
+        /// <returns>(前景色, 背景色)</returns>
+        (Color, Color) GetColor(FileData fileData);
     }
 }

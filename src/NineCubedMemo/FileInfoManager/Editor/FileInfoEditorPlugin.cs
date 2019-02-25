@@ -45,7 +45,11 @@ namespace FileInfoManager.Editor
             return true;
         }
 
-        public void InitializePlaced() { } //プラグイン配置後の初期化処理を行います
+        //プラグイン配置後の初期化処理を行います
+        public void InitializePlaced() {
+            _editor.Modified = false; //テーマのスタイル設定で true になるためリセットします
+        }
+
         private PluginManager _pluginManager = null;           //プラグインマネージャー
         public string     PluginId         { get; set; }       //プラグインID
         public IPlugin    ParentPlugin     { get; set; }       //親プラグイン

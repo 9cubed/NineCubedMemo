@@ -70,9 +70,16 @@ namespace FileInfoManager.Manager.Columns
             return orgFileData;
         }
 
-        // データに応じた背景色を返します
-        public Color GetBackColor(FileData fileData) {
-            return this.ValueColor[fileData.value];
+        // データに応じた色を返します
+        public (Color, Color) GetColor(FileData fileData) {
+            var foreColor = Color.Black;
+            var backColor = this.ValueColor[fileData.value];
+
+            if (backColor.ToArgb() == Color.Black.ToArgb()) {
+                foreColor = Color.Empty;
+                backColor = Color.Empty;
+            }
+            return (foreColor, backColor);
         }
 
     } //class

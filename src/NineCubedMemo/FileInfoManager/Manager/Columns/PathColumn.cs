@@ -47,15 +47,16 @@ namespace FileInfoManager.Manager.Columns
 
             if (FileUtils.Exists(path)) {
                 //ファイルがある場合
-                cell.Style.BackColor = Color.White;
+                //cell.Style.BackColor = Color.White;
             } else {
                 //ファイルがない場合
+                cell.Style.ForeColor = Color.Black;
                 cell.Style.BackColor = Color.LightPink;
             }
         }
 
-        // データに応じた背景色を返します
-        public Color GetBackColor(FileData fileData) => Color.White;
+        // データに応じた色を返します
+        public (Color, Color) GetColor(FileData fileData) => (Color.Empty, Color.Empty);
 
     } //class
 }

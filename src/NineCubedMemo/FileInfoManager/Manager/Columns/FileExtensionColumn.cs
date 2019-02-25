@@ -84,12 +84,12 @@ namespace FileInfoManager.Manager.Columns
             return orgFileData;
         }
 
-        // データに応じた背景色を返します
-        public Color GetBackColor(FileData fileData) {
+        // データに応じた色を返します
+        public (Color, Color) GetColor(FileData fileData) {
             if (fileData.kind == 2) {
-                return Color.LightGoldenrodYellow; //フォルダ
+                return (Color.Black, Color.LightGoldenrodYellow); //フォルダ
             } else {
-                return Color.White;     //フォルダ以外(ファイル or 存在しない)
+                return (Color.Empty, Color.Empty);                //フォルダ以外(ファイル or 存在しない)
             }
         }
 

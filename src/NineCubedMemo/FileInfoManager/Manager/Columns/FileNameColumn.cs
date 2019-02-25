@@ -71,12 +71,12 @@ namespace FileInfoManager.Manager.Columns
             return orgFileData;
         }
 
-        // データに応じた背景色を返します
-        public Color GetBackColor(FileData fileData) {
+        // データに応じた色を返します
+        public (Color, Color) GetColor(FileData fileData) {
             if (FileUtils.Exists(fileData.path)) {
-                return Color.White;
+                return (Color.Empty, Color.Empty);
             } else {
-                return Color.LightPink; //ファイルが存在しない
+                return (Color.Black, Color.LightPink); //ファイルが存在しない
             }
         }
 
