@@ -341,8 +341,8 @@ namespace NineCubed.Memo.Plugins.ImageViewer
             }*/
 
             byte GetByte(int color) {
-                if (color > 256) return 255;
-                if (color < 0)   return 0;
+                if (color >= 256) return 255;
+                if (color <  0)   return 0;
                 return (byte)color;
             }
 
